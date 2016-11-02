@@ -1,0 +1,49 @@
+<!-- INCLUDE overall_header.html -->
+
+<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+
+<h1>{L_ACP_DOWNLOAD_SYSTEM} - {L_ACP_NEW_DOWNLOAD}</h1>
+
+<p>{L_ACP_NEW_DOWNLOAD_EXPLAIN} {ALLOWED_SIZE}</p>
+
+<form id="select_user" method="post" action="{U_ACTION}" enctype="multipart/form-data" />
+	<input type="hidden" name="add_new" value="add_new" />
+	<fieldset>
+		<legend>{L_ACP_NEW_DOWNLOAD}</legend>
+		<dl>
+			<dt><label>{L_ACP_NEW_TITLE}{L_COLON}</label><br /><span>{L_ACP_NEW_TITLE_EXPLAIN}</span></dt>
+			<dd><input type="text" name="title" size="50" value="{TITLE}" /></dd>
+		</dl>
+		<dl>
+			<dt><label>{L_ACP_NEW_VERSION}{L_COLON}</label><br /><span>{L_ACP_NEW_VERSION_EXPLAIN}</span></dt>
+			<dd><input type="text" name="dl_version" size="15" maxlength="10" value="{DL_VERSION}" /></dd>
+		</dl>
+		<dl>
+			<dt><label>{L_ACP_NEW_DESC}{L_COLON}</label><br /><span>{L_ACP_NEW_DESC}</span><br /></dt>
+			<dd><textarea rows="9" name="desc" cols="52">{DESC}</textarea></dd>
+		</dl>
+		<dl>
+			<dt><label>{L_ACP_NEW_DL_CAT}{L_COLON}</label><br /><span>{L_ACP_NEW_DL_CAT_EXPLAIN}</span></dt>
+			<dd><select name="parent">{PARENT_OPTIONS}</select></dd>
+		</dl>
+	</fieldset>
+	<fieldset>
+		<legend>{L_ACP_UPLOAD_METHOD}</legend>
+		<p>{L_ACP_UPLOAD_METHOD_EXPLAIN}</p>
+		<dl>
+			<dt><label>{L_ACP_NEW_FTP_FILENAME}{L_COLON}</label><br /><span>{L_ACP_NEW_FTP_FILENAME_EXPLAIN}</span></dt>
+			<dd><input type="text" name="ftp_upload" size="50" value="{FTP_UPLOAD}" /></dd>
+		</dl>
+		<dl>
+			<dt><label>{L_ACP_NEW_FILENAME}{L_COLON}</label><br /><span>{L_ACP_NEW_FILENAME_EXPLAIN}</span></dt>
+			<dd><input class="inputbox autowidth" type="file" name="filename" size="52" /></dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<legend>{L_SUBMIT}</legend>
+		<input class="button1" id="submit" name="submit" value="{L_SUBMIT}" type="submit" />&nbsp;
+		<input class="button2" id="reset" name="reset" value="{L_RESET}" type="reset" />
+	</fieldset>
+
+<!-- INCLUDE overall_footer.html -->

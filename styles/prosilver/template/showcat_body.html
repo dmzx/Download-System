@@ -1,0 +1,75 @@
+<!-- INCLUDE overall_header.html -->
+<!-- IF S_NO_FILES -->
+	<br /><br />
+		&nbsp;<b>{L_EDS_NO_FILES}</b>
+	<br /><br />
+<!-- ELSE -->
+	<br />
+<div class="action-bar top">
+	<!-- IF .pagination or TOTAL_DOWNLOADS -->
+	<div class="pagination">
+		{TOTAL_DOWNLOADS}
+		<!-- IF .pagination -->
+			<!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			&bull; {PAGE_NUMBER}
+		<!-- ENDIF -->
+	</div>
+	<!-- ENDIF -->
+</div>
+
+	<br />
+	<!-- BEGIN catrow -->
+		<!-- IF catrow.S_FIRST_ROW -->
+			<div class="forabg forumbg-table">
+				<div class="inner">
+	<table class="table1">
+		 <thead>
+			<tr>
+				<th class="eds-title" style="text-align:left;">{L_EDS_FILE_TITLE}</th>
+				<th class="eds-version">{L_EDS_FILE_VERSION}</th>
+				<th class="eds-desc">{L_EDS_FILE_DESC}</th>
+				<th class="eds-count">{L_EDS_FILE_CLICKS}</th>
+				<th class="eds-filesize">{L_EDS_FILESIZE}</th>
+				<th class="eds-dl">{L_EDS_DOWNLOAD}</th>
+			</tr>
+		 </thead>
+		<tbody>
+			<!-- ENDIF -->
+			<tr class="<!-- IF catrow.S_ROW_COUNT is even --> bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+				<td class="eds-title">&nbsp;<b>{catrow.DL_TITLE}</b></td>
+				<td class="eds-version" style="text-align:center;">{catrow.DL_VERSION}</td>
+				<td class="eds-desc" style="text-align:center;">{catrow.DL_DESC}
+				<hr />
+				<span class="small"><i>{L_EDS_UPLOADED_ON}{L_COLON} {catrow.DL_UPLOAD_TIME}<br />
+				{L_EDS_LAST_CHANGED_ON} {L_COLON} {catrow.DL_LAST_CHANGED}</i></span></td>
+				<td class="eds-count" style="text-align:center;"><strong>{catrow.DL_CLICKS}</strong></td>
+				<td class="eds-filesize" style="text-align:center;">{catrow.DL_FILESIZE}</td>
+				<td class="eds-dl" style="text-align:center;">{catrow.U_DOWNLOAD}</td>
+			</tr>
+	<!-- IF catrow.S_LAST_ROW -->
+		</tbody>
+	</table>
+</div>
+</div>
+<!-- ENDIF -->
+	<!-- END catrow -->
+	<div class="action-bar bottom">
+	<!-- IF .pagination or TOTAL_DOWNLOADS -->
+	<div class="pagination">
+		{TOTAL_DOWNLOADS}
+		<!-- IF .pagination -->
+			<!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			&bull; {PAGE_NUMBER}
+		<!-- ENDIF -->
+	</div>
+	<!-- ENDIF -->
+</div>
+<!-- ENDIF -->
+<div class="clear"></div>
+<br />
+<div style="text-align: center;" class="copyright"><a href="http://die-muellers.org" onclick="window.open(this.href); return false">{L_EDS_COPYRIGHT}</a><br />
+<a href="http://www.dmzx-web.net" onclick="window.open(this.href); return false">{L_EDS_COPYRIGHT_DMZX}</a></div>
+
+<!-- INCLUDE overall_footer.html -->

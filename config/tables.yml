@@ -1,0 +1,4 @@
+parameters:
+    dmzx.downloadsystem.table.dm_eds: %core.table_prefix%dm_eds
+    dmzx.downloadsystem.table.dm_eds_cat: %core.table_prefix%dm_eds_cat
+    dmzx.downloadsystem.table.dm_eds_config: %core.table_prefix%dm_eds_config        

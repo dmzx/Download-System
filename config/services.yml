@@ -1,0 +1,102 @@
+imports:
+    - { resource: tables.yml }
+parameters:
+    dmzx.downloadsystem.version_data:
+        author: dmzx
+        title: Download System
+        version: download_system_version
+        file:
+            - www.dmzx-web.net
+            - /versions
+            - downloadsystem_version.json
+services:
+    dmzx.downloadsystem.version.check:
+        class: dmzx\downloadsystem\includes\version_check
+        scope: prototype
+        arguments:
+            - '%dmzx.downloadsystem.version_data%'
+            - '@config'
+            - '@version_helper'
+            - '@template'
+            - '@user'
+    dmzx.downloadsystem.listener:
+        class: dmzx\downloadsystem\event\listener
+        arguments:
+            - '@user'
+            - '@template'
+            - '@controller.helper'
+        tags:
+            - { name: event.listener }
+    dmzx.downloadsystem.controller:
+        class: dmzx\downloadsystem\controller\download
+        arguments:
+            - '@dmzx.downloadsystem.core.functions'
+            - '@template'
+            - '@user'
+            - '@auth'
+            - '@request'
+            - '%core.php_ext%'
+            - '%core.root_path%'
+    dmzx.downloadsystem.controller.cat:
+        class: dmzx\downloadsystem\controller\downloadsystemcat
+        arguments:
+            - '@dmzx.downloadsystem.core.functions'
+            - '@template'
+            - '@user'
+            - '@auth'
+            - '@dbal.conn'
+            - '@request'
+            - '@config'
+            - '@controller.helper'
+            - '@pagination'
+            - '%core.php_ext%'
+            - '%core.root_path%'
+            - '%dmzx.downloadsystem.table.dm_eds%'
+            - '%dmzx.downloadsystem.table.dm_eds_cat%'
+            - '%dmzx.downloadsystem.table.dm_eds_config%'
+    dmzx.downloadsystem.controller.download:
+        class: dmzx\downloadsystem\controller\downloadsystemdownload
+        arguments:
+            - '@user'
+            - '@auth'
+            - '@dbal.conn'
+            - '@request'
+            - '@config'
+            - '%core.php_ext%'
+            - '%core.root_path%'
+            - '%dmzx.downloadsystem.table.dm_eds%'
+            - '%dmzx.downloadsystem.table.dm_eds_cat%'
+    dmzx.downloadsystem.controller.admin.controller:
+        class: dmzx\downloadsystem\controller\admin_controller
+        arguments:
+            - '@dmzx.downloadsystem.core.functions'
+            - '@template'
+            - '@user'
+            - '@cache'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@request'
+            - '@config'
+            - '@pagination'
+            - '@service_container'
+            - '%core.adm_relative_path%'
+            - '%core.php_ext%'
+            - '%core.root_path%'
+            - '%dmzx.downloadsystem.table.dm_eds%'
+            - '%dmzx.downloadsystem.table.dm_eds_cat%'
+            - '%dmzx.downloadsystem.table.dm_eds_config%'
+    dmzx.downloadsystem.core.functions:
+        class: dmzx\downloadsystem\core\functions
+        arguments:
+            - '@template'
+            - '@user'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@request'
+            - '@config'
+            - '@pagination'
+            - '%core.php_ext%'
+            - '%core.root_path%'
+            - '%dmzx.downloadsystem.table.dm_eds%'
+            - '%dmzx.downloadsystem.table.dm_eds_cat%'
+            - '%dmzx.downloadsystem.table.dm_eds_config%'
