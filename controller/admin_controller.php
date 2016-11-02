@@ -1823,7 +1823,7 @@ class admin_controller
 				{
 					unlink($empty_dir.$f);
 				}
-				elseif ($f > '0' and filetype($empty_dir.$f) == "dir")
+				else if ($f > '0' and filetype($empty_dir.$f) == "dir")
 				{
 					remove_dir($current_dir.$f."\\");
 				}
