@@ -9,6 +9,8 @@
 
 namespace dmzx\downloadsystem\controller;
 
+use phpbb\exception\http_exception;
+
 class downloadsystemcat
 {
 	/** @var \dmzx\downloadsystem\core\functions */
@@ -41,7 +43,7 @@ class downloadsystemcat
 	/** @var string */
 	protected $php_ext;
 
-	/** @var string phpBB root path */
+	/** @var string */
 	protected $root_path;
 
 	/**
@@ -67,11 +69,11 @@ class downloadsystemcat
 	* @param \phpbb\config\config						$config
 	* @param \phpbb\controller\helper		 			$helper
 	* @param \phpbb\pagination							$pagination
-	* @param											$php_ext
-	* @param											$root_path
-	* @param											$dm_eds_table
-	* @param											$dm_eds_cat_table
-	* @param											$dm_eds_config_table
+	* @param string										$php_ext
+	* @param string										$root_path
+	* @param string										$dm_eds_table
+	* @param string										$dm_eds_cat_table
+	* @param string										$dm_eds_config_table
 	*
 	*/
 	public function __construct(
@@ -100,10 +102,15 @@ class downloadsystemcat
 		$this->helper 				= $helper;
 		$this->pagination 			= $pagination;
 		$this->php_ext 				= $php_ext;
-		$this->root_path 		= $root_path;
+		$this->root_path 			= $root_path;
 		$this->dm_eds_table 		= $dm_eds_table;
 		$this->dm_eds_cat_table 	= $dm_eds_cat_table;
 		$this->dm_eds_config_table 	= $dm_eds_config_table;
+
+		if (!class_exists('parse_message'))
+		{
+			include($this->root_path . 'includes/message_parser.' . $this->php_ext);
+		}
 	}
 
 	public function handle_downloadsystemcat()
@@ -112,7 +119,10 @@ class downloadsystemcat
 		$eds_values = $this->functions->config_values();
 
 		$start	= $this->request->variable('start', 0);
-		$number	= $eds_values['pagination_user'];
+		$number	= $eds_values['pagination_downloads'];
+
+		// Setup message parser
+		$this->message_parser = new \parse_message();
 
 		/**
 		* Retrieve cat id
@@ -134,7 +144,7 @@ class downloadsystemcat
 		if (!$row)
 		{
 			$message = $this->user->lang['EDS_CAT_NOT_EXIST'] . '<br /><br /><a href="' . $this->helper->route('dmzx_downloadsystem_controller') . '">&laquo; ' . $this->user->lang['EDS_BACK_DOWNLOADS'] . '</a>';
-			trigger_error($message);
+			throw new http_exception(401, $message);
 		}
 		else
 		{
@@ -204,11 +214,17 @@ class downloadsystemcat
 					$download = '<a href="' . $this->helper->route('dmzx_downloadsystem_controller_download', array('id' =>	$dl_id)) . '"><img src="' . $board_url. 'ext/dmzx/downloadsystem/styles/prosilver/theme/images/' . 'eds_regular_download.png" title="' . $this->user->lang['EDS_REGULAR_DOWNLOAD'] . '" alt=""></a>';
 				}
 
+				$this->message_parser->message = $row['download_desc'];
+				$this->message_parser->bbcode_bitfield = $row['bbcode_bitfield'];
+				$this->message_parser->bbcode_uid = $row['bbcode_uid'];
+				$allow_bbcode = $allow_magic_url = $allow_smilies = true;
+				$this->message_parser->format_display($allow_bbcode, $allow_magic_url, $allow_smilies);
+
 				$this->template->assign_block_vars('catrow', array(
 					'DL_TITLE'			=> $dl_title,
 					'DL_VERSION'		=> $dl_version,
 					'DL_CLICKS'			=> $dl_clicks,
-					'DL_DESC'			=> generate_text_for_display($row['download_desc'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options']),
+					'DL_DESC'			=> $this->message_parser->message,
 					'DL_UPLOAD_TIME' 	=> $this->user->format_date($upload_time),
 					'DL_LAST_CHANGED' 	=> $this->user->format_date($last_changed_time),
 					'DL_FILESIZE'		=> $filesize,
@@ -230,15 +246,7 @@ class downloadsystemcat
 			));
 		}
 
-		/**
-		* The output of the page
-		*/
-		page_header($this->user->lang['EDS_TITLE'] . ' &bull; ' . $cat_name);
-
-		$this->template->set_filenames(array(
-			'body' => 'showcat_body.html'
-		));
-
-		page_footer();
+		// Send all data to the template file
+		return $this->helper->render('showcat_body.html', $this->user->lang('EDS_TITLE') . ' &bull; ' . $cat_name);
 	}
 }

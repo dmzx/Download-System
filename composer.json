@@ -3,8 +3,8 @@
 	"type": "phpbb-extension",
 	"description": "This extension will add an easy download system to your forum, where you can offer your user to download files from your webspace.",
 	"homepage": "http://www.dmzx-web.net",
-	"version": "1.0.2",
-	"time": "2016-10-30",
+	"version": "1.0.3",
+	"time": "2016-12-07",
 	"keywords": ["phpbb", "extension", "downloadsystem"],
 	"license": "GPL-2.0",
 	"authors": [
@@ -13,6 +13,11 @@
 			"homepage": "http://www.dmzx-web.net",
 			"email": "info@dmzx-web.net",
 			"role": "Extension Developer"
+		},
+		{
+			"name": "Die Muellers Dot Org",
+			"homepage": "http://die-muellers.org",
+			"role": "Original MOD author"
 		}
 	],
 	"require": {
@@ -24,7 +29,7 @@
 	"extra": {
 		"display-name": "Download System",
 		"soft-require": {
-			"phpbb/phpbb": ">=3.1.0,<3.2.0-RC1"
+			"phpbb/phpbb": ">=3.1.0,<3.3.0@dev"
 		},
 		"version-check": {
 			"host": "www.dmzx-web.net",

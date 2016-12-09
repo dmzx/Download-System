@@ -1,3 +1,4 @@
 <!-- IF S_EDS_EXIST -->
-<li class="small-icon icon-download"><a href="{U_DM_EDS}" title="{L_DM_EDS}">{L_DM_EDS}</a></li>
+<li <!-- IF not PHPBB_IS_32 -->class="small-icon icon-download"<!-- ENDIF --> data-last-responsive="true"><a href="{U_DM_EDS}" title="{L_DM_EDS}" role="menuitem"><!-- IF PHPBB_IS_32 --><i class="icon fa fa-download" aria-hidden="true"></i><!-- ENDIF --><span>{L_DM_EDS}</span></a></li>
 <!-- ENDIF -->
+

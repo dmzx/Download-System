@@ -9,6 +9,8 @@
 
 namespace dmzx\downloadsystem\controller;
 
+use phpbb\exception\http_exception;
+
 class downloadsystemdownload
 {
 	/** @var \phpbb\user */
@@ -29,7 +31,7 @@ class downloadsystemdownload
 	/** @var string */
 	protected $php_ext;
 
-	/** @var string phpBB root path */
+	/** @var string */
 	protected $root_path;
 
 	/**
@@ -49,10 +51,10 @@ class downloadsystemdownload
 	* @param \phpbb\db\driver\driver_interface	$db
 	* @param \phpbb\request\request		 		$request
 	* @param \phpbb\config\config				$config
-	* @param									$php_ext
-	* @param									$root_path
-	* @param									$dm_eds_table
-	* @param									$dm_eds_cat_table
+	* @param string								$php_ext
+	* @param string								$root_path
+	* @param string								$dm_eds_table
+	* @param string								$dm_eds_cat_table
 	*
 	*/
 	public function __construct(
@@ -94,17 +96,16 @@ class downloadsystemdownload
 			if (!$this->auth->acl_get('u_dm_eds_download'))
 			{
 				$message = $this->user->lang['EDS_NO_DOWNLOAD'] . '<br /><br /><a href="' . append_sid("{$this->root_path}index.$this->php_ext") . '">&laquo; ' . $this->user->lang['EDS_BACK_INDEX'] . '</a>';
-				trigger_error($message);
+				throw new http_exception(401, $message);
 			}
 
 			if (!$row)
 			{
-				trigger_error($this->user->lang['EDS_DL_NOEXISTS']);
+				throw new http_exception(400, 'EDS_DL_NOEXISTS');
 			}
 
 			$download_sub_path = $row['cat_sub_dir'];
 			$download_filename = $row['download_filename'];
-			$download_cost = $row['cost_per_dl'];
 
 			$url = $this->root_path . 'ext/dmzx/downloadsystem/files/' . $download_sub_path . '/' . $download_filename;
 
@@ -122,25 +123,7 @@ class downloadsystemdownload
 		}
 		else
 		{
-			trigger_error($this->user->lang['EDS_NO_ID']);
+			throw new http_exception(400, 'EDS_NO_ID');
 		}
-	}
-
-	/**
-	* Get a browser friendly UTF-8 encoded filename
-	*/
-	private function header_filename($file)
-	{
-		$user_agent = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : '';
-
-		// There be dragons here.
-		// Not many follows the RFC...
-		if (strpos($user_agent, 'MSIE') !== false || strpos($user_agent, 'Safari') !== false || strpos($user_agent, 'Konqueror') !== false)
-		{
-			return "filename=" . rawurlencode($file);
-		}
-
-		// follow the RFC for extended filename for the rest
-		return "filename*=UTF-8''" . rawurlencode($file);
 	}
 }

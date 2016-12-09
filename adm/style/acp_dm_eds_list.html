@@ -7,11 +7,11 @@
 <p>{L_ACP_MANAGE_DOWNLOADS_EXPLAIN}</p>
 
 <form id="dm_new" method="post" action="{S_ACTION}">
-<fieldset class="tabulated">
-	<input type="hidden" name="action" value="new_download" />
-	<input class="button2" name="add_download" type="submit" value="{L_ACP_NEW_DOWNLOAD}" />
-	{S_FORM_TOKEN}
-</fieldset>
+	<fieldset class="tabulated">
+		<input type="hidden" name="action" value="new_download" />
+		<input class="button2" name="add_download" type="submit" value="{L_ACP_NEW_DOWNLOAD}" />
+		{S_FORM_TOKEN}
+	</fieldset>
 </form>
 
 <!-- IF .pagination or TOTAL_DOWNLOADS -->
@@ -54,21 +54,21 @@
 </table>
 
 <!-- IF .pagination or TOTAL_DOWNLOADS -->
-	<div class="pagination">
-		{TOTAL_DOWNLOADS}
-		<!-- IF .pagination -->
-			<!-- INCLUDE pagination.html -->
-		<!-- ELSE -->
-			&bull; {PAGE_NUMBER}
-		<!-- ENDIF -->
-	</div>
+<div class="pagination">
+	{TOTAL_DOWNLOADS}
+	<!-- IF .pagination -->
+		<!-- INCLUDE pagination.html -->
+	<!-- ELSE -->
+		&bull; {PAGE_NUMBER}
+	<!-- ENDIF -->
+</div>
 <!-- ENDIF -->
 
 <form action="{S_DOWNLOAD_ACTION}" method="post">
-<fieldset class="display-options">
-	<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;
-	<input class="button2" type="submit" name="sort" value="{L_GO}" />
-</fieldset>
+	<fieldset class="display-options">
+		<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;
+		<input class="button2" type="submit" name="sort" value="{L_GO}" />
+	</fieldset>
 </form>
 
 <!-- INCLUDE overall_footer.html -->

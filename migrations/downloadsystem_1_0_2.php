@@ -14,7 +14,7 @@ class downloadsystem_1_0_2 extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
-			'\dmzx\downloadsystem\migrations\downloadsystem_data',
+			'\dmzx\downloadsystem\migrations\downloadsystem_schema',
 		);
 	}
 

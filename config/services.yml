@@ -25,6 +25,10 @@ services:
             - '@user'
             - '@template'
             - '@controller.helper'
+            - '@ext.manager'
+            - '@config'
+            - '%core.php_ext%'
+            - '@?files.factory'
         tags:
             - { name: event.listener }
     dmzx.downloadsystem.controller:
@@ -35,6 +39,7 @@ services:
             - '@user'
             - '@auth'
             - '@request'
+            - '@controller.helper'
             - '%core.php_ext%'
             - '%core.root_path%'
     dmzx.downloadsystem.controller.cat:
@@ -79,12 +84,15 @@ services:
             - '@config'
             - '@pagination'
             - '@service_container'
+            - '@ext.manager'
+            - '@path_helper'
             - '%core.adm_relative_path%'
             - '%core.php_ext%'
             - '%core.root_path%'
             - '%dmzx.downloadsystem.table.dm_eds%'
             - '%dmzx.downloadsystem.table.dm_eds_cat%'
             - '%dmzx.downloadsystem.table.dm_eds_config%'
+            - '@?files.factory'
     dmzx.downloadsystem.core.functions:
         class: dmzx\downloadsystem\core\functions
         arguments:

@@ -41,6 +41,12 @@ class admin_controller
 	/** @var ContainerBuilder */
 	protected $phpbb_container;
 
+	/** @var \phpbb\extension\manager "Extension Manager" */
+	protected $ext_manager;
+
+	/** @var \phpbb\path_helper */
+	protected $path_helper;
+
 	/** @var string phpBB admin path */
 	protected $phpbb_admin_path;
 
@@ -61,6 +67,9 @@ class admin_controller
 
 	protected $dm_eds_config_table;
 
+	/** @var \phpbb\files\factory */
+	protected $files_factory;
+
 	/**
 	* Constructor
 	*
@@ -74,12 +83,15 @@ class admin_controller
 	* @param \phpbb\config\config										$config
 	* @param \phpbb\pagination											$pagination
 	* @param \Symfony\Component\DependencyInjection\ContainerInterface 	$phpbb_container
+	* @param \phpbb\extension\manager									$ext_manager
+	* @param \phpbb\path_helper											$path_helper
 	* @param string 													$phpbb_admin_path
 	* @param string 													$php_ext
 	* @param string 													$root_path
 	* @param string 													$dm_eds_table
 	* @param string 													$dm_eds_cat_table
 	* @param string 													$dm_eds_config_table
+	* @param \phpbb\files\factory										$files_factory
 	*
 	*/
 	public function __construct(
@@ -93,11 +105,14 @@ class admin_controller
 		\phpbb\config\config $config,
 		\phpbb\pagination $pagination,
 		$phpbb_container,
+		\phpbb\extension\manager $ext_manager,
+		\phpbb\path_helper $path_helper,
 		$phpbb_admin_path,
 		$php_ext, $root_path,
 		$dm_eds_table,
 		$dm_eds_cat_table,
-		$dm_eds_config_table)
+		$dm_eds_config_table,
+		\phpbb\files\factory $files_factory = null)
 	{
 		$this->functions 			= $functions;
 		$this->template 			= $template;
@@ -109,14 +124,27 @@ class admin_controller
 		$this->config 				= $config;
 		$this->pagination 			= $pagination;
 		$this->phpbb_container 		= $phpbb_container;
+		$this->ext_manager	 		= $ext_manager;
+		$this->path_helper	 		= $path_helper;
 		$this->phpbb_admin_path 	= $phpbb_admin_path;
 		$this->php_ext 				= $php_ext;
 		$this->root_path 			= $root_path;
 		$this->dm_eds_table 		= $dm_eds_table;
 		$this->dm_eds_cat_table 	= $dm_eds_cat_table;
 		$this->dm_eds_config_table 	= $dm_eds_config_table;
+		$this->files_factory 		= $files_factory;
 
-		include($this->root_path . 'includes/functions_upload.' . $this->php_ext);
+		$this->ext_path = $this->ext_manager->get_extension_path('dmzx/downloadsystem', true);
+		$this->ext_path_web = $this->path_helper->update_web_root_path($this->ext_path);
+
+		if (!function_exists('submit_post'))
+		{
+			include($this->root_path . 'includes/functions_posting.' . $this->php_ext);
+		}
+		if (!class_exists('parse_message'))
+		{
+			include($this->root_path . 'includes/message_parser.' . $this->php_ext);
+		}
 	}
 
 	public function display_config()
@@ -134,10 +162,12 @@ class admin_controller
 		{
 			// Values for eds_config
 			$sql_ary = array (
-				'pagination_acp'	=> $this->request->variable('pagination_acp', 0),
-				'pagination_user'	=> $this->request->variable('pagination_user', 0),
-				'announce_enable'	=> $this->request->variable('announce_enable', 0),
-				'announce_forum'	=> $this->request->variable('announce_forum', 0),
+				'pagination_acp'		=> $this->request->variable('pagination_acp', 0),
+				'pagination_user'		=> $this->request->variable('pagination_user', 0),
+				'announce_enable'		=> $this->request->variable('announce_enable', 0),
+				'announce_forum'		=> $this->request->variable('announce_forum', 0),
+				'announce_lock_enable'	=> $this->request->variable('announce_lock_enable', 0),
+				'pagination_downloads'	=> $this->request->variable('pagination_downloads', 0),
 			);
 
 			// Check if pagination_acp is at least 5
@@ -147,11 +177,18 @@ class admin_controller
 				trigger_error($this->user->lang['ACP_PAGINATION_ERROR_ACP'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			// Check if pagination_acp is at least 5
+			// Check if pagination_user is at least 3
 			$check_user = $this->request->variable('pagination_user', 0);
 			if ($check_user < 3)
 			{
 				trigger_error($this->user->lang['ACP_PAGINATION_ERROR_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+
+			// Check if pagination_downloads is at least 10
+			$check_user = $this->request->variable('pagination_downloads', 0);
+			if ($check_user < 10)
+			{
+				trigger_error($this->user->lang['ACP_PAGINATION_ERROR_DOWNLOADS'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			// Check if announce forum id exists
@@ -180,12 +217,14 @@ class admin_controller
 		else
 		{
 			$this->template->assign_vars(array(
-				'PAGINATION_ACP'	=> $eds_values['pagination_acp'],
-				'PAGINATION_USER'	=> $eds_values['pagination_user'],
-				'ANNOUNCE_ENABLE'	=> $eds_values['announce_enable'],
-				'ANNOUNCE_FORUM'	=> $eds_values['announce_forum'],
-				'U_BACK'			=> $this->u_action,
-				'U_ACTION'			=> $form_action,
+				'PAGINATION_ACP'		=> $eds_values['pagination_acp'],
+				'PAGINATION_USER'		=> $eds_values['pagination_user'],
+				'ANNOUNCE_ENABLE'		=> $eds_values['announce_enable'],
+				'ANNOUNCE_FORUM'		=> $eds_values['announce_forum'],
+				'ANNOUNCE_LOCK'			=> $eds_values['announce_lock_enable'],
+				'PAGINATION_DOWNLOADS'	=> $eds_values['pagination_downloads'],
+				'U_BACK'				=> $this->u_action,
+				'U_ACTION'				=> $form_action,
 			));
 			$this->version_check->check();
 		}
@@ -243,8 +282,6 @@ class admin_controller
 		$desc		= $this->request->variable('desc', '', true);
 		$dl_version	= $this->request->variable('dl_version', '', true);
 		$costs_dl	= $this->request->variable('cost_per_dl', 0.00);
-		$uid = $bitfield = $options = '';
-		generate_text_for_storage($desc, $uid, $bitfield, $options);
 		$username1 	= $this->request->variable('username', '', true);
 		$username 	= strtolower($username1);
 		$ftp_upload = $this->request->variable('ftp_upload', '', true);
@@ -362,8 +399,6 @@ class admin_controller
 		$desc		= $this->request->variable('desc', '', true);
 		$dl_version	= $this->request->variable('dl_version', '', true);
 		$costs_dl	= $this->request->variable('cost_per_dl', 0.00);
-		$uid = $bitfield = $options = '';
-		generate_text_for_storage($desc, $uid, $bitfield, $options);
 		$username1 	= $this->request->variable('username', '', true);
 		$username 	= strtolower($username1);
 		$ftp_upload = $this->request->variable('ftp_upload', '', true);
@@ -545,9 +580,6 @@ class admin_controller
 		$cat_option = $this->request->variable('parent', '', true);
 		$upload_time = time();
 		$last_changed_time = time();
-		$uid = $bitfield = $options = '';
-		$allow_bbcode = $allow_urls = $allow_smilies = true;
-		generate_text_for_storage($desc, $uid, $bitfield, $options, $allow_bbcode, $allow_urls, $allow_smilies);
 		$username1 	= $this->request->variable('username', '', true);
 		$username 	= strtolower($username1);
 		$ftp_upload	= $this->request->variable('ftp_upload', '', true);
@@ -673,8 +705,21 @@ class admin_controller
 			trigger_error($this->user->lang['ACP_NO_CAT_UPLOAD'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$fileupload = new \fileupload();
-		$fileupload->fileupload('', $allowed_extensions);
+		if ($this->files_factory !== null)
+		{
+			$fileupload = $this->files_factory->get('upload')
+				->set_error_prefix('FILE_')
+				->set_allowed_extensions($allowed_extensions);
+		}
+		else
+		{
+			if (!class_exists('\fileupload'))
+			{
+				include($this->root_path . 'includes/functions_upload.' . $this->php_ext);
+			}
+			$fileupload = new \fileupload();
+			$fileupload->fileupload('', $allowed_extensions);
+		}
 
 		$target_folder = $this->request->variable('parent', 0);
 		$upload_name = $this->request->variable('filename', '');
@@ -697,41 +742,38 @@ class admin_controller
 
 		if (!$ftp_upload)
 		{
-			$upload_file = $fileupload->form_upload('filename');
+			$upload_file = (isset($this->files_factory)) ? $fileupload->handle_upload('files.types.form', 'filename') : $fileupload->form_upload('filename');
 
-			if (file_exists($this->root_path . $upload_dir . '/' . $upload_file->uploadname))
+			if (file_exists($this->root_path . $upload_dir . '/' . $upload_file->get('uploadname')))
 			{
 				trigger_error($this->user->lang['ACP_UPLOAD_FILE_EXISTS'] . adm_back_link($this->u_action), E_USER_WARNING);//continue;
 			}
 
-			if (!$upload_file->uploadname)
+			if (!$upload_file->get('uploadname'))
 			{
 				trigger_error($this->lang['ACP_NO_FILENAME'] . adm_back_link($this->u_action), E_USER_WARNING);//continue;
 			}
 
 			$upload_file->move_file($upload_dir, false, false, false);
-			@chmod($upload_file->destination_file, 0644);
+			@chmod($this->ext_path_web . 'files/' . $upload_file->get('uploadname'), 0644);
 
-			if (sizeof($upload_file->error) && $upload_file->uploadname)
+			if (sizeof($upload_file->error) && $upload_file->get('uploadname'))
 			{
 				$upload_file->remove();
 				trigger_error(implode('<br />', $upload_file->error));
 			}
 			// End the upload
 
-			$filesize = @filesize($this->root_path . $upload_dir . '/' . $upload_file->uploadname);
+			$filesize = @filesize($this->root_path . $upload_dir . '/' . $upload_file->get('uploadname'));
 			$sql_ary = array(
 				'download_title'	=> $title,
 				'download_desc'	 	=> $desc,
-				'download_filename'	=> $upload_file->uploadname,
+				'download_filename'	=> $upload_file->get('uploadname'),
 				'download_version'	=> $dl_version,
 				'download_cat_id'	=> $cat_option,
 				'upload_time'		=> $upload_time,
 				'cost_per_dl'		=> $costs_dl,
 				'last_changed_time'	=> $last_changed_time,
-				'bbcode_uid'		=> $uid,
-				'bbcode_bitfield'	=> $bitfield,
-				'bbcode_options'	=> $options,
 				'filesize'			=> $filesize,
 				'points_user_id'	=> $transfer_user['user_id'],
 			);
@@ -748,7 +790,7 @@ class admin_controller
 
 			if ($filesize	> ($max_filesize * $multiplier))
 			{
-				unlink($this->root_path . $upload_dir . '/' . $upload_file->uploadname);
+				unlink($this->root_path . $upload_dir . '/' . $upload_file->get('uploadname'));
 				trigger_error($this->user->lang['ACP_FILE_TOO_BIG'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
@@ -770,9 +812,6 @@ class admin_controller
 				'upload_time'		=> $upload_time,
 				'cost_per_dl'		=> $costs_dl,
 				'last_changed_time'	=> $last_changed_time,
-				'bbcode_uid'		=> $uid,
-				'bbcode_bitfield'	=> $bitfield,
-				'bbcode_options'	=> $options,
 				'filesize'			=> $filesize,
 				'points_user_id'	=> $transfer_user['user_id'],
 			);
@@ -789,7 +828,7 @@ class admin_controller
 			$cat_name = $row['cat_name'];
 			$this->db->sql_freeresult($result);
 
-			if ( empty($dl_version) )
+			if (empty($dl_version))
 			{
 				$dl_title = $title;
 			}
@@ -800,7 +839,7 @@ class admin_controller
 
 			$download_link = '[url=' . generate_board_url() . '/downloadsystemcat?id=' . $cat_option . ']' . $this->user->lang['ACP_CLICK'] . '[/url]';
 			$download_subject = sprintf($this->user->lang['ACP_ANNOUNCE_TITLE'], $dl_title);
-			$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_MSG'], $title, generate_text_for_display($desc, $uid, $bitfield, $options), $cat_name, $download_link);
+			$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_MSG'], $title, $desc, $cat_name, $download_link);
 			$this->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 		}
 
@@ -841,10 +880,6 @@ class admin_controller
 		$desc 		= $this->request->variable('desc', '', true);
 		$announce_up = $this->request->variable('announce_up', '');
 		$ftp_upload	= $this->request->variable('ftp_upload', '', true);
-
-		$uid = $bitfield = $options = ''; // will be modified by generate_text_for_storage
-		$allow_bbcode = $allow_urls = $allow_smilies = true;
-		generate_text_for_storage($desc, $uid, $bitfield, $options, $allow_bbcode, $allow_urls, $allow_smilies);
 
 		$username1 	= $this->request->variable('username', '', true);
 		$username 	= strtolower($username1);
@@ -943,8 +978,21 @@ class admin_controller
 		$allowed_extensions[] = 'tiff';
 		$allowed_extensions[] = 'TIFF';
 
-		$fileupload = new \fileupload();
-		$fileupload->fileupload('', $allowed_extensions);
+		if ($this->files_factory !== null)
+		{
+			$fileupload = $this->files_factory->get('upload')
+				->set_error_prefix('FILE_')
+				->set_allowed_extensions($allowed_extensions);
+		}
+		else
+		{
+			if (!class_exists('\fileupload'))
+			{
+				include($this->root_path . 'includes/functions_upload.' . $this->php_ext);
+			}
+			$fileupload = new \fileupload();
+			$fileupload->fileupload('', $allowed_extensions);
+		}
 
 		$target_folder = $this->request->variable('parent', 0);
 		$upload_name = $this->request->variable('filename', '');
@@ -967,24 +1015,24 @@ class admin_controller
 
 		if (!$ftp_upload)
 		{
-			$upload_file = $fileupload->form_upload('filename');
+			$upload_file = (isset($this->files_factory)) ? $fileupload->handle_upload('files.types.form', 'filename') : $fileupload->form_upload('filename');
 
-			$new_filename = $upload_file->uploadname;
+			$new_filename = $upload_file->get('uploadname');
 
-			if (!$upload_file->uploadname)
+			if (!$upload_file->get('uploadname'))
 			{
 				$new_filename = $current_filename;
 				$filesize = $current_filesize;
 			}
 			else
 			{
-				$delete_file = $this->root_path . 'ext/dmzx/downloadsystem/files/' . $current_cat_name .'/' . $current_filename;
-				unlink($delete_file);
+				$delete_file = $this->ext_path_web . 'files/' . $current_cat_name .'/' . $current_filename;
+				@unlink($delete_file);
 
 				$upload_file->move_file($upload_dir, false, false, false);
-				@chmod($upload_file->destination_file, 0644);
+				@chmod($this->ext_path_web . 'files/' . $upload_file->get('uploadname'), 0644);
 
-				if (sizeof($upload_file->error) && $upload_file->uploadname)
+				if (sizeof($upload_file->error) && $upload_file->get('uploadname'))
 				{
 					$upload_file->remove();
 					trigger_error(implode('<br />', $upload_file->error));
@@ -1001,9 +1049,6 @@ class admin_controller
 				'download_cat_id'	=> $v_cat_id,
 				'cost_per_dl'		=> $costs_dl,
 				'last_changed_time' => $last_changed_time,
-				'bbcode_uid'		=> $uid,
-				'bbcode_bitfield'	=> $bitfield,
-				'bbcode_options'	=> $options,
 				'filesize'			=> $filesize,
 				'points_user_id'	=> $transfer_user['user_id'],
 			);
@@ -1024,8 +1069,8 @@ class admin_controller
 				$cat_dir = $row['cat_sub_dir'];
 				$this->db->sql_freeresult($result);
 
-				$filecheck = $this->root_path . 'ext/dmzx/downloadsystem/files/' . $cat_dir .'/' . $new_filename;
-				$filecheck_current = $this->root_path . 'ext/dmzx/downloadsystem/files/' . $current_cat_name .'/' . $new_filename;
+				$filecheck = $this->ext_path_web . 'files/' . $cat_dir .'/' . $new_filename;
+				$filecheck_current = $this->ext_path_web . 'files/' . $current_cat_name .'/' . $new_filename;
 
 				// If file should move to new category
 				if ($current_cat_id != $v_cat_id)
@@ -1059,7 +1104,7 @@ class admin_controller
 
 							$download_link = '[url=' . generate_board_url() . '/downloadsystemcat?id=' . $v_cat_id . ']' . $this->user->lang['ACP_CLICK'] . '[/url]';
 							$download_subject = sprintf($this->user->lang['ACP_ANNOUNCE_UP_TITLE'], $dl_title);
-							$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, generate_text_for_display($desc, $uid, $bitfield, $options), $cat_name, $download_link);
+							$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, $desc, $cat_name, $download_link);
 
 							$this->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 						}
@@ -1097,7 +1142,7 @@ class admin_controller
 
 						$download_link = '[url=' . generate_board_url() . '/downloadsystemcat?id=' . $v_cat_id . ']' . $this->user->lang['ACP_CLICK'] . '[/url]';
 						$download_subject = sprintf($this->user->lang['ACP_ANNOUNCE_UP_TITLE'], $dl_title);
-						$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, generate_text_for_display($desc, $uid, $bitfield, $options), $cat_name, $download_link);
+						$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, $desc, $cat_name, $download_link);
 
 						$this->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 					}
@@ -1126,9 +1171,6 @@ class admin_controller
 				'upload_time'		=> $upload_time,
 				'cost_per_dl'		=> $costs_dl,
 				'last_changed_time'	=> $last_changed_time,
-				'bbcode_uid'		=> $uid,
-				'bbcode_bitfield'	=> $bitfield,
-				'bbcode_options'	=> $options,
 				'filesize'			=> $filesize,
 				'points_user_id'	=> $transfer_user['user_id'],
 			);
@@ -1153,7 +1195,7 @@ class admin_controller
 			$file_name = $row['download_filename'];
 			$this->db->sql_freeresult($result);
 
-			$delete_file = $this->root_path . 'ext/dmzx/downloadsystem/files/' . $cat_dir .'/' . $file_name;
+			$delete_file = $this->ext_path_web . 'files/' . $cat_dir .'/' . $file_name;
 			unlink($delete_file);
 
 			$sql = 'DELETE FROM ' . $this->dm_eds_table . '
@@ -1175,6 +1217,9 @@ class admin_controller
 	public function display_downloads()
 	{
 		$this->user->add_lang('posting');
+
+		// Setup message parser
+		$this->message_parser = new \parse_message();
 
 		$action 		= $this->request->is_set_post('submit');
 		$id				= $this->request->variable('id', 0);
@@ -1221,11 +1266,18 @@ class admin_controller
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
+
+			$this->message_parser->message = $row['download_desc'];
+		//	$this->message_parser->bbcode_bitfield = $this->data['bbcode_bitfield'];
+		//	$this->message_parser->bbcode_uid = $this->data['bbcode_uid'];
+			$allow_bbcode = $allow_magic_url = $allow_smilies = true;
+			$this->message_parser->format_display($allow_bbcode, $allow_magic_url, $allow_smilies);
+
 			$this->template->assign_block_vars('downloads', array(
 				'ICON_COPY'		=> '<img src="' . $this->root_path . 'adm/images/file_new.gif" alt="' . $this->user->lang['ACP_COPY_NEW'] . '" title="' . $this->user->lang['ACP_COPY_NEW'] . '" />',
 				'TITLE'			=> $row['download_title'],
 				'FILENAME'		=> $row['download_filename'],
-				'DESC'			=> generate_text_for_display($row['download_desc'], $row['bbcode_uid'], $row['bbcode_bitfield'], $row['bbcode_options']),
+				'DESC'			=> $this->message_parser->message,
 				'VERSION'		=> $row['download_version'],
 				'DL_COST'		=> ($row['cost_per_dl'] == 0 ? $this->user->lang['ACP_COST_FREE'] : $row['cost_per_dl']),
 				'SUB_DIR'		=> $row['cat_sub_dir'],
@@ -1257,6 +1309,9 @@ class admin_controller
 	*/
 	function manage_cats()
 	{
+		// Setup message parser
+		$this->message_parser = new \parse_message();
+
 		$catrow = array();
 		$parent_id = $this->request->variable('parent_id', 0);
 		$this->template->assign_vars(array(
@@ -1300,11 +1355,17 @@ class admin_controller
 		{
 			$folder_image = ($dm_eds[$i]['left_id'] + 1 != $dm_eds[$i]['right_id']) ? '<img src="images/icon_subfolder.gif" alt="' . $this->user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder.gif" alt="' . $this->user->lang['FOLDER'] . '" />';
 
+			$this->message_parser->message = $dm_eds[$i]['cat_desc'];
+		//	$this->message_parser->bbcode_bitfield = $this->data['bbcode_bitfield'];
+		//	$this->message_parser->bbcode_uid = $this->data['bbcode_uid'];
+			$allow_bbcode = $allow_magic_url = $allow_smilies = true;
+			$this->message_parser->format_display($allow_bbcode, $allow_magic_url, $allow_smilies);
+
 			$this->template->assign_block_vars('catrow', array(
 				'FOLDER_IMAGE'			=> $folder_image,
 				'U_CAT'					=> $this->u_action . '&amp;parent_id=' . $dm_eds[$i]['cat_id'],
 				'CAT_NAME'				=> $dm_eds[$i]['cat_name'],
-				'CAT_DESCRIPTION'		=> generate_text_for_display($dm_eds[$i]['cat_desc'], $dm_eds[$i]['cat_desc_uid'], $dm_eds[$i]['cat_desc_bitfield'], $dm_eds[$i]['cat_desc_options']),
+				'CAT_DESCRIPTION'		=> $this->message_parser->message,
 				'U_MOVE_UP'				=> $this->u_action . '&amp;action=move&amp;move=move_up&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 				'U_MOVE_DOWN'			=> $this->u_action . '&amp;action=move&amp;move=move_down&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 				'U_EDIT'				=> $this->u_action . '&amp;action=edit&amp;cat_id=' . $dm_eds[$i]['cat_id'],
@@ -1430,7 +1491,7 @@ class admin_controller
 			}
 			else if (mkdir(($this->root_path . 'ext/dmzx/downloadsystem/files/' . $cat_sub_dir_name)))
 			{
-				if (copy(($this->root_path . 'ext/dmzx/downloadsystem/files/' .'index.htm'), ($phpbb_root_path . 'ext/dmzx/downloadsystem/files/' . $cat_sub_dir_name . '/index.htm')))
+				if (copy(($this->root_path . 'ext/dmzx/downloadsystem/files/' .'index.htm'), ($this->root_path . 'ext/dmzx/downloadsystem/files/' . $cat_sub_dir_name . '/index.htm')))
 				{
 					trigger_error($this->user->lang['ACP_CAT_NEW_DONE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $dm_eds_data['parent_id']));
 				}
@@ -1812,8 +1873,8 @@ class admin_controller
 	*/
 	function remove_dir($selected_dir)
 	{
-		$current_dir = $this->root_path . 'ext/dmzx/downloadsystem/files/' . $selected_dir;
-		$empty_dir = $this->root_path . 'ext/dmzx/downloadsystem/files/' . $selected_dir . '/';
+		$current_dir = $this->ext_path_web . 'files/' . $selected_dir;
+		$empty_dir = $this->ext_path_web . 'files/' . $selected_dir . '/';
 
 		if ($dir = @opendir($current_dir))
 		{
@@ -1838,13 +1899,15 @@ class admin_controller
 	*/
 	function create_announcement($download_subject, $download_msg, $forum_id)
 	{
-		if (!function_exists('submit_post'))
-		{
-			include($this->root_path . 'includes/functions_posting.' . $this->php_ext);
-		}
+		// Read out config values
+		$eds_values = $this->functions->config_values();
 
-		$subject =	utf8_normalize_nfc($download_subject);
-		$text =	utf8_normalize_nfc($download_msg);
+		$lock = $eds_values['announce_lock_enable'];
+
+		$message_parser = new \parse_message();
+
+		$subject =	$download_subject;
+		$text =	$download_msg;
 
 		// Do not try to post message if subject or text is empty
 		if (empty($subject) || empty($text))
@@ -1852,35 +1915,48 @@ class admin_controller
 			return;
 		}
 
-		// variables to hold the parameters for submit_post
-		$poll = $uid = $bitfield = $options = '';
+		$message_parser->message = $text;
 
-		generate_text_for_storage($subject, $uid, $bitfield, $options, false, false, false);
-		generate_text_for_storage($text, $uid, $bitfield, $options, true, true, true);
+		// Grab md5 'checksum' of new message
+		$message_md5 = md5($message_parser->message);
+
+		$message_parser->parse(true, true, true, true, false, true, true);
+
+		$sql = 'SELECT forum_name
+			FROM ' . FORUMS_TABLE . '
+			WHERE forum_id = ' . (int) $forum_id;
+		$result = $this->db->sql_query($sql);
+		$forum_name = $this->db->sql_fetchfield('forum_name');
+		$this->db->sql_freeresult($result);
 
 		$data = array(
 			'forum_id'			=> $forum_id,
 			'icon_id'			=> false,
-
-			'enable_bbcode'	 	=> true,
+			'poster_id' 		=> $this->user->data['user_id'],
+			'enable_bbcode'		=> true,
 			'enable_smilies'	=> true,
 			'enable_urls'		=> true,
 			'enable_sig'		=> true,
-
-			'message'			=> $text,
-			'message_md5'		=> md5($text),
-
-			'bbcode_bitfield'	=> $bitfield,
-			'bbcode_uid'		=> $uid,
-
+			'message'			=> $message_parser->message,
+			'message_md5'		=> $message_md5,
+			'attachment_data'	=> 0,
+			'filename_data'		=> 0,
+			'bbcode_bitfield'	=> $message_parser->bbcode_bitfield,
+			'bbcode_uid'		=> $message_parser->bbcode_uid,
+			'poster_ip'			=> $this->user->ip,
 			'post_edit_locked'	=> 0,
 			'topic_title'		=> $subject,
+			'topic_status'		=> $lock,
 			'notify_set'		=> false,
-			'notify'			=> false,
-			'post_time'		 	=> 0,
-			'forum_name'		=> '',
+			'notify'			=> true,
+			'post_time' 		=> time(),
+			'forum_name'		=> $forum_name,
 			'enable_indexing'	=> true,
+			'force_approved_state'	=> true,
+			'force_visibility' => true,
+			'attr_id'	=> 0,
 		);
+		$poll = array();
 
 		submit_post('post', $subject, '', POST_NORMAL, $poll, $data);
 	}

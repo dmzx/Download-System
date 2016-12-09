@@ -29,9 +29,10 @@ class downloadsystem_sample extends \phpbb\db\migration\migration
 	{
 		$sample_data = array(
 			array(
-				'pagination_acp' => '5',
-				'pagination_user' => '3',
-				),
+				'pagination_acp' 		=> '5',
+				'pagination_user' 		=> '3',
+				'pagination_downloads' 	=> '25',
+			),
 		);
 		$this->db->sql_multi_insert($this->table_prefix . 'dm_eds_config', $sample_data);
 	}

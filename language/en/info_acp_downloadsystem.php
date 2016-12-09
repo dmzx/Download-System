@@ -34,7 +34,7 @@ if (empty($lang) || !is_array($lang))
 //
 
 $lang = array_merge($lang, array(
-	'ACP_DM_EDS'						=> 'DM Easy Download System',
+	'ACP_DM_EDS'						=> 'Download System',
 	'ACP_MANAGE_CATEGORIES'				=> 'Manage Categories',
 	'ACP_MANAGE_CONFIG'					=> 'Configuration',
 	'ACP_MANAGE_DOWNLOADS'				=> 'Manage Downloads',

@@ -9,6 +9,8 @@
 
 namespace dmzx\downloadsystem\controller;
 
+use phpbb\exception\http_exception;
+
 class download
 {
 	/** @var \dmzx\downloadsystem\core\functions */
@@ -26,10 +28,13 @@ class download
 	/** @var \phpbb\request\request */
 	protected $request;
 
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
 	/** @var string */
 	protected $php_ext;
 
-	/** @var string phpBB root path */
+	/** @var string */
 	protected $root_path;
 
 	/**
@@ -40,8 +45,9 @@ class download
 	* @param \phpbb\user								$user
 	* @param \phpbb\auth\auth							$auth
 	* @param \phpbb\request\request		 				$request
-	* @param											$php_ext
-	* @param											$root_path
+	* @param \phpbb\controller\helper					$helper
+	* @param string										$php_ext
+	* @param string										$root_path
 	*
 	*/
 	public function __construct(
@@ -50,6 +56,7 @@ class download
 		\phpbb\user $user,
 		\phpbb\auth\auth $auth,
 		\phpbb\request\request $request,
+		\phpbb\controller\helper $helper,
 		$php_ext,
 		$root_path)
 	{
@@ -58,33 +65,31 @@ class download
 		$this->user 			= $user;
 		$this->auth 			= $auth;
 		$this->request 			= $request;
+		$this->helper 			= $helper;
 		$this->php_ext 			= $php_ext;
-		$this->root_path 	= $root_path;
+		$this->root_path 		= $root_path;
 	}
 
 	public function handle_downloadsystem()
 	{
-		/**
-		* Check, if user may see the DM EDS
-		*/
 		if (!$this->auth->acl_get('u_dm_eds_use'))
 		{
 			$message = $this->user->lang['EDS_NO_PERMISSION'] . '<br /><br /><a href="' . append_sid("{$this->root_path}index.$this->php_ext") . '">&laquo; ' . $this->user->lang['EDS_BACK_INDEX'] . '</a>';
-			trigger_error($message);
+			throw new http_exception(401, $message);
 		}
 
 		$cat_id = $this->request->variable('id', 0);
+
+		// Generate the sub categories list
 		$this->functions->generate_cat_list($cat_id);
 
-		/**
-		* The output of the page
-		*/
-		page_header($this->user->lang['EDS_TITLE'] . ' &bull; ' . $this->user->lang['EDS_INDEX']);
-
-		$this->template->set_filenames(array(
-			'body' => 'index_body.html'
+		// Build navigation link
+		$this->template->assign_block_vars('navlinks', array(
+			'FORUM_NAME'	=> $this->user->lang('EDS_DOWNLOADS'),
+			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller'),
 		));
 
-		page_footer();
+		// Send all data to the template file
+		return $this->helper->render('index_body.html', $this->user->lang('EDS_TITLE') . ' &bull; ' . $this->user->lang('EDS_INDEX'));
 	}
 }

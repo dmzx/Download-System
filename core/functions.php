@@ -112,12 +112,6 @@ class functions
 		$padding = '';
 		$forum_list = ($return_array) ? array() : '';
 
-		//----------------------------------------------------------------------------------------
-		// Sometimes it could happen that forums will be displayed here not be displayed within the index page
-		// This is the result of forums not displayed at index, having list permissions and a parent of a forum with no permissions.
-		// If this happens, the padding could be "broken"
-		//----------------------------------------------------------------------------------------
-
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if ($row['left_id'] < $right)
@@ -248,7 +242,7 @@ class functions
 			}
 			else
 			{
-				return; //$cat_parents = unserialize($cat_data['cat_parents']);
+				return;
 			}
 		}
 		return $cat_parents;
@@ -272,7 +266,7 @@ class functions
 	*/
 	public function generate_cat_nav(&$cat_data)
 	{
-		$parent_cat_id = request_var('id', 0);
+		$parent_cat_id = $this->request->variable('id', 0);
 
 		// Get video parents
 		$cat_parents = $this->get_cat_parents($cat_data);
@@ -304,8 +298,21 @@ class functions
 	{
 		$start = $this->request->variable('start', 0);
 
+		if (!class_exists('parse_message'))
+		{
+			include($this->root_path . 'includes/message_parser.' . $this->php_ext);
+		}
+
+		// Setup message parser
+		$this->message_parser = new \parse_message();
+
+		// Read out config values
+		$eds_values = $this->config_values();
+
+		$pagination_downloads = $eds_values['pagination_downloads'];
+
 		// pagination value for categories
-		$dls = $this->config['posts_per_page'];
+		$dls = $pagination_downloads;
 
 		// Total number of category
 		$sql = 'SELECT COUNT(cat_id) AS total_cat
@@ -391,7 +398,7 @@ class functions
 					$sql2 = 'SELECT *
 						FROM ' . $this->dm_eds_table . '
 						WHERE last_changed_time = ' . $row['last_download'];
-					$result2 = $this->db->sql_query($sql2);
+					$result2 = $this->db->sql_query($sql2, 20);
 
 					while ($row2 = $this->db->sql_fetchrow($result2))
 					{
@@ -418,13 +425,19 @@ class functions
 					$last_download = $this->user->lang['EDS_NO_DOWNLOADS'];
 				}
 
+				$this->message_parser->message = $row['cat_desc'];
+				$this->message_parser->bbcode_bitfield = $row['bbcode_bitfield'];
+				$this->message_parser->bbcode_uid = $row['bbcode_uid'];
+				$allow_bbcode = $allow_magic_url = $allow_smilies = true;
+				$this->message_parser->format_display($allow_bbcode, $allow_magic_url, $allow_smilies);
+
 				// Send the results to the template
 				$this->template->assign_block_vars('catrow', array(
 					'LAST_DOWNLOAD'			=> $last_download,
 					'NUMBER_DOWNLOADS'		=> $row['number_downloads'],
 					'CAT_NAME'				=> censor_text($row['cat_name']),
 					'U_EDS_CAT'				=> $this->helper->route('dmzx_downloadsystem_controller_cat', array('id' =>	$row['cat_id'])),
-					'CAT_DESC'				=> generate_text_for_display($row['cat_desc'], $row['cat_desc_uid'], $row['cat_desc_bitfield'], $row['cat_desc_options']),
+					'CAT_DESC'				=> $this->message_parser->message,
 					'CAT_FOLDER_IMG_SRC'	=> $this->user->img($folder_image, $folder_alt, false, '', 'src'),
 					'SUBCATS'				=> ($subcats) ? $l_subcats . ': <span style="font-weight: bold;">' . $subcats . '</span>' : '',
 				));
@@ -438,7 +451,7 @@ class functions
 			$this->pagination->generate_template_pagination($pagination_url, 'pagination', 'start', $total_cat, $dls, $start);
 
 			$this->template->assign_vars(array(
-				'LAST_POST_IMG'	=> $this->user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+				'LAST_POST_IMG'			=> $this->user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 				'EDS_CATEGORIES'		=> ($total_cat == 1) ? $this->user->lang['EDS_CAT'] : sprintf($this->user->lang['EDS_CATS'], $total_cat),
 			));
 		}
