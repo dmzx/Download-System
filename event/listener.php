@@ -53,7 +53,6 @@ class listener implements EventSubscriberInterface
 		$this->user					= $user;
 		$this->template				= $template;
 		$this->helper 				= $helper;
-		$this->extension_manager	= $extension_manager;
 		$this->config				= $config;
 		$this->php_ext				= $php_ext;
 		$this->files_factory 		= $files_factory;
