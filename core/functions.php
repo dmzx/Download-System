@@ -484,7 +484,7 @@ class functions
 			'DOWNLOADSYSTEM_AUTHOR_HOMEPAGES'	=> implode(' &amp; ', $author_homepages),
 		));
 
-		return assign_authors;
+		return;
 	}
 
 	/**
