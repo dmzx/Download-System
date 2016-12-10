@@ -238,11 +238,14 @@ class downloadsystemcat
 			//Start pagination
 			$this->pagination->generate_template_pagination($pagination_url, 'pagination', 'start', $total_downloads, $number, $start);
 
+			$this->functions->assign_authors();
+
 			$this->template->assign_vars(array(
-				'CAT_NAME' 			=> $cat_name,
-				'MAIN_LINK'			=> $this->helper->route('dmzx_downloadsystem_controller'),
-				'TOTAL_DOWNLOADS'	=> ($total_downloads == 1) ? $this->user->lang['EDS_SINGLE'] : sprintf($this->user->lang['EDS_MULTI'], $total_downloads),
-				'L_MAIN_LINK'		=> sprintf($this->user->lang['EDS_BACK_LINK'], '<a href= "' . $this->helper->route('dmzx_downloadsystem_controller') . '">', '</a>'),
+				'CAT_NAME' 								=> $cat_name,
+				'MAIN_LINK'								=> $this->helper->route('dmzx_downloadsystem_controller'),
+				'DOWNLOADSYSTEM_FOOTER_VIEW'			=> true,
+				'TOTAL_DOWNLOADS'						=> ($total_downloads == 1) ? $this->user->lang['EDS_SINGLE'] : sprintf($this->user->lang['EDS_MULTI'], $total_downloads),
+				'L_MAIN_LINK'							=> sprintf($this->user->lang['EDS_BACK_LINK'], '<a href= "' . $this->helper->route('dmzx_downloadsystem_controller') . '">', '</a>'),
 			));
 		}
 

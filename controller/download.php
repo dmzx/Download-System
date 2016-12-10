@@ -89,6 +89,9 @@ class download
 			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller'),
 		));
 
+		$this->functions->assign_authors();
+		$this->template->assign_var('DOWNLOADSYSTEM_FOOTER_VIEW', true);
+
 		// Send all data to the template file
 		return $this->helper->render('index_body.html', $this->user->lang('EDS_TITLE') . ' &bull; ' . $this->user->lang('EDS_INDEX'));
 	}

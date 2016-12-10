@@ -22,9 +22,6 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\controller\helper */
 	protected $helper;
 
-	/** @var \phpbb\extension\manager */
-	protected $extension_manager;
-
 	/** @var \phpbb\config\config */
 	protected $config;
 
@@ -40,7 +37,6 @@ class listener implements EventSubscriberInterface
 	* @param \phpbb\user						$user
 	* @param \phpbb\template\template			$template
 	* @param \phpbb\controller\helper			$helper
-	* @param \phpbb\extension\manager 			$extension_manager
 	* @param \phpbb\config\config				$config
 	* @param string								$php_ext
 	* @param \phpbb\files\factory				$files_factory
@@ -50,7 +46,6 @@ class listener implements EventSubscriberInterface
 		\phpbb\user $user,
 		\phpbb\template\template $template,
 		\phpbb\controller\helper $helper,
-		\phpbb\extension\manager $extension_manager,
 		\phpbb\config\config $config,
 		$php_ext,
 		\phpbb\files\factory $files_factory = null)
@@ -70,7 +65,6 @@ class listener implements EventSubscriberInterface
 			'core.viewonline_overwrite_location'		=> 'add_page_viewonline',
 			'core.user_setup'							=> 'load_language_on_setup',
 			'core.page_header'							=> 'page_header',
-			'core.page_header_after'					=> 'page_header_after',
 			'core.permissions'							=> 'permissions',
 		);
 	}
@@ -105,18 +99,6 @@ class listener implements EventSubscriberInterface
 		));
 	}
 
-	public function page_header_after($event)
-	{
-		$page = '';
-		$page = $this->page_name();
-
-		if ($page === 'downloadsystem')
-		{
-			$this->assign_authors();
-			$this->template->assign_var('DOWNLOADSYSTEM_FOOTER_VIEW', true);
-		}
-	}
-
 	public function permissions($event)
 	{
 		$event['permissions'] = array_merge($event['permissions'], array(
@@ -135,40 +117,6 @@ class listener implements EventSubscriberInterface
 		));
 		$event['categories'] = array_merge($event['categories'], array(
 			'Download System'	=> 'ACL_U_DM',
-		));
-	}
-
-	public function page_name()
-	{
-		$this_page = explode(".", $this->user->page['page']);
-		if ($this_page[0] == 'app')
-		{
-			$this_page_name = explode("/", $this_page[1]);
-			return($this_page_name[1]);
-		}
-		else
-		{
-			$this_page_name = $this_page[0];
-			return($this_page_name);
-		}
-	}
-
-	protected function assign_authors()
-	{
-		$md_manager = $this->extension_manager->create_extension_metadata_manager('dmzx/downloadsystem', $this->template);
-		$meta = $md_manager->get_metadata();
-		$author_names = array();
-		$author_homepages = array();
-
-		foreach (array_slice($meta['authors'], 0, 1) as $author)
-		{
-			$author_names[] = $author['name'];
-			$author_homepages[] = sprintf('<a href="%1$s" title="%2$s">%2$s</a>', $author['homepage'], $author['name']);
-		}
-		$this->template->assign_vars(array(
-			'DOWNLOADSYSTEM_DISPLAY_NAME'		=> $meta['extra']['display-name'],
-			'DOWNLOADSYSTEM_AUTHOR_NAMES'		=> implode(' &amp; ', $author_names),
-			'DOWNLOADSYSTEM_AUTHOR_HOMEPAGES'	=> implode(' &amp; ', $author_homepages),
 		));
 	}
 }

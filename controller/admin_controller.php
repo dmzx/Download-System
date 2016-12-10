@@ -580,6 +580,10 @@ class admin_controller
 		$cat_option = $this->request->variable('parent', '', true);
 		$upload_time = time();
 		$last_changed_time = time();
+
+		$uid = $bitfield = $options = '';
+		$allow_bbcode = $allow_urls = $allow_smilies = true;
+
 		$username1 	= $this->request->variable('username', '', true);
 		$username 	= strtolower($username1);
 		$ftp_upload	= $this->request->variable('ftp_upload', '', true);
@@ -713,6 +717,8 @@ class admin_controller
 		}
 		else
 		{
+			generate_text_for_storage($desc, $uid, $bitfield, $options, $allow_bbcode, $allow_urls, $allow_smilies);
+
 			if (!class_exists('\fileupload'))
 			{
 				include($this->root_path . 'includes/functions_upload.' . $this->php_ext);
@@ -774,6 +780,9 @@ class admin_controller
 				'upload_time'		=> $upload_time,
 				'cost_per_dl'		=> $costs_dl,
 				'last_changed_time'	=> $last_changed_time,
+				'bbcode_uid'		=> $uid,
+				'bbcode_bitfield'	=> $bitfield,
+				'bbcode_options'	=> $options,
 				'filesize'			=> $filesize,
 				'points_user_id'	=> $transfer_user['user_id'],
 			);
@@ -812,6 +821,9 @@ class admin_controller
 				'upload_time'		=> $upload_time,
 				'cost_per_dl'		=> $costs_dl,
 				'last_changed_time'	=> $last_changed_time,
+				'bbcode_uid'		=> $uid,
+				'bbcode_bitfield'	=> $bitfield,
+				'bbcode_options'	=> $options,
 				'filesize'			=> $filesize,
 				'points_user_id'	=> $transfer_user['user_id'],
 			);
@@ -839,7 +851,16 @@ class admin_controller
 
 			$download_link = '[url=' . generate_board_url() . '/downloadsystemcat?id=' . $cat_option . ']' . $this->user->lang['ACP_CLICK'] . '[/url]';
 			$download_subject = sprintf($this->user->lang['ACP_ANNOUNCE_TITLE'], $dl_title);
-			$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_MSG'], $title, $desc, $cat_name, $download_link);
+
+			if ($this->files_factory !== null)
+			{
+				$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, $desc, $cat_name, $download_link);
+			}
+			else
+			{
+				$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, generate_text_for_display($desc, $uid, $bitfield, $options), $cat_name, $download_link);
+
+			}
 			$this->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 		}
 
@@ -880,6 +901,9 @@ class admin_controller
 		$desc 		= $this->request->variable('desc', '', true);
 		$announce_up = $this->request->variable('announce_up', '');
 		$ftp_upload	= $this->request->variable('ftp_upload', '', true);
+
+		$uid = $bitfield = $options = ''; // will be modified by generate_text_for_storage
+		$allow_bbcode = $allow_urls = $allow_smilies = true;
 
 		$username1 	= $this->request->variable('username', '', true);
 		$username 	= strtolower($username1);
@@ -986,6 +1010,8 @@ class admin_controller
 		}
 		else
 		{
+			generate_text_for_storage($desc, $uid, $bitfield, $options, $allow_bbcode, $allow_urls, $allow_smilies);
+
 			if (!class_exists('\fileupload'))
 			{
 				include($this->root_path . 'includes/functions_upload.' . $this->php_ext);
@@ -1049,6 +1075,9 @@ class admin_controller
 				'download_cat_id'	=> $v_cat_id,
 				'cost_per_dl'		=> $costs_dl,
 				'last_changed_time' => $last_changed_time,
+				'bbcode_uid'		=> $uid,
+				'bbcode_bitfield'	=> $bitfield,
+				'bbcode_options'	=> $options,
 				'filesize'			=> $filesize,
 				'points_user_id'	=> $transfer_user['user_id'],
 			);
@@ -1104,8 +1133,16 @@ class admin_controller
 
 							$download_link = '[url=' . generate_board_url() . '/downloadsystemcat?id=' . $v_cat_id . ']' . $this->user->lang['ACP_CLICK'] . '[/url]';
 							$download_subject = sprintf($this->user->lang['ACP_ANNOUNCE_UP_TITLE'], $dl_title);
-							$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, $desc, $cat_name, $download_link);
 
+							if ($this->files_factory !== null)
+							{
+								$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, $desc, $cat_name, $download_link);
+							}
+							else
+							{
+								$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, generate_text_for_display($desc, $uid, $bitfield, $options), $cat_name, $download_link);
+
+							}
 							$this->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 						}
 
@@ -1142,8 +1179,16 @@ class admin_controller
 
 						$download_link = '[url=' . generate_board_url() . '/downloadsystemcat?id=' . $v_cat_id . ']' . $this->user->lang['ACP_CLICK'] . '[/url]';
 						$download_subject = sprintf($this->user->lang['ACP_ANNOUNCE_UP_TITLE'], $dl_title);
-						$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, $desc, $cat_name, $download_link);
 
+						if ($this->files_factory !== null)
+						{
+							$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, $desc, $cat_name, $download_link);
+						}
+						else
+						{
+							$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, generate_text_for_display($desc, $uid, $bitfield, $options), $cat_name, $download_link);
+
+						}
 						$this->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 					}
 					$this->db->sql_query('UPDATE ' . $this->dm_eds_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE download_id = ' . $id);
@@ -1171,6 +1216,9 @@ class admin_controller
 				'upload_time'		=> $upload_time,
 				'cost_per_dl'		=> $costs_dl,
 				'last_changed_time'	=> $last_changed_time,
+				'bbcode_uid'		=> $uid,
+				'bbcode_bitfield'	=> $bitfield,
+				'bbcode_options'	=> $options,
 				'filesize'			=> $filesize,
 				'points_user_id'	=> $transfer_user['user_id'],
 			);
@@ -1266,10 +1314,9 @@ class admin_controller
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-
 			$this->message_parser->message = $row['download_desc'];
-		//	$this->message_parser->bbcode_bitfield = $this->data['bbcode_bitfield'];
-		//	$this->message_parser->bbcode_uid = $this->data['bbcode_uid'];
+			$this->message_parser->bbcode_bitfield = $row['bbcode_bitfield'];
+			$this->message_parser->bbcode_uid = $row['bbcode_uid'];
 			$allow_bbcode = $allow_magic_url = $allow_smilies = true;
 			$this->message_parser->format_display($allow_bbcode, $allow_magic_url, $allow_smilies);
 
@@ -1309,9 +1356,6 @@ class admin_controller
 	*/
 	function manage_cats()
 	{
-		// Setup message parser
-		$this->message_parser = new \parse_message();
-
 		$catrow = array();
 		$parent_id = $this->request->variable('parent_id', 0);
 		$this->template->assign_vars(array(
@@ -1355,17 +1399,11 @@ class admin_controller
 		{
 			$folder_image = ($dm_eds[$i]['left_id'] + 1 != $dm_eds[$i]['right_id']) ? '<img src="images/icon_subfolder.gif" alt="' . $this->user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder.gif" alt="' . $this->user->lang['FOLDER'] . '" />';
 
-			$this->message_parser->message = $dm_eds[$i]['cat_desc'];
-		//	$this->message_parser->bbcode_bitfield = $this->data['bbcode_bitfield'];
-		//	$this->message_parser->bbcode_uid = $this->data['bbcode_uid'];
-			$allow_bbcode = $allow_magic_url = $allow_smilies = true;
-			$this->message_parser->format_display($allow_bbcode, $allow_magic_url, $allow_smilies);
-
 			$this->template->assign_block_vars('catrow', array(
 				'FOLDER_IMAGE'			=> $folder_image,
 				'U_CAT'					=> $this->u_action . '&amp;parent_id=' . $dm_eds[$i]['cat_id'],
 				'CAT_NAME'				=> $dm_eds[$i]['cat_name'],
-				'CAT_DESCRIPTION'		=> $this->message_parser->message,
+				'CAT_DESCRIPTION'		=> generate_text_for_display($dm_eds[$i]['cat_desc'], $dm_eds[$i]['cat_desc_uid'], $dm_eds[$i]['cat_desc_bitfield'], $dm_eds[$i]['cat_desc_options']),
 				'U_MOVE_UP'				=> $this->u_action . '&amp;action=move&amp;move=move_up&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 				'U_MOVE_DOWN'			=> $this->u_action . '&amp;action=move&amp;move=move_down&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 				'U_EDIT'				=> $this->u_action . '&amp;action=edit&amp;cat_id=' . $dm_eds[$i]['cat_id'],
@@ -1385,8 +1423,6 @@ class admin_controller
 	*/
 	function create_cat()
 	{
-		include_once($this->root_path . 'includes/message_parser.' . $this->php_ext);
-
 		if ($this->request->is_set('submit'))
 		{
 			$dm_eds_data = array();
@@ -1513,8 +1549,6 @@ class admin_controller
 	*/
 	function edit_cat()
 	{
-		include_once($this->root_path . 'includes/message_parser.' . $this->php_ext);
-
 		if (!$cat_id = $this->request->variable('cat_id', 0))
 		{
 			trigger_error('No Cat ID', E_USER_WARNING);
@@ -1642,6 +1676,7 @@ class admin_controller
 		}
 		$dm_eds_data = $this->db->sql_fetchrow($result);
 		$dm_eds_desc_data = generate_text_for_edit($dm_eds_data['cat_desc'], $dm_eds_data['cat_desc_uid'], $dm_eds_data['cat_desc_options']);
+
 		$parents_list = $this->functions->make_cat_select($dm_eds_data['parent_id'], $cat_id);
 
 		$this->template->assign_vars(array(
@@ -1904,7 +1939,7 @@ class admin_controller
 
 		$lock = $eds_values['announce_lock_enable'];
 
-		$message_parser = new \parse_message();
+		$this->message_parser = new \parse_message();
 
 		$subject =	$download_subject;
 		$text =	$download_msg;
@@ -1915,12 +1950,12 @@ class admin_controller
 			return;
 		}
 
-		$message_parser->message = $text;
+		$this->message_parser->message = $text;
 
 		// Grab md5 'checksum' of new message
-		$message_md5 = md5($message_parser->message);
+		$message_md5 = md5($this->message_parser->message);
 
-		$message_parser->parse(true, true, true, true, false, true, true);
+		$this->message_parser->parse(true, true, true, true, false, true, true);
 
 		$sql = 'SELECT forum_name
 			FROM ' . FORUMS_TABLE . '
@@ -1937,12 +1972,12 @@ class admin_controller
 			'enable_smilies'	=> true,
 			'enable_urls'		=> true,
 			'enable_sig'		=> true,
-			'message'			=> $message_parser->message,
+			'message'			=> $this->message_parser->message,
 			'message_md5'		=> $message_md5,
 			'attachment_data'	=> 0,
 			'filename_data'		=> 0,
-			'bbcode_bitfield'	=> $message_parser->bbcode_bitfield,
-			'bbcode_uid'		=> $message_parser->bbcode_uid,
+			'bbcode_bitfield'	=> $this->message_parser->bbcode_bitfield,
+			'bbcode_uid'		=> $this->message_parser->bbcode_uid,
 			'poster_ip'			=> $this->user->ip,
 			'post_edit_locked'	=> 0,
 			'topic_title'		=> $subject,

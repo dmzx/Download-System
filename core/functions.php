@@ -32,6 +32,9 @@ class functions
 	/** @var \phpbb\pagination */
 	protected $pagination;
 
+	/** @var \phpbb\extension\manager */
+	protected $extension_manager;
+
 	/** @var string */
 	protected $php_ext;
 
@@ -59,6 +62,7 @@ class functions
 	* @param \phpbb\request\request		 		$request
 	* @param \phpbb\config\config				$config
 	* @param \phpbb\pagination					$pagination
+	* @param \phpbb\extension\manager 			$extension_manager
 	* @param									$php_ext
 	* @param									$root_path
 	* @param									$dm_eds_table
@@ -74,6 +78,7 @@ class functions
 		\phpbb\request\request $request,
 		\phpbb\config\config $config,
 		\phpbb\pagination $pagination,
+		\phpbb\extension\manager $extension_manager,
 		$php_ext, $root_path,
 		$dm_eds_table,
 		$dm_eds_cat_table,
@@ -86,6 +91,7 @@ class functions
 		$this->request 				= $request;
 		$this->config 				= $config;
 		$this->pagination 			= $pagination;
+		$this->extension_manager	= $extension_manager;
 		$this->php_ext 				= $php_ext;
 		$this->root_path 			= $root_path;
 		$this->dm_eds_table 		= $dm_eds_table;
@@ -437,7 +443,7 @@ class functions
 					'NUMBER_DOWNLOADS'		=> $row['number_downloads'],
 					'CAT_NAME'				=> censor_text($row['cat_name']),
 					'U_EDS_CAT'				=> $this->helper->route('dmzx_downloadsystem_controller_cat', array('id' =>	$row['cat_id'])),
-					'CAT_DESC'				=> $this->message_parser->message,
+					'CAT_DESC'				=> generate_text_for_display($row['cat_desc'], $row['cat_desc_uid'], $row['cat_desc_bitfield'], $row['cat_desc_options']),
 					'CAT_FOLDER_IMG_SRC'	=> $this->user->img($folder_image, $folder_alt, false, '', 'src'),
 					'SUBCATS'				=> ($subcats) ? $l_subcats . ': <span style="font-weight: bold;">' . $subcats . '</span>' : '',
 				));
@@ -455,6 +461,30 @@ class functions
 				'EDS_CATEGORIES'		=> ($total_cat == 1) ? $this->user->lang['EDS_CAT'] : sprintf($this->user->lang['EDS_CATS'], $total_cat),
 			));
 		}
+	}
+
+	/**
+	* Assign authors
+	*/
+	public function assign_authors()
+	{
+		$md_manager = $this->extension_manager->create_extension_metadata_manager('dmzx/downloadsystem', $this->template);
+		$meta = $md_manager->get_metadata();
+		$author_names = array();
+		$author_homepages = array();
+
+		foreach (array_slice($meta['authors'], 0, 1) as $author)
+		{
+			$author_names[] = $author['name'];
+			$author_homepages[] = sprintf('<a href="%1$s" title="%2$s">%2$s</a>', $author['homepage'], $author['name']);
+		}
+		$this->template->assign_vars(array(
+			'DOWNLOADSYSTEM_DISPLAY_NAME'		=> $meta['extra']['display-name'],
+			'DOWNLOADSYSTEM_AUTHOR_NAMES'		=> implode(' &amp; ', $author_names),
+			'DOWNLOADSYSTEM_AUTHOR_HOMEPAGES'	=> implode(' &amp; ', $author_homepages),
+		));
+
+		return assign_authors;
 	}
 
 	/**
