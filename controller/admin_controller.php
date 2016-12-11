@@ -383,7 +383,7 @@ class admin_controller
 
 		$sql = 'SELECT *
 			FROM ' . $this->dm_eds_table . '
-			WHERE download_id = ' . $id;
+			WHERE download_id = ' . (int) $id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		decode_message($row['download_desc'], $row['bbcode_uid']);
@@ -499,7 +499,7 @@ class admin_controller
 			FROM ' . $this->dm_eds_table . ' d
 				LEFT JOIN ' . $this->dm_eds_cat_table . ' c
 				ON d.download_cat_id = c.cat_id
-			WHERE download_id = ' . $id;
+			WHERE download_id = ' . (int) $id;
 		$result = $this->db->sql_query_limit($sql,1);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -738,7 +738,7 @@ class admin_controller
 
 		$sql = 'SELECT cat_sub_dir
 			FROM ' . $this->dm_eds_cat_table . '
-			WHERE cat_id = ' . $target_folder;
+			WHERE cat_id = ' . (int) $target_folder;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$target = $row['cat_sub_dir'];
@@ -834,7 +834,7 @@ class admin_controller
 		{
 			$sql = 'SELECT *
 				FROM ' . $this->dm_eds_cat_table . '
-				WHERE cat_id = ' . $cat_option;
+				WHERE cat_id = ' . (int) $cat_option;
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$cat_name = $row['cat_name'];
@@ -884,7 +884,7 @@ class admin_controller
 			FROM ' . $this->dm_eds_table . ' d
 			LEFT JOIN ' . $this->dm_eds_cat_table . ' c
 				ON d.download_cat_id = c.cat_id
-			WHERE download_id = ' . $id;
+			WHERE download_id = ' . (int) $id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$current_cat_id = $row['download_cat_id'];
@@ -1031,7 +1031,7 @@ class admin_controller
 
 		$sql = 'SELECT cat_sub_dir
 			FROM ' . $this->dm_eds_cat_table . '
-			WHERE cat_id = ' . $target_folder;
+			WHERE cat_id = ' . (int) $target_folder;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$target = $row['cat_sub_dir'];
@@ -1092,7 +1092,7 @@ class admin_controller
 				// Check, if the file already is in the directory
 				$sql = 'SELECT cat_sub_dir
 					FROM ' . $this->dm_eds_cat_table . '
-					WHERE cat_id = ' . $v_cat_id;
+					WHERE cat_id = ' . (int) $v_cat_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$cat_dir = $row['cat_sub_dir'];
@@ -1116,7 +1116,7 @@ class admin_controller
 						{
 							$sql = 'SELECT *
 								FROM ' . $this->dm_eds_cat_table . '
-								WHERE cat_id = ' . $v_cat_id;
+								WHERE cat_id = ' . (int) $v_cat_id;
 							$result = $this->db->sql_query($sql);
 							$row = $this->db->sql_fetchrow($result);
 							$cat_name = $row['cat_name'];
@@ -1148,7 +1148,7 @@ class admin_controller
 
 						if (rename(($this->root_path . 'ext/dmzx/downloadsystem/files/' . $current_cat_name . '/' .$new_filename), ($this->root_path . 'ext/dmzx/downloadsystem/files/' . $cat_dir . '/' . $new_filename)))
 						{
-							$this->db->sql_query('UPDATE ' . $this->dm_eds_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE download_id = ' . $id);
+							$this->db->sql_query('UPDATE ' . $this->dm_eds_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE download_id = ' . (int) $id);
 							$this->cache->destroy('sql', $this->dm_eds_table);
 						}
 						trigger_error($this->user->lang['ACP_DOWNLOAD_UPDATED'] . adm_back_link($this->u_action));
@@ -1162,7 +1162,7 @@ class admin_controller
 					{
 						$sql = 'SELECT *
 							FROM ' . $this->dm_eds_cat_table . '
-							WHERE cat_id = ' . $v_cat_id;
+							WHERE cat_id = ' . (int) $v_cat_id;
 						$result = $this->db->sql_query($sql);
 						$row = $this->db->sql_fetchrow($result);
 						$cat_name = $row['cat_name'];
@@ -1191,7 +1191,7 @@ class admin_controller
 						}
 						$this->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 					}
-					$this->db->sql_query('UPDATE ' . $this->dm_eds_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE download_id = ' . $id);
+					$this->db->sql_query('UPDATE ' . $this->dm_eds_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE download_id = ' . (int) $id);
 					$this->cache->destroy('sql', $this->dm_eds_table);
 					trigger_error($this->user->lang['ACP_DOWNLOAD_UPDATED'] . adm_back_link($this->u_action));
 					return;
@@ -1236,7 +1236,7 @@ class admin_controller
 				FROM ' . $this->dm_eds_cat_table . ' c
 				LEFT JOIN ' . $this->dm_eds_table . ' d
 					ON c.cat_id = d.download_cat_id
-				WHERE d.download_id = ' . $id;
+				WHERE d.download_id = ' . (int) $id;
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$cat_dir = $row['cat_sub_dir'];
@@ -1247,7 +1247,7 @@ class admin_controller
 			unlink($delete_file);
 
 			$sql = 'DELETE FROM ' . $this->dm_eds_table . '
-				WHERE download_id = '. $id;
+				WHERE download_id = '. (int) $id;
 			$this->db->sql_query($sql);
 			trigger_error($this->user->lang['ACP_DOWNLOAD_DELETED'] . adm_back_link($this->u_action));
 		}
@@ -1386,7 +1386,7 @@ class admin_controller
 		$dm_eds = array();
 		$sql = 'SELECT *
 			FROM ' . $this->dm_eds_cat_table . '
-			WHERE parent_id = ' . $parent_id . '
+			WHERE parent_id = ' . (int) $parent_id . '
 			ORDER BY left_id ASC';
 		$result = $this->db->sql_query($sql);
 
@@ -1732,7 +1732,7 @@ class admin_controller
 			// Get cat directory name
 			$sql = 'SELECT cat_sub_dir
 				FROM ' . $this->dm_eds_cat_table . '
-				WHERE cat_id = ' . $cat_id;
+				WHERE cat_id = ' . (int) $cat_id;
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$sub_cat_dir = $row['cat_sub_dir'];
@@ -1741,7 +1741,7 @@ class admin_controller
 			// Check if category has files
 			$sql = ' SELECT COUNT(download_id) AS has_downloads
 				FROM ' . $this->dm_eds_table . '
-				WHERE download_cat_id = ' . $cat_id;
+				WHERE download_cat_id = ' . (int) $cat_id;
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$has_downloads = $row['has_downloads'];
@@ -1779,7 +1779,7 @@ class admin_controller
 			FROM ' . $this->dm_eds_cat_table . ' AS ec
 			LEFT JOIN ' . $this->dm_eds_table . ' AS ed
 				ON ec.cat_id = ed.download_cat_id
-			WHERE ec.cat_id = ' . $cat_id . '
+			WHERE ec.cat_id = ' . (int) $cat_id . '
 			GROUP BY ec.cat_id';
 		$result = $this->db->sql_query($sql);
 

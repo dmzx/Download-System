@@ -136,15 +136,14 @@ class downloadsystemcat
 		// Select cat name
 		$sql = 'SELECT cat_name
 			FROM ' . $this->dm_eds_cat_table . '
-			WHERE cat_id = ' . $cat_id;
+			WHERE cat_id = ' . (int) $cat_id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
 		if (!$row)
 		{
-			$message = $this->user->lang['EDS_CAT_NOT_EXIST'] . '<br /><br /><a href="' . $this->helper->route('dmzx_downloadsystem_controller') . '">&laquo; ' . $this->user->lang['EDS_BACK_DOWNLOADS'] . '</a>';
-			throw new http_exception(401, $message);
+			throw new http_exception(401, 'EDS_CAT_NOT_EXIST');
 		}
 		else
 		{

@@ -258,7 +258,7 @@ class functions
 	{
 		$sql = 'SELECT *
 			FROM ' . $this->dm_eds_cat_table . '
-			WHERE cat_id = ' . $cat_id;
+			WHERE cat_id = ' . (int) $cat_id;
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -357,7 +357,7 @@ class functions
 				LEFT JOIN ' . $this->dm_eds_table . ' bd
 					ON ( bd.download_cat_id = bc.cat_id
 						OR bd.download_cat_id = bc2.cat_id )
-				WHERE bc.parent_id = ' . $cat_id . '
+				WHERE bc.parent_id = ' . (int) $cat_id . '
 				GROUP BY bc.cat_id
 				ORDER BY bc.left_id ASC';
 			$result = $this->db->sql_query_limit($sql, $dls, $start);

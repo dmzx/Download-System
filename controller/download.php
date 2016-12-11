@@ -74,8 +74,7 @@ class download
 	{
 		if (!$this->auth->acl_get('u_dm_eds_use'))
 		{
-			$message = $this->user->lang['EDS_NO_PERMISSION'] . '<br /><br /><a href="' . append_sid("{$this->root_path}index.$this->php_ext") . '">&laquo; ' . $this->user->lang['EDS_BACK_INDEX'] . '</a>';
-			throw new http_exception(401, $message);
+			throw new http_exception(401, 'EDS_NO_PERMISSION');
 		}
 
 		$cat_id = $this->request->variable('id', 0);

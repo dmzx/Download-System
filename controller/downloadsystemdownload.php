@@ -95,8 +95,7 @@ class downloadsystemdownload
 
 			if (!$this->auth->acl_get('u_dm_eds_download'))
 			{
-				$message = $this->user->lang['EDS_NO_DOWNLOAD'] . '<br /><br /><a href="' . append_sid("{$this->root_path}index.$this->php_ext") . '">&laquo; ' . $this->user->lang['EDS_BACK_INDEX'] . '</a>';
-				throw new http_exception(401, $message);
+				throw new http_exception(401, 'EDS_NO_DOWNLOAD');
 			}
 
 			if (!$row)
@@ -111,7 +110,7 @@ class downloadsystemdownload
 
 			$sql = 'UPDATE ' . $this->dm_eds_table . '
 				SET download_count = download_count + 1
-				WHERE download_id = ' . $id;
+				WHERE download_id = ' . (int) $id;
 			$result=$this->db->sql_query($sql);
 
 			$this->db->sql_freeresult($result);
