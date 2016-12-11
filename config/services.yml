@@ -39,8 +39,6 @@ services:
             - '@auth'
             - '@request'
             - '@controller.helper'
-            - '%core.php_ext%'
-            - '%core.root_path%'
     dmzx.downloadsystem.controller.cat:
         class: dmzx\downloadsystem\controller\downloadsystemcat
         arguments:
@@ -76,6 +74,7 @@ services:
             - '@dmzx.downloadsystem.core.functions'
             - '@template'
             - '@user'
+            - '@log'
             - '@cache'
             - '@dbal.conn'
             - '@controller.helper'

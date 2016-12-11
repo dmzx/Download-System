@@ -31,12 +31,6 @@ class download
 	/** @var \phpbb\controller\helper */
 	protected $helper;
 
-	/** @var string */
-	protected $php_ext;
-
-	/** @var string */
-	protected $root_path;
-
 	/**
 	* Constructor
 	*
@@ -46,8 +40,6 @@ class download
 	* @param \phpbb\auth\auth							$auth
 	* @param \phpbb\request\request		 				$request
 	* @param \phpbb\controller\helper					$helper
-	* @param string										$php_ext
-	* @param string										$root_path
 	*
 	*/
 	public function __construct(
@@ -56,9 +48,7 @@ class download
 		\phpbb\user $user,
 		\phpbb\auth\auth $auth,
 		\phpbb\request\request $request,
-		\phpbb\controller\helper $helper,
-		$php_ext,
-		$root_path)
+		\phpbb\controller\helper $helper)
 	{
 		$this->functions 		= $functions;
 		$this->template 		= $template;
@@ -66,8 +56,6 @@ class download
 		$this->auth 			= $auth;
 		$this->request 			= $request;
 		$this->helper 			= $helper;
-		$this->php_ext 			= $php_ext;
-		$this->root_path 		= $root_path;
 	}
 
 	public function handle_downloadsystem()

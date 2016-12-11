@@ -38,4 +38,11 @@ $lang = array_merge($lang, array(
 	'ACP_MANAGE_CATEGORIES'				=> 'Manage Categories',
 	'ACP_MANAGE_CONFIG'					=> 'Configuration',
 	'ACP_MANAGE_DOWNLOADS'				=> 'Manage Downloads',
+	'LOG_DOWNLOAD_ADD'					=> '<strong>Added new download</strong><br>» %1$s',
+	'LOG_DOWNLOAD_UPDATED'				=> '<strong>Updated download</strong><br>» %1$s',
+	'LOG_DOWNLOAD_DELETED'				=> '<strong>Deleted download</strong><br>» %1$s',
+	'LOG_CATEGORY_ADD'					=> '<strong>Added new download category</strong><br>» %1$s',
+	'LOG_CATEGORY_UPDATED'				=> '<strong>Updated download category</strong><br>» %1$s',
+	'LOG_CATEGORY_DELETED'				=> '<strong>Deleted download category</strong><br>» %1$s',
+	'LOG_CONFIG_UPDATED'				=> '<strong>Updated download configuration</strong>',
 ));

@@ -20,6 +20,9 @@ class admin_controller
 	/** @var \phpbb\user */
 	protected $user;
 
+	/** @var \phpbb\log\log */
+	protected $log;
+
 	/** @var \phpbb\cache\service */
 	protected $cache;
 
@@ -76,6 +79,7 @@ class admin_controller
 	* @param \dmzx\downloadsystem\core\functions						$functions
 	* @param \phpbb\template\template		 							$template
 	* @param \phpbb\user												$user
+	* @param \phpbb\log													$log
 	* @param \phpbb\cache\service										$cache
 	* @param \phpbb\db\driver\driver_interface							$db
 	* @param \phpbb\controller\helper		 							$helper
@@ -98,6 +102,7 @@ class admin_controller
 		\dmzx\downloadsystem\core\functions $functions,
 		\phpbb\template\template $template,
 		\phpbb\user $user,
+		\phpbb\log\log $log,
 		\phpbb\cache\service $cache,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\controller\helper $helper,
@@ -117,6 +122,7 @@ class admin_controller
 		$this->functions 			= $functions;
 		$this->template 			= $template;
 		$this->user 				= $user;
+		$this->log 					= $log;
 		$this->cache 				= $cache;
 		$this->db 					= $db;
 		$this->helper 				= $helper;
@@ -211,6 +217,9 @@ class admin_controller
 			// Update values
 			$sql = 'UPDATE ' . $this->dm_eds_config_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary);
 			$this->db->sql_query($sql);
+
+			// Log message
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CONFIG_UPDATED');
 
 			trigger_error($this->user->lang['ACP_CONFIG_SUCCESS'] . adm_back_link($this->u_action));
 		}
@@ -865,7 +874,10 @@ class admin_controller
 		}
 
 		$this->db->sql_query('INSERT INTO ' . $this->dm_eds_table .' ' . $this->db->sql_build_array('INSERT', $sql_ary));
-		trigger_error($this->user->lang['ACP_NEW_ADDED'] . adm_back_link($this->u_action));
+
+		// Log message
+		$this->log_message('LOG_DOWNLOAD_ADD', $title, 'ACP_NEW_ADDED');
+
 	}
 
 	public function update()
@@ -1151,7 +1163,10 @@ class admin_controller
 							$this->db->sql_query('UPDATE ' . $this->dm_eds_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE download_id = ' . (int) $id);
 							$this->cache->destroy('sql', $this->dm_eds_table);
 						}
-						trigger_error($this->user->lang['ACP_DOWNLOAD_UPDATED'] . adm_back_link($this->u_action));
+
+						// Log message
+						$this->log_message('LOG_DOWNLOAD_UPDATED', $title, 'ACP_DOWNLOAD_UPDATED');
+
 						return;
 					}
 				}
@@ -1193,7 +1208,10 @@ class admin_controller
 					}
 					$this->db->sql_query('UPDATE ' . $this->dm_eds_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE download_id = ' . (int) $id);
 					$this->cache->destroy('sql', $this->dm_eds_table);
-					trigger_error($this->user->lang['ACP_DOWNLOAD_UPDATED'] . adm_back_link($this->u_action));
+
+					// Log message
+					$this->log_message('LOG_DOWNLOAD_UPDATED', $title, 'ACP_DOWNLOAD_UPDATED');
+
 					return;
 				}
 			}
@@ -1249,7 +1267,9 @@ class admin_controller
 			$sql = 'DELETE FROM ' . $this->dm_eds_table . '
 				WHERE download_id = '. (int) $id;
 			$this->db->sql_query($sql);
-			trigger_error($this->user->lang['ACP_DOWNLOAD_DELETED'] . adm_back_link($this->u_action));
+
+			// Log message
+			$this->log_message('LOG_DOWNLOAD_DELETED', $file_name, 'ACP_DOWNLOAD_DELETED');
 		}
 		else
 		{
@@ -1520,6 +1540,9 @@ class admin_controller
 			$this->db->sql_query('INSERT INTO ' . $this->dm_eds_cat_table . ' ' . $this->db->sql_build_array('INSERT', $dm_eds_data));
 			$this->cache->destroy('sql', $this->dm_eds_cat_table);
 
+			// Log message
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CATEGORY_ADD', time(), array($cat_sub_dir_name));
+
 			// Check if created foldername already exists
 			if (is_dir($this->root_path . 'ext/dmzx/downloadsystem/files/' . $cat_sub_dir_name))
 			{
@@ -1662,7 +1685,8 @@ class admin_controller
 			$this->db->sql_query($sql);
 			$this->cache->destroy('sql', $this->dm_eds_cat_table);
 
-			trigger_error($this->user->lang['ACP_CAT_EDIT_DONE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $dm_eds_data['parent_id']));
+			// Log message
+			$this->log_message('LOG_CATEGORY_UPDATED', $dm_eds_data['cat_name'], 'ACP_CAT_EDIT_DONE');
 		}
 
 		$sql = 'SELECT *
@@ -1730,12 +1754,13 @@ class admin_controller
 			}
 
 			// Get cat directory name
-			$sql = 'SELECT cat_sub_dir
+			$sql = 'SELECT cat_sub_dir, cat_name
 				FROM ' . $this->dm_eds_cat_table . '
 				WHERE cat_id = ' . (int) $cat_id;
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$sub_cat_dir = $row['cat_sub_dir'];
+			$cat_name = $row['cat_name'];
 			$this->db->sql_freeresult($result);
 
 			// Check if category has files
@@ -1771,7 +1796,8 @@ class admin_controller
 			// Remove the folder and all of its content
 			$this->remove_dir($sub_cat_dir);
 
-			trigger_error($this->user->lang['ACP_CAT_DELETE_DONE'] . adm_back_link($this->u_action));
+			// Log message
+			$this->log_message('LOG_CATEGORY_DELETED', $cat_name, 'ACP_CAT_DELETE_DONE');
 		}
 
 		$catname = '';
@@ -1994,6 +2020,19 @@ class admin_controller
 		$poll = array();
 
 		submit_post('post', $subject, '', POST_NORMAL, $poll, $data);
+	}
+
+	/**
+	 * Log Message
+	 *
+	 * @return message
+	 * @access private
+	*/
+	private function log_message($log_message, $title, $user_message)
+	{
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_message, time(), array($title));
+
+		trigger_error($this->user->lang[$user_message] . adm_back_link($this->u_action));
 	}
 
 	/**

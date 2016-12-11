@@ -79,7 +79,6 @@ $lang = array_merge($lang, array(
 	'EDS_FILESIZE'						=> 'Filesize',
 	'EDS_CAT_NOT_EXIST'					=> 'The selected category does not exist!',
 	'EDS_BACK_DOWNLOADS'				=> 'Back to download overview',
-	'EDS_REMOVE_INSTALL'				=> '',
 	'EDS_NO_PERMISSION'					=> 'You don\'t have the permission to use the Download System',
 	'EDS_NO_DOWNLOAD'					=> 'You don\'t have the permission to download files from the Download System',
 	'EDS_NO_DIRECT_DL'					=> 'You are not allowed to download files',
@@ -119,7 +118,7 @@ Have fun!',
 	'ACP_ANNOUNCE_TITLE'				=> '%1$s', //'[NEW] %1$s'
 	'ACP_ANNOUNCE_UP'					=> 'Announce download again',
 	'ACP_ANNOUNCE_UP_EXPLAIN'			=> 'Activate, if you like to re-announce the download. The message will be sent as an update information',
-	'ACP_ANNOUNCE_UP_MSG'					=> 'Hello,
+	'ACP_ANNOUNCE_UP_MSG'				=> 'Hello,
 
 we have an updated download!
 
@@ -246,7 +245,6 @@ Have fun!',
 	'LOG_MODIFICATION_ADDED'			=> '<strong>Modification added</strong><br />» %s',
 	'LOG_MODIFICATION_REMOVED'			=> '<strong>Modification removed</strong><br />» %s',
 	'ACP_MANAGE_CONFIG_EXPLAIN'			=> 'Here you can set a few basic values.',
-	'NOT_UPLOADED'						=> '',
 	'ACP_SET_USERNAME'					=> 'Username for a transfer',
 	'ACP_SET_USERNAME_EXPLAIN'			=> 'Here you can set a username, to which the download costs should be transferred to. Leave empty, if none should receive the above named costs.',
 	'ACP_FTP_OR_UPLOAD'					=> 'You can do only a FTP upload <strong>OR</strong> normal upload!',
