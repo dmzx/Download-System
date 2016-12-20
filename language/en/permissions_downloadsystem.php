@@ -34,6 +34,7 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'ACL_U_DM_EDS_DOWNLOAD'				=> 'Can download files in Download System',
+	'ACL_U_DM_EDS_UPLOAD'				=> 'Can upload files in Download System',
 	'ACL_U_DM_EDS_USE'					=> 'Can use the Download System',
 	'ACL_U_DM'							=> 'Download System',
 ));

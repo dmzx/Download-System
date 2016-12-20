@@ -1,0 +1,43 @@
+<!-- INCLUDE overall_header.html -->
+
+<form method="post" id="add_upload" {S_FORM_ENCTYPE}>
+	<div class="panel">
+		<div class="inner">
+			<h2>{L_EDS_UPLOADS}</h2>
+			<p>{L_EDS_UPLOAD_MESSAGE}</p>
+			<p>{ALLOWED_SIZE}</p>
+			<fieldset class="fields2">
+				<dl>
+					<dt><label>{L_EDS_NEW_TITLE}{L_COLON}</label><br /><span>{L_EDS_NEW_TITLE_EXPLAIN}</span></dt>
+					<dd><input type="text" name="title" size="50" value="{TITLE}" /></dd>
+				</dl>
+				<dl>
+					<dt><label>{L_EDS_NEW_VERSION}{L_COLON}</label><br /><span>{L_EDS_NEW_VERSION_EXPLAIN}</span></dt>
+					<dd><input type="text" name="dl_version" size="15" maxlength="10" value="{DL_VERSION}" /></dd>
+				</dl>
+				<dl>
+					<dt><label>{L_EDS_NEW_DESC}{L_COLON}</label><br /><span>{L_EDS_NEW_DESC_EXPLAIN}</span><br /></dt>
+					<dd><textarea rows="9" name="desc" cols="52">{DESC}</textarea></dd>
+				</dl>
+				<dl>
+					<dt><label>{L_EDS_NEW_DL_CAT}{L_COLON}</label><br /><span>{L_EDS_NEW_DL_CAT_EXPLAIN}</span></dt>
+					<dd><select name="parent">{PARENT_OPTIONS}</select></dd>
+				</dl>
+				<dl>
+					<dt><label>{L_EDS_NEW_FILENAME}{L_COLON}</label><br /><span>{L_EDS_NEW_FILENAME_EXPLAIN}</span></dt>
+					<dd><input class="inputbox autowidth" type="file" name="filename" size="52" /></dd>
+				</dl>
+			</fieldset>
+		</div>
+	</div>
+	<div class="panel bg2">
+		<div class="inner">
+			<fieldset class="submit-buttons">
+				<input class="button1" id="submit" name="submit" value="{L_SUBMIT}" type="submit" />&nbsp;
+				{S_FORM_TOKEN}
+			</fieldset>
+		</div>
+	</div>
+</form>
+
+<!-- INCLUDE overall_footer.html -->

@@ -25,6 +25,9 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\config\config */
 	protected $config;
 
+	/** @var \phpbb\auth\auth */
+	protected $auth;
+
 	/** @var string */
 	protected $php_ext;
 
@@ -38,6 +41,7 @@ class listener implements EventSubscriberInterface
 	* @param \phpbb\template\template			$template
 	* @param \phpbb\controller\helper			$helper
 	* @param \phpbb\config\config				$config
+	* @param \phpbb\auth\auth					$auth
 	* @param string								$php_ext
 	* @param \phpbb\files\factory				$files_factory
 	*
@@ -47,6 +51,7 @@ class listener implements EventSubscriberInterface
 		\phpbb\template\template $template,
 		\phpbb\controller\helper $helper,
 		\phpbb\config\config $config,
+		\phpbb\auth\auth $auth,
 		$php_ext,
 		\phpbb\files\factory $files_factory = null)
 	{
@@ -54,6 +59,7 @@ class listener implements EventSubscriberInterface
 		$this->template				= $template;
 		$this->helper 				= $helper;
 		$this->config				= $config;
+		$this->auth 				= $auth;
 		$this->php_ext				= $php_ext;
 		$this->files_factory 		= $files_factory;
 	}
@@ -75,6 +81,12 @@ class listener implements EventSubscriberInterface
 			$event['location'] = $this->user->lang('EDS_DOWNLOADS');
 			$event['location_url'] = $this->helper->route('dmzx_downloadsystem_controller', array('name' => 'index'));
 		}
+
+		if (strrpos($event['row']['session_page'], 'app.' . $this->php_ext . '/downloadsystemupload') === 0)
+		{
+			$event['location'] = $this->user->lang('EDS_UPLOAD_SECTION');
+			$event['location_url'] = $this->helper->route('dmzx_downloadsystem_controller_upload', array('name' => 'index'));
+		}
 	}
 
 	public function load_language_on_setup($event)
@@ -90,8 +102,9 @@ class listener implements EventSubscriberInterface
 	public function page_header($event)
 	{
 		$this->template->assign_vars(array(
-			'L_DM_EDS'						=> $this->user->lang['EDS_DOWNLOADS'],
 			'U_DM_EDS'						=> $this->helper->route('dmzx_downloadsystem_controller'),
+			'U_DM_EDS_UPLOAD'				=> $this->helper->route('dmzx_downloadsystem_controller_upload'),
+			'DM_EDS_USE_UPLOAD'				=> $this->auth->acl_get('u_dm_eds_upload'),
 			'S_EDS_EXIST'					=> true,
 			'DOWNLOADSYSTEM_VERSION'		=> $this->config['download_system_version'],
 			'PHPBB_IS_32'					=> ($this->files_factory !== null) ? true : false,
@@ -107,6 +120,10 @@ class listener implements EventSubscriberInterface
 			),
 			'u_dm_eds_download'	=> array(
 				'lang'		=> 'ACL_U_DM_EDS_DOWNLOAD',
+				'cat'		=> 'Download System'
+			),
+			'u_dm_eds_upload'	=> array(
+				'lang'		=> 'ACL_U_DM_EDS_UPLOAD',
 				'cat'		=> 'Download System'
 			),
 			'a_dm_eds'		=> array(

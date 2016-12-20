@@ -13,9 +13,6 @@ use phpbb\exception\http_exception;
 
 class downloadsystemdownload
 {
-	/** @var \phpbb\user */
-	protected $user;
-
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -24,12 +21,6 @@ class downloadsystemdownload
 
 	/** @var \phpbb\request\request */
 	protected $request;
-
-	/** @var \phpbb\config\config */
-	protected $config;
-
-	/** @var string */
-	protected $php_ext;
 
 	/** @var string */
 	protected $root_path;
@@ -46,34 +37,25 @@ class downloadsystemdownload
 	/**
 	* Constructor
 	*
-	* @param \phpbb\user						$user
 	* @param \phpbb\auth\auth					$auth
 	* @param \phpbb\db\driver\driver_interface	$db
 	* @param \phpbb\request\request		 		$request
-	* @param \phpbb\config\config				$config
-	* @param string								$php_ext
 	* @param string								$root_path
 	* @param string								$dm_eds_table
 	* @param string								$dm_eds_cat_table
 	*
 	*/
 	public function __construct(
-		\phpbb\user $user,
 		\phpbb\auth\auth $auth,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\request\request $request,
-		\phpbb\config\config $config,
-		$php_ext,
 		$root_path,
 		$dm_eds_table,
 		$dm_eds_cat_table)
 	{
-		$this->user 			= $user;
 		$this->auth 			= $auth;
 		$this->db 				= $db;
 		$this->request 			= $request;
-		$this->config 			= $config;
-		$this->php_ext 			= $php_ext;
 		$this->root_path 		= $root_path;
 		$this->dm_eds_table 	= $dm_eds_table;
 		$this->dm_eds_cat_table = $dm_eds_cat_table;
@@ -88,7 +70,7 @@ class downloadsystemdownload
 			$sql = 'SELECT d.*, c.*
 				FROM ' . $this->dm_eds_table . ' d
 				LEFT JOIN ' . $this->dm_eds_cat_table . ' c
-				ON d.download_cat_id = c.cat_id
+					ON d.download_cat_id = c.cat_id
 				WHERE d.download_id = ' . (int) $id;
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);

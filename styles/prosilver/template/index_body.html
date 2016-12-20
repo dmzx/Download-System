@@ -1,8 +1,8 @@
 <!-- INCLUDE overall_header.html -->
 <h2>{L_EDS_TITLE}</h2>
+
 <p>{L_EDS_TITLE_EXPLAIN}</p>
 <br />
-
 <div class="action-bar top">
 	<!-- IF .pagination or EDS_CATEGORIES -->
 	<div class="pagination">
@@ -15,42 +15,41 @@
 	</div>
 	<!-- ENDIF -->
 </div>
-
 <!-- IF S_NO_CAT -->
-	{L_EDS_NO_CAT}<br /><br />
-	<a href="{U_BACK}">{L_EDS_BACK_INDEX}</a>
-	<br /><br />
+{L_EDS_NO_CAT}<br /><br />
+<a href="{U_BACK}">{L_EDS_BACK_INDEX}</a>
+<br /><br />
 <!-- ELSE -->
-<!-- BEGIN catrow -->
-	<!-- IF catrow.S_FIRST_ROW -->
-		<div class="forabg	forumbg-table">
-			<div class="inner">
-				<table class="table1">
-					<thead>
-						<tr>
-							<th class="table1" style="text-align:center;">{L_EDS_CATS_NAME}</th>
-							<th class="table1" style="text-align:center;">{L_EDS_NUMBER_DOWNLOADS}</th>
-							<th class="table1" style="text-align:center;">{L_EDS_LAST_FILE}</th>
-						</tr>
-					</thead>
-				<tbody>
-				<!-- ENDIF -->
-					<tr class="<!-- IF catrow.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
-						<td ><a href="{catrow.U_EDS_CAT}" class="forumtitle">{catrow.CAT_NAME}</a><br /><br />
-							{catrow.CAT_DESC}
-							<br />
-							{catrow.SUBCATS}
-							<br /></td>
-						<td class="posts">{catrow.NUMBER_DOWNLOADS}</td>
-						<td class="eds-lastpost" style="text-align:center;">{catrow.LAST_DOWNLOAD}</td>
-					</tr>
-				<!-- IF catrow.S_LAST_ROW -->
-				 </tbody>
-				</table>
+	<!-- BEGIN catrow -->
+		<!-- IF catrow.S_FIRST_ROW -->
+			<div class="forabg	forumbg-table">
+				<div class="inner">
+					<table class="table1">
+						<thead>
+							<tr>
+								<th class="table1" style="text-align:center;">{L_EDS_CATS_NAME}</th>
+								<th class="table1" style="text-align:center;">{L_EDS_NUMBER_DOWNLOADS}</th>
+								<th class="table1" style="text-align:center;">{L_EDS_LAST_FILE}</th>
+							</tr>
+						</thead>
+						<tbody>
+						<!-- ENDIF -->
+							<tr class="<!-- IF catrow.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+								<td ><a href="{catrow.U_EDS_CAT}" class="forumtitle">{catrow.CAT_NAME}</a><br /><br />
+									{catrow.CAT_DESC}
+									<br />
+									{catrow.SUBCATS}
+									<br /></td>
+								<td class="posts">{catrow.NUMBER_DOWNLOADS}</td>
+								<td class="eds-lastpost" style="text-align:center;">{catrow.LAST_DOWNLOAD}</td>
+							</tr>
+						<!-- IF catrow.S_LAST_ROW -->
+						 </tbody>
+					</table>
+				</div>
 			</div>
-		</div>
-	<!-- ENDIF -->
-<!-- END catrow -->
+		<!-- ENDIF -->
+	<!-- END catrow -->
 <!-- ENDIF -->
 
 <div class="action-bar bottom">

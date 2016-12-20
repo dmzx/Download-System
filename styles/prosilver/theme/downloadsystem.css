@@ -69,3 +69,9 @@ div.eds-legend {
 	line-height: 1.2em;
 	font-size: 1.1em;
 }
+.icon-downloads { 
+	background-image: url("./images/icon_downloads.gif"); 
+}
+.icon-upload { 
+	background-image: url("./images/icon_upload.gif"); 
+}

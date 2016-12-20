@@ -3,8 +3,8 @@
 	"type": "phpbb-extension",
 	"description": "This extension will add an easy download system to your forum, where you can offer your user to download files from your webspace.",
 	"homepage": "http://www.dmzx-web.net",
-	"version": "1.0.5",
-	"time": "2016-12-11",
+	"version": "1.0.6",
+	"time": "2016-12-19",
 	"keywords": ["phpbb", "extension", "downloadsystem"],
 	"license": "GPL-2.0",
 	"authors": [

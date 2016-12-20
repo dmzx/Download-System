@@ -31,9 +31,6 @@ class downloadsystemcat
 	/** @var \phpbb\request\request */
 	protected $request;
 
-	/** @var \phpbb\config\config */
-	protected $config;
-
 	/** @var \phpbb\controller\helper */
 	protected $helper;
 
@@ -55,8 +52,6 @@ class downloadsystemcat
 
 	protected $dm_eds_cat_table;
 
-	protected $dm_eds_config_table;
-
 	/**
 	* Constructor
 	*
@@ -66,14 +61,12 @@ class downloadsystemcat
 	* @param \phpbb\auth\auth							$auth
 	* @param \phpbb\db\driver\driver_interface			$db
 	* @param \phpbb\request\request		 				$request
-	* @param \phpbb\config\config						$config
 	* @param \phpbb\controller\helper		 			$helper
 	* @param \phpbb\pagination							$pagination
 	* @param string										$php_ext
 	* @param string										$root_path
 	* @param string										$dm_eds_table
 	* @param string										$dm_eds_cat_table
-	* @param string										$dm_eds_config_table
 	*
 	*/
 	public function __construct(
@@ -83,14 +76,12 @@ class downloadsystemcat
 		\phpbb\auth\auth $auth,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\request\request $request,
-		\phpbb\config\config $config,
 		\phpbb\controller\helper $helper,
 		\phpbb\pagination $pagination,
 		$php_ext,
 		$root_path,
 		$dm_eds_table,
-		$dm_eds_cat_table,
-		$dm_eds_config_table)
+		$dm_eds_cat_table)
 	{
 		$this->functions 			= $functions;
 		$this->template 			= $template;
@@ -98,14 +89,12 @@ class downloadsystemcat
 		$this->auth 				= $auth;
 		$this->db 					= $db;
 		$this->request 				= $request;
-		$this->config 				= $config;
 		$this->helper 				= $helper;
 		$this->pagination 			= $pagination;
 		$this->php_ext 				= $php_ext;
 		$this->root_path 			= $root_path;
 		$this->dm_eds_table 		= $dm_eds_table;
 		$this->dm_eds_cat_table 	= $dm_eds_cat_table;
-		$this->dm_eds_config_table 	= $dm_eds_config_table;
 
 		if (!class_exists('parse_message'))
 		{

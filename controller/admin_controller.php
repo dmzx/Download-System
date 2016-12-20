@@ -29,14 +29,8 @@ class admin_controller
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\controller\helper */
-	protected $helper;
-
 	/** @var \phpbb\request\request */
 	protected $request;
-
-	/** @var \phpbb\config\config */
-	protected $config;
 
 	/** @var \phpbb\pagination */
 	protected $pagination;
@@ -49,9 +43,6 @@ class admin_controller
 
 	/** @var \phpbb\path_helper */
 	protected $path_helper;
-
-	/** @var string phpBB admin path */
-	protected $phpbb_admin_path;
 
 	/** @var string */
 	protected $php_ext;
@@ -82,14 +73,11 @@ class admin_controller
 	* @param \phpbb\log													$log
 	* @param \phpbb\cache\service										$cache
 	* @param \phpbb\db\driver\driver_interface							$db
-	* @param \phpbb\controller\helper		 							$helper
 	* @param \phpbb\request\request		 								$request
-	* @param \phpbb\config\config										$config
 	* @param \phpbb\pagination											$pagination
 	* @param \Symfony\Component\DependencyInjection\ContainerInterface 	$phpbb_container
 	* @param \phpbb\extension\manager									$ext_manager
 	* @param \phpbb\path_helper											$path_helper
-	* @param string 													$phpbb_admin_path
 	* @param string 													$php_ext
 	* @param string 													$root_path
 	* @param string 													$dm_eds_table
@@ -105,14 +93,11 @@ class admin_controller
 		\phpbb\log\log $log,
 		\phpbb\cache\service $cache,
 		\phpbb\db\driver\driver_interface $db,
-		\phpbb\controller\helper $helper,
 		\phpbb\request\request $request,
-		\phpbb\config\config $config,
 		\phpbb\pagination $pagination,
 		$phpbb_container,
 		\phpbb\extension\manager $ext_manager,
 		\phpbb\path_helper $path_helper,
-		$phpbb_admin_path,
 		$php_ext, $root_path,
 		$dm_eds_table,
 		$dm_eds_cat_table,
@@ -125,14 +110,11 @@ class admin_controller
 		$this->log 					= $log;
 		$this->cache 				= $cache;
 		$this->db 					= $db;
-		$this->helper 				= $helper;
 		$this->request 				= $request;
-		$this->config 				= $config;
 		$this->pagination 			= $pagination;
 		$this->phpbb_container 		= $phpbb_container;
 		$this->ext_manager	 		= $ext_manager;
 		$this->path_helper	 		= $path_helper;
-		$this->phpbb_admin_path 	= $phpbb_admin_path;
 		$this->php_ext 				= $php_ext;
 		$this->root_path 			= $root_path;
 		$this->dm_eds_table 		= $dm_eds_table;
@@ -280,33 +262,17 @@ class admin_controller
 		// Read out config values
 		$eds_values = $this->functions->config_values();
 
-		$form_action = $this->u_action. '&amp;action=add_new';
-		$lang_mode = $this->user->lang['ACP_NEW_DOWNLOAD'];
-		$action = $this->request->variable('action', '');
-		$action = ($this->request->is_set('submit') && !$this->request->is_set('id')) ? 'add' : $action;
-
-		$id			= $this->request->variable('id', 0);
-		$title		= $this->request->variable('title', '', true);
-		$filename	= $this->request->variable('filename', '', true);
-		$desc		= $this->request->variable('desc', '', true);
-		$dl_version	= $this->request->variable('dl_version', '', true);
-		$costs_dl	= $this->request->variable('cost_per_dl', 0.00);
-		$username1 	= $this->request->variable('username', '', true);
-		$username 	= strtolower($username1);
-		$ftp_upload = $this->request->variable('ftp_upload', '', true);
-
-		// Select the user data to transfer to
-		$sql_array = array(
-			'SELECT'	=> '*',
-			'FROM'		=> array(
-				USERS_TABLE => 'u',
-			),
-			'WHERE'		=> 'username_clean = "' . $this->db->sql_escape(utf8_clean_string($username)) . '"',
-		);
-		$sql = $this->db->sql_build_query('SELECT', $sql_array);
-		$result = $this->db->sql_query($sql);
-		$transfer_user = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
+		$form_action 	= $this->u_action. '&amp;action=add_new';
+		$lang_mode 		= $this->user->lang['ACP_NEW_DOWNLOAD'];
+		$action 		= $this->request->variable('action', '');
+		$action 		= ($this->request->is_set('submit') && !$this->request->is_set('id')) ? 'add' : $action;
+		$id				= $this->request->variable('id', 0);
+		$title			= $this->request->variable('title', '', true);
+		$filename		= $this->request->variable('filename', '', true);
+		$desc			= $this->request->variable('desc', '', true);
+		$dl_version		= $this->request->variable('dl_version', '', true);
+		$costs_dl		= $this->request->variable('cost_per_dl', 0.00);
+		$ftp_upload 	= $this->request->variable('ftp_upload', '', true);
 
 		// Check if categories exists
 		$sql = 'SELECT COUNT(cat_id) AS total_cats
@@ -367,7 +333,6 @@ class admin_controller
 			'DL_VERSION'		=> $dl_version,
 			'FTP_UPLOAD'		=> $ftp_upload,
 			'PARENT_OPTIONS'	=> $cat_options,
-			'COST_PER_DL'		=> sprintf(number_format($eds_values['costs_per_dl'], 2, '.', '')),
 			'ALLOWED_SIZE'		=> sprintf($this->user->lang['ACP_NEW_DOWNLOAD_SIZE'], $max_filesize, $unit),
 			'U_BACK'			=> $this->u_action,
 			'U_ACTION'			=> $form_action,
@@ -408,22 +373,7 @@ class admin_controller
 		$desc		= $this->request->variable('desc', '', true);
 		$dl_version	= $this->request->variable('dl_version', '', true);
 		$costs_dl	= $this->request->variable('cost_per_dl', 0.00);
-		$username1 	= $this->request->variable('username', '', true);
-		$username 	= strtolower($username1);
 		$ftp_upload = $this->request->variable('ftp_upload', '', true);
-
-		// Select the user data to transfer to
-		$sql_array = array(
-			'SELECT'	=> '*',
-			'FROM'		=> array(
-				USERS_TABLE => 'u',
-			),
-			'WHERE'		=> 'username_clean = "' . $this->db->sql_escape(utf8_clean_string($username)) . '"',
-		);
-		$sql = $this->db->sql_build_query('SELECT', $sql_array);
-		$result = $this->db->sql_query($sql);
-		$transfer_user = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
 
 		// Check if categories exists
 		$sql = 'SELECT COUNT(cat_id) AS total_cats
@@ -484,9 +434,7 @@ class admin_controller
 			'FTP_UPLOAD'		=> $ftp_upload,
 			'DL_VERSION'		=> $copy_version,
 			'PARENT_OPTIONS'	=> $cat_options,
-			'COST_PER_DL'		=> sprintf(number_format($eds_values['costs_per_dl'], 2, '.', '')),
 			'ALLOWED_SIZE'		=> sprintf($this->user->lang['ACP_NEW_DOWNLOAD_SIZE'], $max_filesize, $unit),
-			'TRANSFER_USER'		=> $username,
 			'U_BACK'			=> $this->u_action,
 			'U_ACTION'			=> $form_action,
 			'L_MODE_TITLE'		=> $lang_mode,
@@ -561,12 +509,10 @@ class admin_controller
 			'FILENAME'			=> $row['download_filename'],
 			'CATNAME'			=> $row['cat_name'],
 			'DL_VERSION'		=> $download_version,
-			'COST_PER_DL'		=> $row['cost_per_dl'],
 			'PARENT_OPTIONS'	=> $cat_options,
 			'ALLOWED_SIZE'		=> sprintf($this->user->lang['ACP_NEW_DOWNLOAD_SIZE'], $max_filesize, $unit),
 			'U_ACTION'			=> $form_action,
 			'L_MODE_TITLE'		=> $lang_mode,
-
 		));
 	}
 
@@ -579,41 +525,18 @@ class admin_controller
 		// Read out config values
 		$eds_values = $this->functions->config_values();
 
-		//Make SQL Array
-		$id			= $this->request->variable('id', 0);
-		$title		= $this->request->variable('title', '', true);
-		$filename	= $this->request->variable('filename', '', true);
-		$desc		= $this->request->variable('desc', '', true);
-		$dl_version	= $this->request->variable('dl_version', '', true);
-		$costs_dl	= $this->request->variable('cost_per_dl', 0.00, true);
-		$cat_option = $this->request->variable('parent', '', true);
-		$upload_time = time();
-		$last_changed_time = time();
-
+		$id					= $this->request->variable('id', 0);
+		$title				= $this->request->variable('title', '', true);
+		$filename			= $this->request->variable('filename', '', true);
+		$desc				= $this->request->variable('desc', '', true);
+		$dl_version			= $this->request->variable('dl_version', '', true);
+		$costs_dl			= $this->request->variable('cost_per_dl', 0.00, true);
+		$cat_option 		= $this->request->variable('parent', '', true);
+		$upload_time 		= time();
+		$last_changed_time 	= time();
 		$uid = $bitfield = $options = '';
-		$allow_bbcode = $allow_urls = $allow_smilies = true;
-
-		$username1 	= $this->request->variable('username', '', true);
-		$username 	= strtolower($username1);
-		$ftp_upload	= $this->request->variable('ftp_upload', '', true);
-
-		// Select the user data to transfer to
-		$sql_array = array(
-			'SELECT'	=> '*',
-			'FROM'		=> array(
-				USERS_TABLE => 'u',
-			),
-			'WHERE'		=> 'username_clean = "' . $this->db->sql_escape(utf8_clean_string($username)) . '"',
-		);
-		$sql = $this->db->sql_build_query('SELECT', $sql_array);
-		$result = $this->db->sql_query($sql);
-		$transfer_user = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		if (!$transfer_user)
-		{
-			$transfer_user['user_id'] = 0;
-		}
+		$allow_bbcode 		= $allow_urls = $allow_smilies = true;
+		$ftp_upload			= $this->request->variable('ftp_upload', '', true);
 
 		if (!$ftp_upload)
 		{
@@ -630,80 +553,8 @@ class admin_controller
 			}
 		}
 
-		// Here you can add additional extenstions
-		// Always use lower and upper case extensions
-		$allowed_extensions = array();
-		// Archive extenstions
-		$allowed_extensions[] = 'zip';
-		$allowed_extensions[] = 'ZIP';
-		$allowed_extensions[] = 'rar';
-		$allowed_extensions[] = 'RAR';
-		$allowed_extensions[] = '7z';
-		$allowed_extensions[] = '7Z';
-		$allowed_extensions[] = 'ace';
-		$allowed_extensions[] = 'ACE';
-		$allowed_extensions[] = 'gtar';
-		$allowed_extensions[] = 'GTAR';
-		$allowed_extensions[] = 'gz';
-		$allowed_extensions[] = 'GZ';
-		$allowed_extensions[] = 'tar';
-		$allowed_extensions[] = 'TAR';
-		// Text files
-		$allowed_extensions[] = 'txt';
-		$allowed_extensions[] = 'TXT';
-		// Documents
-		$allowed_extensions[] = 'doc';
-		$allowed_extensions[] = 'DOC';
-		$allowed_extensions[] = 'docx';
-		$allowed_extensions[] = 'DOCX';
-		$allowed_extensions[] = 'xls';
-		$allowed_extensions[] = 'XLS';
-		$allowed_extensions[] = 'xlsx';
-		$allowed_extensions[] = 'XLSX';
-		$allowed_extensions[] = 'ppt';
-		$allowed_extensions[] = 'PPT';
-		$allowed_extensions[] = 'pptx';
-		$allowed_extensions[] = 'PPTX';
-		$allowed_extensions[] = 'pdf';
-		$allowed_extensions[] = 'PDF';
-		// Real Media files
-		$allowed_extensions[] = 'ram';
-		$allowed_extensions[] = 'RAM';
-		$allowed_extensions[] = 'rm';
-		$allowed_extensions[] = 'RM';
-		// Windows Media files
-		$allowed_extensions[] = 'wma';
-		$allowed_extensions[] = 'WMA';
-		$allowed_extensions[] = 'wmv';
-		$allowed_extensions[] = 'WMV';
-		// Flash files
-		$allowed_extensions[] = 'swf';
-		$allowed_extensions[] = 'SWF';
-		// Quick time files
-		$allowed_extensions[] = 'mov';
-		$allowed_extensions[] = 'MOV';
-		$allowed_extensions[] = 'mp4';
-		$allowed_extensions[] = 'MP4';
-		// Different files
-		$allowed_extensions[] = 'mp3';
-		$allowed_extensions[] = 'MP3';
-		$allowed_extensions[] = 'mpeg';
-		$allowed_extensions[] = 'MPEG';
-		$allowed_extensions[] = 'mpg';
-		$allowed_extensions[] = 'MPG';
-		// Picture files
-		$allowed_extensions[] = 'png';
-		$allowed_extensions[] = 'PNG';
-		$allowed_extensions[] = 'jpg';
-		$allowed_extensions[] = 'JPG';
-		$allowed_extensions[] = 'jpeg';
-		$allowed_extensions[] = 'JPEG';
-		$allowed_extensions[] = 'gif';
-		$allowed_extensions[] = 'GIF';
-		$allowed_extensions[] = 'tif';
-		$allowed_extensions[] = 'TIF';
-		$allowed_extensions[] = 'tiff';
-		$allowed_extensions[] = 'TIFF';
+		// Add allowed extensions
+		$allowed_extensions = $this->functions->allowed_extensions();
 
 		// Check if categories exists
 		$sql = 'SELECT COUNT(cat_id) AS total_cats
@@ -721,7 +572,6 @@ class admin_controller
 		if ($this->files_factory !== null)
 		{
 			$fileupload = $this->files_factory->get('upload')
-				->set_error_prefix('FILE_')
 				->set_allowed_extensions($allowed_extensions);
 		}
 		else
@@ -759,14 +609,14 @@ class admin_controller
 		{
 			$upload_file = (isset($this->files_factory)) ? $fileupload->handle_upload('files.types.form', 'filename') : $fileupload->form_upload('filename');
 
+			if (!$upload_file->get('uploadname'))
+			{
+				trigger_error($this->user->lang['ACP_NO_FILENAME'] . adm_back_link($this->u_action), E_USER_WARNING);//continue;
+			}
+
 			if (file_exists($this->root_path . $upload_dir . '/' . $upload_file->get('uploadname')))
 			{
 				trigger_error($this->user->lang['ACP_UPLOAD_FILE_EXISTS'] . adm_back_link($this->u_action), E_USER_WARNING);//continue;
-			}
-
-			if (!$upload_file->get('uploadname'))
-			{
-				trigger_error($this->lang['ACP_NO_FILENAME'] . adm_back_link($this->u_action), E_USER_WARNING);//continue;
 			}
 
 			$upload_file->move_file($upload_dir, false, false, false);
@@ -793,7 +643,7 @@ class admin_controller
 				'bbcode_bitfield'	=> $bitfield,
 				'bbcode_options'	=> $options,
 				'filesize'			=> $filesize,
-				'points_user_id'	=> $transfer_user['user_id'],
+				'points_user_id'	=> $this->user->data['user_id'],
 			);
 
 			// Check, if filesize is greater than PHP ini allows
@@ -808,7 +658,7 @@ class admin_controller
 
 			if ($filesize	> ($max_filesize * $multiplier))
 			{
-				unlink($this->root_path . $upload_dir . '/' . $upload_file->get('uploadname'));
+				@unlink($this->root_path . $upload_dir . '/' . $upload_file->get('uploadname'));
 				trigger_error($this->user->lang['ACP_FILE_TOO_BIG'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
@@ -834,7 +684,7 @@ class admin_controller
 				'bbcode_bitfield'	=> $bitfield,
 				'bbcode_options'	=> $options,
 				'filesize'			=> $filesize,
-				'points_user_id'	=> $transfer_user['user_id'],
+				'points_user_id'	=> $this->user->data['user_id'],
 			);
 		}
 
@@ -870,7 +720,7 @@ class admin_controller
 				$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_MSG'], $title, generate_text_for_display($desc, $uid, $bitfield, $options), $cat_name, $download_link);
 
 			}
-			$this->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
+			$this->functions->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 		}
 
 		$this->db->sql_query('INSERT INTO ' . $this->dm_eds_table .' ' . $this->db->sql_build_array('INSERT', $sql_ary));
@@ -905,119 +755,25 @@ class admin_controller
 		$current_filesize = $row['filesize'];
 		$this->db->sql_freeresult($result);
 
-		$title 		= $this->request->variable('title', '', true);
-		$v_cat_id	= $this->request->variable('parent', '');
-		$dl_version	= $this->request->variable('dl_version', '', true);
-		$costs_dl	= $this->request->variable('cost_per_dl', 0.00);
-		$last_changed_time = time();
-		$desc 		= $this->request->variable('desc', '', true);
-		$announce_up = $this->request->variable('announce_up', '');
-		$ftp_upload	= $this->request->variable('ftp_upload', '', true);
+		$title 				= $this->request->variable('title', '', true);
+		$v_cat_id			= $this->request->variable('parent', '');
+		$dl_version			= $this->request->variable('dl_version', '', true);
+		$costs_dl			= $this->request->variable('cost_per_dl', 0.00);
+		$last_changed_time 	= time();
+		$desc 				= $this->request->variable('desc', '', true);
+		$announce_up 		= $this->request->variable('announce_up', '');
+		$ftp_upload			= $this->request->variable('ftp_upload', '', true);
+		$ftp_upload			= $this->request->variable('ftp_upload', '', true);
 
 		$uid = $bitfield = $options = ''; // will be modified by generate_text_for_storage
 		$allow_bbcode = $allow_urls = $allow_smilies = true;
 
-		$username1 	= $this->request->variable('username', '', true);
-		$username 	= strtolower($username1);
-		$ftp_upload	= $this->request->variable('ftp_upload', '', true);
-
-		// Select the user data to transfer to
-		$sql_array = array(
-			'SELECT'	=> '*',
-			'FROM'		=> array(
-				USERS_TABLE => 'u',
-			),
-			'WHERE'		=> 'username_clean = "' . $this->db->sql_escape(utf8_clean_string($username)) . '"',
-		);
-		$sql = $this->db->sql_build_query('SELECT', $sql_array);
-		$result = $this->db->sql_query($sql);
-		$transfer_user = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		if (!$transfer_user)
-		{
-			$transfer_user['user_id'] = 0;
-		}
-
-		// Here you can add additional extenstions
-		// Always use lower and upper case extensions
-		$allowed_extensions = array();
-		// Archive extenstions
-		$allowed_extensions[] = 'zip';
-		$allowed_extensions[] = 'ZIP';
-		$allowed_extensions[] = 'rar';
-		$allowed_extensions[] = 'RAR';
-		$allowed_extensions[] = '7z';
-		$allowed_extensions[] = '7Z';
-		$allowed_extensions[] = 'ace';
-		$allowed_extensions[] = 'ACE';
-		$allowed_extensions[] = 'gtar';
-		$allowed_extensions[] = 'GTAR';
-		$allowed_extensions[] = 'gz';
-		$allowed_extensions[] = 'GZ';
-		$allowed_extensions[] = 'tar';
-		$allowed_extensions[] = 'TAR';
-		// Text files
-		$allowed_extensions[] = 'txt';
-		$allowed_extensions[] = 'TXT';
-		// Documents
-		$allowed_extensions[] = 'doc';
-		$allowed_extensions[] = 'DOC';
-		$allowed_extensions[] = 'docx';
-		$allowed_extensions[] = 'DOCX';
-		$allowed_extensions[] = 'xls';
-		$allowed_extensions[] = 'XLS';
-		$allowed_extensions[] = 'xlsx';
-		$allowed_extensions[] = 'XLSX';
-		$allowed_extensions[] = 'ppt';
-		$allowed_extensions[] = 'PPT';
-		$allowed_extensions[] = 'pptx';
-		$allowed_extensions[] = 'PPTX';
-		$allowed_extensions[] = 'pdf';
-		$allowed_extensions[] = 'PDF';
-		// Real Media files
-		$allowed_extensions[] = 'ram';
-		$allowed_extensions[] = 'RAM';
-		$allowed_extensions[] = 'rm';
-		$allowed_extensions[] = 'RM';
-		// Windows Media files
-		$allowed_extensions[] = 'wma';
-		$allowed_extensions[] = 'WMA';
-		$allowed_extensions[] = 'wmv';
-		$allowed_extensions[] = 'WMV';
-		// Flash files
-		$allowed_extensions[] = 'swf';
-		$allowed_extensions[] = 'SWF';
-		// Quick time files
-		$allowed_extensions[] = 'mov';
-		$allowed_extensions[] = 'MOV';
-		$allowed_extensions[] = 'mp4';
-		$allowed_extensions[] = 'MP4';
-		// Different files
-		$allowed_extensions[] = 'mp3';
-		$allowed_extensions[] = 'MP3';
-		$allowed_extensions[] = 'mpeg';
-		$allowed_extensions[] = 'MPEG';
-		$allowed_extensions[] = 'mpg';
-		$allowed_extensions[] = 'MPG';
-		// Picture files
-		$allowed_extensions[] = 'png';
-		$allowed_extensions[] = 'PNG';
-		$allowed_extensions[] = 'jpg';
-		$allowed_extensions[] = 'JPG';
-		$allowed_extensions[] = 'jpeg';
-		$allowed_extensions[] = 'JPEG';
-		$allowed_extensions[] = 'gif';
-		$allowed_extensions[] = 'GIF';
-		$allowed_extensions[] = 'tif';
-		$allowed_extensions[] = 'TIF';
-		$allowed_extensions[] = 'tiff';
-		$allowed_extensions[] = 'TIFF';
+		// Add allowed extensions
+		$allowed_extensions = $this->functions->allowed_extensions();
 
 		if ($this->files_factory !== null)
 		{
 			$fileupload = $this->files_factory->get('upload')
-				->set_error_prefix('FILE_')
 				->set_allowed_extensions($allowed_extensions);
 		}
 		else
@@ -1091,7 +847,7 @@ class admin_controller
 				'bbcode_bitfield'	=> $bitfield,
 				'bbcode_options'	=> $options,
 				'filesize'			=> $filesize,
-				'points_user_id'	=> $transfer_user['user_id'],
+				'points_user_id'	=> $this->user->data['user_id'],
 			);
 
 			// If the title is empty, return an error
@@ -1155,7 +911,7 @@ class admin_controller
 								$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, generate_text_for_display($desc, $uid, $bitfield, $options), $cat_name, $download_link);
 
 							}
-							$this->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
+							$this->functions->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 						}
 
 						if (rename(($this->root_path . 'ext/dmzx/downloadsystem/files/' . $current_cat_name . '/' .$new_filename), ($this->root_path . 'ext/dmzx/downloadsystem/files/' . $cat_dir . '/' . $new_filename)))
@@ -1204,7 +960,7 @@ class admin_controller
 							$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, generate_text_for_display($desc, $uid, $bitfield, $options), $cat_name, $download_link);
 
 						}
-						$this->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
+						$this->functions->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 					}
 					$this->db->sql_query('UPDATE ' . $this->dm_eds_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE download_id = ' . (int) $id);
 					$this->cache->destroy('sql', $this->dm_eds_table);
@@ -1238,7 +994,7 @@ class admin_controller
 				'bbcode_bitfield'	=> $bitfield,
 				'bbcode_options'	=> $options,
 				'filesize'			=> $filesize,
-				'points_user_id'	=> $transfer_user['user_id'],
+				'points_user_id'	=> $this->user->data['user_id'],
 			);
 		}
 	}
@@ -1262,7 +1018,7 @@ class admin_controller
 			$this->db->sql_freeresult($result);
 
 			$delete_file = $this->ext_path_web . 'files/' . $cat_dir .'/' . $file_name;
-			unlink($delete_file);
+			@unlink($delete_file);
 
 			$sql = 'DELETE FROM ' . $this->dm_eds_table . '
 				WHERE download_id = '. (int) $id;
@@ -1943,7 +1699,7 @@ class admin_controller
 			{
 				if ($f > '0' and filetype($empty_dir.$f) == "file")
 				{
-					unlink($empty_dir.$f);
+					@unlink($empty_dir.$f);
 				}
 				else if ($f > '0' and filetype($empty_dir.$f) == "dir")
 				{
@@ -1953,73 +1709,6 @@ class admin_controller
 			closedir($dir);
 			rmdir($current_dir);
 		}
-	}
-
-	/**
-	* Post download announcement
-	*/
-	function create_announcement($download_subject, $download_msg, $forum_id)
-	{
-		// Read out config values
-		$eds_values = $this->functions->config_values();
-
-		$lock = $eds_values['announce_lock_enable'];
-
-		$this->message_parser = new \parse_message();
-
-		$subject =	$download_subject;
-		$text =	$download_msg;
-
-		// Do not try to post message if subject or text is empty
-		if (empty($subject) || empty($text))
-		{
-			return;
-		}
-
-		$this->message_parser->message = $text;
-
-		// Grab md5 'checksum' of new message
-		$message_md5 = md5($this->message_parser->message);
-
-		$this->message_parser->parse(true, true, true, true, false, true, true);
-
-		$sql = 'SELECT forum_name
-			FROM ' . FORUMS_TABLE . '
-			WHERE forum_id = ' . (int) $forum_id;
-		$result = $this->db->sql_query($sql);
-		$forum_name = $this->db->sql_fetchfield('forum_name');
-		$this->db->sql_freeresult($result);
-
-		$data = array(
-			'forum_id'			=> $forum_id,
-			'icon_id'			=> false,
-			'poster_id' 		=> $this->user->data['user_id'],
-			'enable_bbcode'		=> true,
-			'enable_smilies'	=> true,
-			'enable_urls'		=> true,
-			'enable_sig'		=> true,
-			'message'			=> $this->message_parser->message,
-			'message_md5'		=> $message_md5,
-			'attachment_data'	=> 0,
-			'filename_data'		=> 0,
-			'bbcode_bitfield'	=> $this->message_parser->bbcode_bitfield,
-			'bbcode_uid'		=> $this->message_parser->bbcode_uid,
-			'poster_ip'			=> $this->user->ip,
-			'post_edit_locked'	=> 0,
-			'topic_title'		=> $subject,
-			'topic_status'		=> $lock,
-			'notify_set'		=> false,
-			'notify'			=> true,
-			'post_time' 		=> time(),
-			'forum_name'		=> $forum_name,
-			'enable_indexing'	=> true,
-			'force_approved_state'	=> true,
-			'force_visibility' => true,
-			'attr_id'	=> 0,
-		);
-		$poll = array();
-
-		submit_post('post', $subject, '', POST_NORMAL, $poll, $data);
 	}
 
 	/**

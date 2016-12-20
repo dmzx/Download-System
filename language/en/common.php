@@ -64,6 +64,7 @@ $lang = array_merge($lang, array(
 	'EDS_LEGEND_OK'						=> 'You have enough %1$s',
 	'EDS_MULTI'							=> '%1$s Downloads',
 	'EDS_NO_CAT'						=> '<strong>Sorry! There are currently no categories available.</strong><br /><br />',
+	'EDS_NO_CAT_IN_UPLOAD'				=> 'Sorry! There are currently no categories available.',
 	'EDS_NO_DOWNLOADS'					=> '<strong>Sorry! There are currently no downloads available.</strong><br /><br />',
 	'EDS_NO_FILES'						=> 'There are no downloads',
 	'EDS_NO_ID'							=> 'No id given',
@@ -76,11 +77,16 @@ $lang = array_merge($lang, array(
 	'EDS_TITLE'							=> 'Downloads',
 	'EDS_TITLE_EXPLAIN'					=> 'Select a category below',
 	'EDS_UPLOADED_ON'					=> 'Uploaded on',
+	'EDS_UPLOAD'						=> 'Upload',
+	'EDS_UPLOADS'						=> 'Download system upload section',
+	'EDS_UPLOAD_SECTION'				=> 'Upload section',
+	'EDS_UPLOAD_MESSAGE'				=> 'Upload here your file in correct category.',
 	'EDS_FILESIZE'						=> 'Filesize',
 	'EDS_CAT_NOT_EXIST'					=> 'The selected category does not exist!',
 	'EDS_BACK_DOWNLOADS'				=> 'Back to download overview',
 	'EDS_NO_PERMISSION'					=> 'You don\'t have the permission to use the Download System',
 	'EDS_NO_DOWNLOAD'					=> 'You don\'t have the permission to download files from the Download System',
+	'EDS_NO_UPLOAD'						=> 'You don\'t have the permission to use the upload section',
 	'EDS_NO_DIRECT_DL'					=> 'You are not allowed to download files',
 	'EDS_CAT'							=> 'One category',
 	'EDS_CATS'							=> '%d categories',
@@ -94,6 +100,18 @@ $lang = array_merge($lang, array(
 	'EDS_NOT_UP_TO_DATE'				=> '%s is not up to date',
 	'EDS_RELEASE_ANNOUNCEMENT'			=> 'Announcement Topic',
 	'EDS_UP_TO_DATE'					=> '%s is up to date',
+	'EDS_NEW_TITLE'						=> 'Title',
+	'EDS_NEW_TITLE_EXPLAIN'				=> 'Title for your new download.',
+	'EDS_NEW_VERSION'					=> 'Version',
+	'EDS_NEW_VERSION_EXPLAIN'			=> 'Version of your download.',
+	'EDS_NEW_DESC'						=> 'Description',
+	'EDS_NEW_DESC_EXPLAIN'				=> 'BBcode & Smilies allowed.',
+	'EDS_NEW_DL_CAT'					=> 'Category',
+	'EDS_NEW_DL_CAT_EXPLAIN'			=> 'Select here the category.',
+	'EDS_NEW_DOWNLOAD'					=> 'New download',
+	'EDS_NEW_FILENAME'					=> 'File name',
+	'EDS_NEW_FILENAME_EXPLAIN'			=> 'Select the file to upload.',
+	'EDS_NEW_DOWNLOAD_SIZE'				=> 'The maximum size of the file is <strong>%1$s %2$s</strong>! Due to the upload time you might need, this value can be lower!',
 
 	// ACP
 	'ACP_ADD'							=> 'Add',
@@ -108,25 +126,25 @@ $lang = array_merge($lang, array(
 
 we have a new download!
 
-Title: [b]%1$s[/b]
-Description: [b]%2$s[/b]
-Category: [b]%3$s[/b]
-Click [b]%4$s[/b] to go to the download page!
+[b]Title:[/b] %1$s
+[b]Description:[/b] %2$s
+[b]Category:[/b] %3$s
+[b]Click %4$s to go to the download page![/b]
 
 Have fun!',
 	'ACP_ANNOUNCE_SETTINGS'				=> 'Announcement settings',
-	'ACP_ANNOUNCE_TITLE'				=> '%1$s', //'[NEW] %1$s'
+	'ACP_ANNOUNCE_TITLE'				=> '%1$s',
 	'ACP_ANNOUNCE_UP'					=> 'Announce download again',
 	'ACP_ANNOUNCE_UP_EXPLAIN'			=> 'Activate, if you like to re-announce the download. The message will be sent as an update information',
 	'ACP_ANNOUNCE_UP_MSG'				=> 'Hello,
 
 we have an updated download!
 
-Title: [b]%1$s[/b]
+[b]Title:[/b] %1$
 
-Description: [b]%2$s[/b]
+[b]Description:[/b] %2$s
 
-Category: [b]%3$s[/b]
+[b]Category:[/b] %3$s
 
 [b]Click %4$s to go to the category![/b]
 

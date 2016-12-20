@@ -97,6 +97,19 @@ class functions
 		$this->dm_eds_table 		= $dm_eds_table;
 		$this->dm_eds_cat_table 	= $dm_eds_cat_table;
 		$this->dm_eds_config_table 	= $dm_eds_config_table;
+
+		if (!function_exists('submit_post'))
+		{
+			include($this->root_path . 'includes/functions_posting.' . $this->php_ext);
+		}
+		if (!class_exists('parse_message'))
+		{
+			include($this->root_path . 'includes/message_parser.' . $this->php_ext);
+		}
+		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
+		{
+			define('PHPBB_USE_BOARD_URL_PATH', true);
+		}
 	}
 
 	/**
@@ -304,11 +317,6 @@ class functions
 	{
 		$start = $this->request->variable('start', 0);
 
-		if (!class_exists('parse_message'))
-		{
-			include($this->root_path . 'includes/message_parser.' . $this->php_ext);
-		}
-
 		// Setup message parser
 		$this->message_parser = new \parse_message();
 
@@ -499,5 +507,157 @@ class functions
 		$this->db->sql_freeresult($result);
 
 		return $eds_values;
+	}
+
+	/**
+	* Post download announcement
+	*/
+	public function create_announcement($download_subject, $download_msg, $forum_id)
+	{
+		// Read out config values
+		$eds_values = $this->config_values();
+
+		$lock = $eds_values['announce_lock_enable'];
+
+		$this->message_parser = new \parse_message();
+
+		$subject =	$download_subject;
+		$text =	$download_msg;
+
+		// Do not try to post message if subject or text is empty
+		if (empty($subject) || empty($text))
+		{
+			return;
+		}
+
+		$this->message_parser->message = $text;
+
+		// Grab md5 'checksum' of new message
+		$message_md5 = md5($this->message_parser->message);
+
+		$this->message_parser->parse(true, true, true, true, false, true, true);
+
+		$sql = 'SELECT forum_name
+			FROM ' . FORUMS_TABLE . '
+			WHERE forum_id = ' . (int) $forum_id;
+		$result = $this->db->sql_query($sql);
+		$forum_name = $this->db->sql_fetchfield('forum_name');
+		$this->db->sql_freeresult($result);
+
+		$data = array(
+			'forum_id'			=> $forum_id,
+			'icon_id'			=> false,
+			'poster_id' 		=> $this->user->data['user_id'],
+			'enable_bbcode'		=> true,
+			'enable_smilies'	=> true,
+			'enable_urls'		=> true,
+			'enable_sig'		=> true,
+			'message'			=> $this->message_parser->message,
+			'message_md5'		=> $message_md5,
+			'attachment_data'	=> 0,
+			'filename_data'		=> 0,
+			'bbcode_bitfield'	=> $this->message_parser->bbcode_bitfield,
+			'bbcode_uid'		=> $this->message_parser->bbcode_uid,
+			'poster_ip'			=> $this->user->ip,
+			'post_edit_locked'	=> 0,
+			'topic_title'		=> $subject,
+			'topic_status'		=> $lock,
+			'notify_set'		=> false,
+			'notify'			=> true,
+			'post_time' 		=> time(),
+			'forum_name'		=> $forum_name,
+			'enable_indexing'	=> true,
+			'force_approved_state'	=> true,
+			'force_visibility' 	=> true,
+			'attr_id'			=> 0,
+		);
+		$poll = array();
+
+		submit_post('post', $subject, '', POST_NORMAL, $poll, $data);
+	}
+
+	/**
+	* Allowed Extensions
+	*/
+	public function allowed_extensions()
+	{
+		// Here you can add additional extensions
+		// Always use lower and upper case extensions
+
+		$allowed_extensions = array();
+
+		// Archive extenstions
+		$allowed_extensions[] = 'zip';
+		$allowed_extensions[] = 'ZIP';
+		$allowed_extensions[] = 'rar';
+		$allowed_extensions[] = 'RAR';
+		$allowed_extensions[] = '7z';
+		$allowed_extensions[] = '7Z';
+		$allowed_extensions[] = 'ace';
+		$allowed_extensions[] = 'ACE';
+		$allowed_extensions[] = 'gtar';
+		$allowed_extensions[] = 'GTAR';
+		$allowed_extensions[] = 'gz';
+		$allowed_extensions[] = 'GZ';
+		$allowed_extensions[] = 'tar';
+		$allowed_extensions[] = 'TAR';
+		// Text files
+		$allowed_extensions[] = 'txt';
+		$allowed_extensions[] = 'TXT';
+		// Documents
+		$allowed_extensions[] = 'doc';
+		$allowed_extensions[] = 'DOC';
+		$allowed_extensions[] = 'docx';
+		$allowed_extensions[] = 'DOCX';
+		$allowed_extensions[] = 'xls';
+		$allowed_extensions[] = 'XLS';
+		$allowed_extensions[] = 'xlsx';
+		$allowed_extensions[] = 'XLSX';
+		$allowed_extensions[] = 'ppt';
+		$allowed_extensions[] = 'PPT';
+		$allowed_extensions[] = 'pptx';
+		$allowed_extensions[] = 'PPTX';
+		$allowed_extensions[] = 'pdf';
+		$allowed_extensions[] = 'PDF';
+		// Real Media files
+		$allowed_extensions[] = 'ram';
+		$allowed_extensions[] = 'RAM';
+		$allowed_extensions[] = 'rm';
+		$allowed_extensions[] = 'RM';
+		// Windows Media files
+		$allowed_extensions[] = 'wma';
+		$allowed_extensions[] = 'WMA';
+		$allowed_extensions[] = 'wmv';
+		$allowed_extensions[] = 'WMV';
+		// Flash files
+		$allowed_extensions[] = 'swf';
+		$allowed_extensions[] = 'SWF';
+		// Quick time files
+		$allowed_extensions[] = 'mov';
+		$allowed_extensions[] = 'MOV';
+		$allowed_extensions[] = 'mp4';
+		$allowed_extensions[] = 'MP4';
+		// Different files
+		$allowed_extensions[] = 'mp3';
+		$allowed_extensions[] = 'MP3';
+		$allowed_extensions[] = 'mpeg';
+		$allowed_extensions[] = 'MPEG';
+		$allowed_extensions[] = 'mpg';
+		$allowed_extensions[] = 'MPG';
+		// Picture files
+		$allowed_extensions[] = 'png';
+		$allowed_extensions[] = 'PNG';
+		$allowed_extensions[] = 'jpg';
+		$allowed_extensions[] = 'JPG';
+		$allowed_extensions[] = 'jpeg';
+		$allowed_extensions[] = 'JPEG';
+		$allowed_extensions[] = 'gif';
+		$allowed_extensions[] = 'GIF';
+		$allowed_extensions[] = 'tif';
+		$allowed_extensions[] = 'TIF';
+		$allowed_extensions[] = 'tiff';
+		$allowed_extensions[] = 'TIFF';
+
+		return $allowed_extensions;
 	}
 }

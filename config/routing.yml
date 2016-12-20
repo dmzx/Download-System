@@ -6,4 +6,7 @@ dmzx_downloadsystem_controller_cat:
     defaults: { _controller: dmzx.downloadsystem.controller.cat:handle_downloadsystemcat }
 dmzx_downloadsystem_controller_download:
     path: /downloadsystemdownload
-    defaults: { _controller: dmzx.downloadsystem.controller.download:handle_downloadsystemdownload }            
+    defaults: { _controller: dmzx.downloadsystem.controller.download:handle_downloadsystemdownload }
+dmzx_downloadsystem_controller_upload:
+    path: /downloadsystemupload
+    defaults: { _controller: dmzx.downloadsystem.controller.upload:handle_downloadsystemupload }    
