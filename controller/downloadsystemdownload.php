@@ -100,6 +100,7 @@ class downloadsystemdownload
 			header('Content-type: application/octet-stream');
 			header("Content-disposition: attachment; filename=\"" . $download_filename . "\"");
 			header('Content-Length: ' . filesize($url));
+			ob_end_flush();
 			readfile($url);
 		}
 		else

@@ -137,6 +137,7 @@ class downloadupload
 
 		$id				= $this->request->variable('id', 0);
 		$title			= $this->request->variable('title', '', true);
+		$cat_name_show	= $this->request->variable('cat_name_show', 1);
 		$filename		= $this->request->variable('filename', '', true);
 		$desc			= $this->request->variable('desc', '', true);
 		$dl_version		= $this->request->variable('dl_version', '', true);
@@ -297,9 +298,19 @@ class downloadupload
 			$this->log_message('LOG_DOWNLOAD_ADD', $title, 'ACP_NEW_ADDED');
 		}
 
+		if ($this->auth->acl_get('a_'))
+		{
+			$sql_show_cat =	'';
+		}
+		else
+		{
+			$sql_show_cat = ' WHERE cat_name_show = ' . (int) $cat_name_show . '';
+		}
+
 		// Check if categories exists
 		$sql = 'SELECT COUNT(cat_id) AS total_cats
-			FROM ' . $this->dm_eds_cat_table;
+			FROM ' . $this->dm_eds_cat_table . '
+			' . $sql_show_cat;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$total_cats = $row['total_cats'];
@@ -312,6 +323,7 @@ class downloadupload
 
 		$sql = 'SELECT *
 			FROM ' . $this->dm_eds_cat_table . '
+			' . $sql_show_cat . '
 			ORDER BY LOWER(cat_name)';
 		$result = $this->db->sql_query($sql);
 		$cats = array();

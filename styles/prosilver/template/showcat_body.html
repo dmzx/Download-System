@@ -1,4 +1,5 @@
 <!-- INCLUDE overall_header.html -->
+
 <!-- IF S_NO_FILES -->
 <br /><br />
 	&nbsp;<b>{L_EDS_NO_FILES}</b>
@@ -24,7 +25,7 @@
 		<div class="forabg forumbg-table">
 			<div class="inner">
 				<table class="table1">
-					 <thead>
+					<thead>
 						<tr>
 							<th class="eds-title" style="text-align:left;">{L_EDS_FILE_TITLE}</th>
 							<th class="eds-version">{L_EDS_FILE_VERSION}</th>
@@ -33,7 +34,7 @@
 							<th class="eds-filesize">{L_EDS_FILESIZE}</th>
 							<th class="eds-dl">{L_EDS_DOWNLOAD}</th>
 						</tr>
-					 </thead>
+					</thead>
 					<tbody>
 						<!-- ENDIF -->
 						<tr class="<!-- IF catrow.S_ROW_COUNT is even --> bg1<!-- ELSE -->bg2<!-- ENDIF -->">
@@ -42,7 +43,7 @@
 							<td class="eds-desc" style="text-align:center;">{catrow.DL_DESC}
 							<hr />
 							<span class="small"><i>{L_EDS_UPLOADED_ON}{L_COLON} {catrow.DL_UPLOAD_TIME}<br />
-							{L_EDS_LAST_CHANGED_ON} {L_COLON} {catrow.DL_LAST_CHANGED}</i></span></td>
+							{L_EDS_LAST_CHANGED_ON}{L_COLON} {catrow.DL_LAST_CHANGED}</i></span></td>
 							<td class="eds-count" style="text-align:center;"><strong>{catrow.DL_CLICKS}</strong></td>
 							<td class="eds-filesize" style="text-align:center;">{catrow.DL_FILESIZE}</td>
 							<td class="eds-dl" style="text-align:center;">{catrow.U_DOWNLOAD}</td>

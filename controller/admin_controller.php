@@ -38,9 +38,6 @@ class admin_controller
 	/** @var ContainerBuilder */
 	protected $phpbb_container;
 
-	/** @var \phpbb\extension\manager "Extension Manager" */
-	protected $ext_manager;
-
 	/** @var \phpbb\path_helper */
 	protected $path_helper;
 
@@ -75,7 +72,6 @@ class admin_controller
 	* @param \phpbb\db\driver\driver_interface							$db
 	* @param \phpbb\request\request		 								$request
 	* @param \phpbb\pagination											$pagination
-	* @param \Symfony\Component\DependencyInjection\ContainerInterface 	$phpbb_container
 	* @param \phpbb\extension\manager									$ext_manager
 	* @param \phpbb\path_helper											$path_helper
 	* @param string 													$php_ext
@@ -95,7 +91,6 @@ class admin_controller
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\request\request $request,
 		\phpbb\pagination $pagination,
-		$phpbb_container,
 		\phpbb\extension\manager $ext_manager,
 		\phpbb\path_helper $path_helper,
 		$php_ext, $root_path,
@@ -112,7 +107,6 @@ class admin_controller
 		$this->db 					= $db;
 		$this->request 				= $request;
 		$this->pagination 			= $pagination;
-		$this->phpbb_container 		= $phpbb_container;
 		$this->ext_manager	 		= $ext_manager;
 		$this->path_helper	 		= $path_helper;
 		$this->php_ext 				= $php_ext;
@@ -138,8 +132,6 @@ class admin_controller
 	public function display_config()
 	{
 		$form_action = $this->u_action. '&amp;action=add';
-
-		$this->version_check = $this->phpbb_container->get('dmzx.downloadsystem.version.check');
 
 		// Read out config values
 		$eds_values = $this->functions->config_values();
@@ -217,43 +209,6 @@ class admin_controller
 				'U_BACK'				=> $this->u_action,
 				'U_ACTION'				=> $form_action,
 			));
-			$this->version_check->check();
-		}
-	}
-
-	public function display_categories()
-	{
-		$action = $this->request->variable('action', '');
-		// Now let's define, what to do within the module Manage Categories
-		switch ($action)
-		{
-			// Create a new category
-			case 'create':
-				$this->page_title = $this->user->lang['ACP_NEW_CAT'];
-				$this->create_cat();
-			break;
-
-			// Edit an existing category
-			case 'edit':
-				$this->page_title = $this->user->lang['ACP_EDIT_CAT'];
-				$this->edit_cat();
-			break;
-			// Delete an existing category
-			case 'delete':
-				$this->page_title = $this->user->lang['ACP_DEL_CAT'];
-				$this->delete_cat();
-			break;
-
-			// Move a category to another position
-			case 'move':
-				$this->move_cat();
-			break;
-
-			// Call the main module
-			default:
-				$this->page_title = $this->user->lang['ACP_MANAGE_CATEGORIES'];
-				$this->manage_cats();
-			break;
 		}
 	}
 
@@ -763,7 +718,6 @@ class admin_controller
 		$desc 				= $this->request->variable('desc', '', true);
 		$announce_up 		= $this->request->variable('announce_up', '');
 		$ftp_upload			= $this->request->variable('ftp_upload', '', true);
-		$ftp_upload			= $this->request->variable('ftp_upload', '', true);
 
 		$uid = $bitfield = $options = ''; // will be modified by generate_text_for_storage
 		$allow_bbcode = $allow_urls = $allow_smilies = true;
@@ -1130,7 +1084,7 @@ class admin_controller
 	/**
 	* Function for managing categories
 	*/
-	function manage_cats()
+	public function manage_cats()
 	{
 		$catrow = array();
 		$parent_id = $this->request->variable('parent_id', 0);
@@ -1145,8 +1099,7 @@ class admin_controller
 		else
 		{
 			$navigation = '<a href="' . $this->u_action . '">' . $this->user->lang['ACP_CAT_INDEX'] . '</a>';
-
-			$dm_eds_nav = get_cat_branch($parent_id, 'parents', 'descending');
+			$dm_eds_nav = $this->functions->get_cat_branch($parent_id, 'parents', 'descending');
 			foreach ($dm_eds_nav as $row)
 			{
 				if ($row['cat_id'] == $parent_id)
@@ -1162,10 +1115,8 @@ class admin_controller
 		$dm_eds = array();
 		$sql = 'SELECT *
 			FROM ' . $this->dm_eds_cat_table . '
-			WHERE parent_id = ' . (int) $parent_id . '
 			ORDER BY left_id ASC';
 		$result = $this->db->sql_query($sql);
-
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$dm_eds[] = $row;
@@ -1174,11 +1125,15 @@ class admin_controller
 		for ($i = 0; $i < count($dm_eds); $i++)
 		{
 			$folder_image = ($dm_eds[$i]['left_id'] + 1 != $dm_eds[$i]['right_id']) ? '<img src="images/icon_subfolder.gif" alt="' . $this->user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder.gif" alt="' . $this->user->lang['FOLDER'] . '" />';
+			$url = $this->u_action . "&amp;parent_id=$parent_id&amp;cat_id={$dm_eds[$i]['cat_id']}";
 
 			$this->template->assign_block_vars('catrow', array(
 				'FOLDER_IMAGE'			=> $folder_image,
 				'U_CAT'					=> $this->u_action . '&amp;parent_id=' . $dm_eds[$i]['cat_id'],
 				'CAT_NAME'				=> $dm_eds[$i]['cat_name'],
+				'CAT_SUBS'				=> ($dm_eds[$i]['left_id'] + 1 == $dm_eds[$i]['right_id'] && !$dm_eds[$i]['cat_id'] == $dm_eds[$i]['parent_id']) ? true : false,
+				'CAT_SUBS_SHOW'			=> ($dm_eds[$i]['left_id'] + 1 != $dm_eds[$i]['right_id'] && $dm_eds[$i]['cat_id'] != $parent_id	|| $dm_eds[$i]['parent_id'] == 0) ? true : false,
+				'CAT_NAME_SHOW'			=> ($dm_eds[$i]['cat_name_show'] == 1) ? $this->user->lang['ACP_CAT_NAME_SHOW_YES'] : $this->user->lang['ACP_CAT_NAME_SHOW_NO'],
 				'CAT_DESCRIPTION'		=> generate_text_for_display($dm_eds[$i]['cat_desc'], $dm_eds[$i]['cat_desc_uid'], $dm_eds[$i]['cat_desc_bitfield'], $dm_eds[$i]['cat_desc_options']),
 				'U_MOVE_UP'				=> $this->u_action . '&amp;action=move&amp;move=move_up&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 				'U_MOVE_DOWN'			=> $this->u_action . '&amp;action=move&amp;move=move_down&amp;cat_id=' . $dm_eds[$i]['cat_id'],
@@ -1186,6 +1141,7 @@ class admin_controller
 				'U_DELETE'				=> $this->u_action . '&amp;action=delete&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 			));
 		}
+
 		$this->template->assign_vars(array(
 			'NAVIGATION'		=> $navigation,
 			'S_DM_EDS'			=> $parent_id,
@@ -1197,7 +1153,7 @@ class admin_controller
 	/**
 	* Function for create a category
 	*/
-	function create_cat()
+	public function create_cat()
 	{
 		if ($this->request->is_set('submit'))
 		{
@@ -1209,6 +1165,7 @@ class admin_controller
 				'cat_parents'		=> $this->request->variable('cat_parents', 0),
 				'cat_desc'			=> $this->request->variable('cat_desc', '', true),
 				'cat_desc_options'	=> 7,
+				'cat_name_show'		=> $this->request->variable('cat_name_show', 0),
 			);
 
 			generate_text_for_storage($dm_eds_data['cat_desc'], $dm_eds_data['cat_desc_uid'], $dm_eds_data['cat_desc_bitfield'], $dm_eds_data['cat_desc_options'], $this->request->variable('desc_parse_bbcode', false), $this->request->variable('desc_parse_urls', false), $this->request->variable('desc_parse_smilies', false));
@@ -1312,6 +1269,7 @@ class admin_controller
 				}
 			}
 		}
+
 		$parent_options = $this->functions->make_cat_select($this->request->variable('parent_id', 0), false, false, false, false);
 		$this->template->assign_vars(array(
 			'S_MODE_CREATE'				=> true,
@@ -1320,17 +1278,19 @@ class admin_controller
 			'S_DESC_SMILIES_CHECKED'	=> true,
 			'S_DESC_URLS_CHECKED'		=> true,
 			'S_PARENT_OPTIONS'			=> $parent_options,
+			'CAT_NAME_SHOW'				=> $this->request->variable('cat_name_show', 1),
+			'CAT_NAME_NO_SHOW'			=> $this->user->lang['ACP_SUB_NO_CAT'],
 		));
 	}
 
 	/**
 	* Function for editing a category
 	*/
-	function edit_cat()
+	public function edit_cat()
 	{
 		if (!$cat_id = $this->request->variable('cat_id', 0))
 		{
-			trigger_error('No Cat ID', E_USER_WARNING);
+			trigger_error($this->user->lang['ACP_NO_CAT_ID'], E_USER_WARNING);
 		}
 
 		if ($this->request->is_set('submit'))
@@ -1342,6 +1302,7 @@ class admin_controller
 				'cat_parents'					=> '',
 				'cat_desc_options'				=> 7,
 				'cat_desc'						=> $this->request->variable('cat_desc', '', true),
+				'cat_name_show'					=> $this->request->variable('cat_name_show', 0),
 			);
 			generate_text_for_storage($dm_eds_data['cat_desc'], $dm_eds_data['cat_desc_uid'], $dm_eds_data['cat_desc_bitfield'], $dm_eds_data['cat_desc_options'], $this->request->variable('desc_parse_bbcode', false), $this->request->variable('desc_parse_urls', false), $this->request->variable('desc_parse_smilies', false));
 			$row = $this->functions->get_cat_info($cat_id);
@@ -1401,7 +1362,7 @@ class admin_controller
 
 					//create new gap
 					//need parent_information
-					$parent = $functions->get_cat_info($dm_eds_data['parent_id']);
+					$parent = $this->functions->get_cat_info($dm_eds_data['parent_id']);
 					//left_id
 					$sql = 'UPDATE ' . $this->dm_eds_cat_table . '
 						SET left_id = left_id + ' . $moving_ids . '
@@ -1459,6 +1420,16 @@ class admin_controller
 
 		$parents_list = $this->functions->make_cat_select($dm_eds_data['parent_id'], $cat_id);
 
+		// Has subcategories
+		if (($dm_eds_data['left_id'] + 1) != $dm_eds_data['right_id'])
+		{
+			$subcategories = false;
+		}
+		else
+		{
+			$subcategories = true;
+		}
+
 		$this->template->assign_vars(array(
 			'S_MODE_EDIT'				=> true,
 			'S_ACTION'					=> $this->u_action . '&amp;action=edit&amp;cat_id=' . $cat_id,
@@ -1469,18 +1440,21 @@ class admin_controller
 			'S_DESC_BBCODE_CHECKED'		=> ($dm_eds_desc_data['allow_bbcode']) ? true : false,
 			'S_DESC_SMILIES_CHECKED'	=> ($dm_eds_desc_data['allow_smilies']) ? true : false,
 			'S_DESC_URLS_CHECKED'		=> ($dm_eds_desc_data['allow_urls']) ? true : false,
+			'S_HAS_SUBCATS'				=> $subcategories,
 			'S_MODE'					=> 'edit',
+			'CAT_NAME_SHOW'				=> $dm_eds_data['cat_name_show'],
+			'CAT_NAME_NO_SHOW'			=> $this->user->lang['ACP_SUB_NO_CAT'],
 		));
 	}
 
 	/**
 	* Function for deleting a category
 	*/
-	function delete_cat()
+	public function delete_cat()
 	{
 		if (!$cat_id = $this->request->variable('cat_id', 0))
 		{
-			trigger_error('No Cat ID', E_USER_WARNING);
+			trigger_error($this->user->lang['ACP_NO_CAT_ID'], E_USER_WARNING);
 		}
 		else
 		{
@@ -1608,7 +1582,7 @@ class admin_controller
 	{
 		if (!$cat_id = $this->request->variable('cat_id', 0))
 		{
-			trigger_error('No Cat ID', E_USER_WARNING);
+			trigger_error($this->user->lang['ACP_NO_CAT_ID'], E_USER_WARNING);
 		}
 		else
 		{
@@ -1682,13 +1656,13 @@ class admin_controller
 				AND right_id BETWEEN {$left_id} AND {$right_id}";
 		$this->db->sql_query($sql);
 		$this->cache->destroy('sql', $this->dm_eds_cat_table);
-		redirect($this->u_action . '&amp;parent_id=' . $moving['parent_id']);
+	//	redirect($this->u_action . '&amp;parent_id=' . $moving['parent_id']);
 	}
 
 	/**
 	* Function for removing a category and all its content
 	*/
-	function remove_dir($selected_dir)
+	public function remove_dir($selected_dir)
 	{
 		$current_dir = $this->ext_path_web . 'files/' . $selected_dir;
 		$empty_dir = $this->ext_path_web . 'files/' . $selected_dir . '/';

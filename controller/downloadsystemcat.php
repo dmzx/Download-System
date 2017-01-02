@@ -108,7 +108,7 @@ class downloadsystemcat
 		$eds_values = $this->functions->config_values();
 
 		$start	= $this->request->variable('start', 0);
-		$number	= $eds_values['pagination_downloads'];
+		$number	= $eds_values['pagination_user'];
 
 		// Setup message parser
 		$this->message_parser = new \parse_message();

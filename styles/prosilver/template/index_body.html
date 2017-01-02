@@ -27,7 +27,8 @@
 					<table class="table1">
 						<thead>
 							<tr>
-								<th class="table1" style="text-align:center;">{L_EDS_CATS_NAME}</th>
+								<th class="table1 responsive-hide" style="text-align:center;"></th>
+								<th class="table1" style="text-align:left;">{L_EDS_CATS_NAME}</th>
 								<th class="table1" style="text-align:center;">{L_EDS_NUMBER_DOWNLOADS}</th>
 								<th class="table1" style="text-align:center;">{L_EDS_LAST_FILE}</th>
 							</tr>
@@ -35,11 +36,13 @@
 						<tbody>
 						<!-- ENDIF -->
 							<tr class="<!-- IF catrow.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+								<td class="responsive-hide" style="width: 5%; text-align: center;">{catrow.CAT_FOLDER_IMG_SRC}</td>
 								<td ><a href="{catrow.U_EDS_CAT}" class="forumtitle">{catrow.CAT_NAME}</a><br /><br />
 									{catrow.CAT_DESC}
 									<br />
 									{catrow.SUBCATS}
-									<br /></td>
+									<br />
+								</td>
 								<td class="posts">{catrow.NUMBER_DOWNLOADS}</td>
 								<td class="eds-lastpost" style="text-align:center;">{catrow.LAST_DOWNLOAD}</td>
 							</tr>

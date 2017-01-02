@@ -146,7 +146,7 @@ class functions
 			$right = $row['right_id'];
 			$disabled = false;
 
-			if (((is_array($ignore_id) && in_array($row['cat_id'], $ignore_id)) || $row['cat_id'] == $ignore_id) || ($dm_video))
+			if (((is_array($ignore_id) && in_array($row['cat_id'], $ignore_id)) || $row['cat_id'] == $ignore_id) || ($row['parent_id']))
 			{
 				$disabled = true;
 			}
@@ -287,10 +287,20 @@ class functions
 	{
 		$parent_cat_id = $this->request->variable('id', 0);
 
-		// Get video parents
+		// Get category parents
 		$cat_parents = $this->get_cat_parents($cat_data);
 
-		// Build navigation links
+		// Build navigation link
+		$this->template->assign_block_vars('navlinks', array(
+			'FORUM_NAME'	=> $this->user->lang('EDS_DOWNLOADS'),
+			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller'),
+		));
+
+		$this->template->assign_block_vars('navlinks', array(
+			'FORUM_NAME'	=> $cat_data['cat_name'],
+			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller_cat', array('id' => $parent_cat_id)),
+		));
+
 		if (!empty($cat_parents))
 		{
 			foreach ($cat_parents as $parent_cat_id => $parent_data)
@@ -302,11 +312,6 @@ class functions
 				));
 			}
 		}
-
-		$this->template->assign_block_vars('navlinks', array(
-			'FORUM_NAME'	=> $cat_data['cat_name'],
-			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller_cat', array('id' => $parent_cat_id)),
-		));
 		return;
 	}
 
@@ -330,7 +335,8 @@ class functions
 
 		// Total number of category
 		$sql = 'SELECT COUNT(cat_id) AS total_cat
-			FROM ' . $this->dm_eds_cat_table;
+			FROM ' . $this->dm_eds_cat_table . '
+			WHERE parent_id = ' . (int) $cat_id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$total_cat = $row['total_cat'];
@@ -361,10 +367,11 @@ class functions
 				FROM ' . $this->dm_eds_cat_table . ' bc
 				LEFT JOIN ' . $this->dm_eds_cat_table . ' bc2
 					ON ( bc2.left_id < bc.right_id
-						AND bc2.left_id > bc.left_id )
+						AND bc2.left_id > bc.left_id
+						AND bc2.cat_id = ' . (int) $cat_id . ' )
 				LEFT JOIN ' . $this->dm_eds_table . ' bd
 					ON ( bd.download_cat_id = bc.cat_id
-						OR bd.download_cat_id = bc2.cat_id )
+						OR bd.download_cat_id = bc2.cat_id	)
 				WHERE bc.parent_id = ' . (int) $cat_id . '
 				GROUP BY bc.cat_id
 				ORDER BY bc.left_id ASC';
@@ -392,8 +399,7 @@ class functions
 						$subcats .= '">' . censor_text($row2['cat_name']) . '</a>';
 					}
 					$this->db->sql_freeresult($result2);
-					$folder_image = 'forum_read_subforum';
-					$folder_alt = 'no';
+
 					$l_subcats = $this->user->lang['EDS_SUB_CAT'];
 					if ($row['left_id'] + 3 != $row['right_id'])
 					{
@@ -402,10 +408,10 @@ class functions
 				}
 				else
 				{
-					$folder_image = 'forum_read';
 					$l_subcats = '';
-					$folder_alt = 'no';
 				}
+
+				$folder_image = (($row['left_id'] + 1) != $row['right_id']) ? '<img src="./../adm/images/icon_subfolder.gif" alt="' . $this->user->lang['SUBFORUM'] . '" />' : '<img src="./../adm/images/icon_folder.gif" alt="' . $this->user->lang['FOLDER'] . '" />';
 
 				if ($row['last_download'])
 				{
@@ -452,7 +458,7 @@ class functions
 					'CAT_NAME'				=> censor_text($row['cat_name']),
 					'U_EDS_CAT'				=> $this->helper->route('dmzx_downloadsystem_controller_cat', array('id' =>	$row['cat_id'])),
 					'CAT_DESC'				=> generate_text_for_display($row['cat_desc'], $row['cat_desc_uid'], $row['cat_desc_bitfield'], $row['cat_desc_options']),
-					'CAT_FOLDER_IMG_SRC'	=> $this->user->img($folder_image, $folder_alt, false, '', 'src'),
+					'CAT_FOLDER_IMG_SRC'	=> $folder_image,
 					'SUBCATS'				=> ($subcats) ? $l_subcats . ': <span style="font-weight: bold;">' . $subcats . '</span>' : '',
 				));
 			}

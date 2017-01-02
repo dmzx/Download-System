@@ -22,6 +22,7 @@ class downloadsystem_module
 
 		// Requests
 		$action = $request->variable('action', '');
+		$cat_id = $request->variable('cat_id', 0);
 		if ($request->is_set_post('add'))
 		{
 			$action = 'add';
@@ -42,9 +43,42 @@ class downloadsystem_module
 			case 'categories':
 				$this->page_title = $user->lang['ACP_MANAGE_CATEGORIES'];
 				$this->tpl_name = 'acp_dm_eds';
-				$admin_controller->display_categories();
-			break;
 
+				switch ($action)
+				{
+					// Create a new category
+					case 'create':
+						$this->page_title = $user->lang['ACP_NEW_CAT'];
+						$admin_controller->create_cat();
+
+						// Return to stop execution of this script
+						return;
+					break;
+
+					// Edit an existing category
+					case 'edit':
+						$this->page_title = $user->lang['ACP_EDIT_CAT'];
+						$admin_controller->edit_cat();
+
+						// Return to stop execution of this script
+						return;
+					break;
+					// Delete an existing category
+					case 'delete':
+						$this->page_title = $user->lang['ACP_DEL_CAT'];
+						$admin_controller->delete_cat();
+
+						// Return to stop execution of this script
+						return;
+					break;
+
+					// Move a category to another position
+					case 'move':
+						$admin_controller->move_cat();
+					break;
+				}
+				$admin_controller->manage_cats();
+			break;
 			case 'downloads':
 				$this->page_title = $user->lang['ACP_EDIT_DOWNLOADS'];
 				$this->tpl_name = 'acp_dm_eds_list';
@@ -54,46 +88,34 @@ class downloadsystem_module
 					case 'new_download';
 						$this->page_title = $user->lang['ACP_NEW_DOWNLOAD'];
 						$this->tpl_name = 'acp_dm_eds_new';
-
 						$admin_controller->new_download();
-						return;
 					break;
 
 					case 'copy_new';
 						$this->page_title = $user->lang['ACP_NEW_DOWNLOAD'];
 						$this->tpl_name = 'acp_dm_eds_new_copy';
-
 						$admin_controller->copy_new();
-						return;
 					break;
 
 					case 'edit';
 						$this->page_title = $user->lang['ACP_EDIT_DOWNLOADS'];
 						$this->tpl_name = 'acp_dm_eds_edit';
-
 						$admin_controller->edit();
-						return;
 					break;
 
 					case 'add_new';
 						$admin_controller->add_new();
-						return;
 					break;
 
 					case 'update';
 						$admin_controller->update();
-						return;
 					break;
 
 					case 'delete';
 						$admin_controller->delete();
-						return;
-					break;
-
-					default:
-						$admin_controller->display_downloads();
 					break;
 				}
+				$admin_controller->display_downloads();
 			break;
 		}
 	}

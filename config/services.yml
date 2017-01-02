@@ -1,24 +1,6 @@
 imports:
     - { resource: tables.yml }
-parameters:
-    dmzx.downloadsystem.version_data:
-        author: dmzx
-        title: Download System
-        version: download_system_version
-        file:
-            - www.dmzx-web.net
-            - /versions
-            - downloadsystem_version.json
 services:
-    dmzx.downloadsystem.version.check:
-        class: dmzx\downloadsystem\includes\version_check
-        scope: prototype
-        arguments:
-            - '%dmzx.downloadsystem.version_data%'
-            - '@config'
-            - '@version_helper'
-            - '@template'
-            - '@user'
     dmzx.downloadsystem.listener:
         class: dmzx\downloadsystem\event\listener
         arguments:
@@ -93,7 +75,6 @@ services:
             - '@dbal.conn'
             - '@request'
             - '@pagination'
-            - '@service_container'
             - '@ext.manager'
             - '@path_helper'
             - '%core.php_ext%'
