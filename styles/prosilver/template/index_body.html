@@ -2,11 +2,11 @@
 <h2>{L_EDS_TITLE}</h2>
 
 <p>{L_EDS_TITLE_EXPLAIN}</p>
-<br />
-<div class="action-bar top">
+
+<div class="action-bar">
 	<!-- IF .pagination or EDS_CATEGORIES -->
 	<div class="pagination">
-		 {EDS_CATEGORIES}
+		 {EDS_CATEGORIES}<!-- IF EDS_SUB_CAT_SHOW --> {EDS_SUB_CATEGORIES}<!-- ENDIF -->
 		<!-- IF .pagination -->
 			<!-- INCLUDE pagination.html -->
 		<!-- ELSE -->
@@ -55,10 +55,10 @@
 	<!-- END catrow -->
 <!-- ENDIF -->
 
-<div class="action-bar bottom">
+<div class="action-bar">
 	<!-- IF .pagination or EDS_CATEGORIES -->
 	<div class="pagination">
-		 {EDS_CATEGORIES}
+		 {EDS_CATEGORIES}<!-- IF EDS_SUB_CAT_SHOW --> {EDS_SUB_CATEGORIES}<!-- ENDIF -->
 		<!-- IF .pagination -->
 			<!-- INCLUDE pagination.html -->
 		<!-- ELSE -->

@@ -88,8 +88,10 @@ $lang = array_merge($lang, array(
 	'EDS_NO_DOWNLOAD'					=> 'You don\'t have the permission to download files from the Download System',
 	'EDS_NO_UPLOAD'						=> 'You don\'t have the permission to use the upload section',
 	'EDS_NO_DIRECT_DL'					=> 'You are not allowed to download files',
-	'EDS_CAT'							=> 'One category',
+	'EDS_CAT'							=> '%d category',
 	'EDS_CATS'							=> '%d categories',
+	'EDS_SUB_CATEGORY'					=> 'and %d subcategory',
+	'EDS_SUB_CATEGORIES'				=> 'and %d subcategories',
 	'EDS_CURRENT_VERSION'				=> 'Current Version',
 	'EDS_NEW_TITLE'						=> 'Title',
 	'EDS_NEW_TITLE_EXPLAIN'				=> 'Title for your new download.',
@@ -103,6 +105,8 @@ $lang = array_merge($lang, array(
 	'EDS_NEW_FILENAME'					=> 'File name',
 	'EDS_NEW_FILENAME_EXPLAIN'			=> 'Select the file to upload.',
 	'EDS_NEW_DOWNLOAD_SIZE'				=> 'The maximum size of the file is <strong>%1$s %2$s</strong>! Due to the upload time you might need, this value can be lower!',
+	'EDS_SUBCAT_FILE'					=> '1 file',
+	'EDS_SUBCAT_FILES'					=> '%1$d files',
 
 	// ACP
 	'ACP_ADD'							=> 'Add',

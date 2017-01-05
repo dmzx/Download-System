@@ -337,16 +337,25 @@ class functions
 		$sql = 'SELECT COUNT(cat_id) AS total_cat
 			FROM ' . $this->dm_eds_cat_table . '
 			WHERE parent_id = ' . (int) $cat_id;
-		$result = $this->db->sql_query($sql);
+		$result = $this->db->sql_query($sql, 60);
 		$row = $this->db->sql_fetchrow($result);
 		$total_cat = $row['total_cat'];
+		$this->db->sql_freeresult($result);
+
+		// Total number of subcategory
+		$sql = 'SELECT COUNT(cat_id) AS total_sub_cat
+			FROM ' . $this->dm_eds_cat_table . '
+			WHERE parent_id > 0';
+		$result = $this->db->sql_query($sql, 60);
+		$row = $this->db->sql_fetchrow($result);
+		$total_sub_cat = $row['total_sub_cat'];
 		$this->db->sql_freeresult($result);
 
 		// Select cat name
 		$sql = 'SELECT cat_name
 			FROM ' . $this->dm_eds_cat_table. '
 			WHERE cat_id = ' . (int) $cat_id;
-		$result = $this->db->sql_query($sql);
+		$result = $this->db->sql_query($sql, 60);
 		$row = $this->db->sql_fetchrow($result);
 		$cat_name = $row['cat_name'];
 		$this->db->sql_freeresult($result);
@@ -375,7 +384,7 @@ class functions
 				WHERE bc.parent_id = ' . (int) $cat_id . '
 				GROUP BY bc.cat_id
 				ORDER BY bc.left_id ASC';
-			$result = $this->db->sql_query_limit($sql, $dls, $start);
+			$result = $this->db->sql_query_limit($sql, $dls, $start, 60);
 
 			while ($row = $this->db->sql_fetchrow($result))
 			{
@@ -385,18 +394,23 @@ class functions
 				// Do we have sub categories?
 				if (($row['left_id'] + 1) != $row['right_id'])
 				{
-					$sql2 = 'SELECT bc.*
+					$sql2 = 'SELECT bc.*, bd.*, COUNT(bd.download_id) AS number_downloads_files
 						FROM ' . $this->dm_eds_cat_table . ' bc
+						LEFT JOIN ' . $this->dm_eds_table . ' bd
+							ON ( bd.download_cat_id = bc.cat_id )
 						WHERE bc.parent_id = ' . $row['cat_id'] . '
+						GROUP BY bc.cat_id
 						ORDER BY bc.left_id ASC';
-					$result2 = $this->db->sql_query($sql2);
+					$result2 = $this->db->sql_query($sql2, 60);
 
 					while ($row2 = $this->db->sql_fetchrow($result2))
 					{
+						$number_downloads_files = ($row2['number_downloads_files'] == 1) ? $this->user->lang['EDS_SUBCAT_FILE'] : sprintf($this->user->lang['EDS_SUBCAT_FILES'], $row2['number_downloads_files']);
+
 						$subcats .= ($subcats) ? ', ' : '';
 						$subcats .= '<a class="subforum ' . (((isset($read_info[$row2['cat_id']]) ? $read_info[$row2['cat_id']] : 0) && ($this->user->data['user_id'] != ANONYMOUS)) ? 'unread' : 'read') . '" href="';
 						$subcats .= $this->helper->route('dmzx_downloadsystem_controller_cat', array('id' =>	$row2['cat_id']));
-						$subcats .= '">' . censor_text($row2['cat_name']) . '</a>';
+						$subcats .= '">' . censor_text($row2['cat_name']) . '</a> <span class="small"><em>(' . $number_downloads_files . ')</em></span>';
 					}
 					$this->db->sql_freeresult($result2);
 
@@ -411,7 +425,8 @@ class functions
 					$l_subcats = '';
 				}
 
-				$folder_image = (($row['left_id'] + 1) != $row['right_id']) ? '<img src="./../adm/images/icon_subfolder.gif" alt="' . $this->user->lang['SUBFORUM'] . '" />' : '<img src="./../adm/images/icon_folder.gif" alt="' . $this->user->lang['FOLDER'] . '" />';
+				$board_url = generate_board_url() . '/';
+				$folder_image = (($row['left_id'] + 1) != $row['right_id']) ? '<img src="'. $board_url. 'adm/images/icon_subfolder.gif" alt="' . $this->user->lang['SUBFORUM'] . '" />' : '<img src="'. $board_url. 'adm/images/icon_folder.gif" alt="' . $this->user->lang['FOLDER'] . '" />';
 
 				if ($row['last_download'])
 				{
@@ -472,7 +487,9 @@ class functions
 
 			$this->template->assign_vars(array(
 				'LAST_POST_IMG'			=> $this->user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
-				'EDS_CATEGORIES'		=> ($total_cat == 1) ? $this->user->lang['EDS_CAT'] : sprintf($this->user->lang['EDS_CATS'], $total_cat),
+				'EDS_CATEGORIES'		=> ($total_cat == 1) ? sprintf($this->user->lang['EDS_CAT'], $total_cat) : sprintf($this->user->lang['EDS_CATS'], $total_cat),
+				'EDS_SUB_CAT_SHOW'		=> ($total_sub_cat == 0) ? false : true,
+				'EDS_SUB_CATEGORIES'	=> ($total_sub_cat == 1) ? sprintf($this->user->lang['EDS_SUB_CATEGORY'], $total_sub_cat) : sprintf($this->user->lang['EDS_SUB_CATEGORIES'], $total_sub_cat),
 			));
 		}
 	}
