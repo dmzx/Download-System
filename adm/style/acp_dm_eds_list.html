@@ -1,74 +1,80 @@
-<!-- INCLUDE overall_header.html -->
+{% INCLUDE 'overall_header.html' %}
 
 <a name="maincontent"></a>
 
-<h1>{L_ACP_DOWNLOAD_SYSTEM} - {L_ACP_MANAGE_DOWNLOADS}</h1>
+<h1>{{ lang('ACP_DOWNLOAD_SYSTEM') }} - {{ lang('ACP_MANAGE_DOWNLOADS') }}</h1>
 
-<p>{L_ACP_MANAGE_DOWNLOADS_EXPLAIN}</p>
+<p>{{ lang('ACP_MANAGE_DOWNLOADS_EXPLAIN') }}</p>
 
-<form id="dm_new" method="post" action="{S_ACTION}">
+<form id="dm_new" method="post" action="{{ S_ACTION }}">
 	<fieldset class="tabulated">
 		<input type="hidden" name="action" value="new_download" />
-		<input class="button2" name="add_download" type="submit" value="{L_ACP_NEW_DOWNLOAD}" />
-		{S_FORM_TOKEN}
+		<input class="button2" name="add_download" type="submit" value="{{ lang('ACP_NEW_DOWNLOAD') }}" />
+		{{ S_FORM_TOKEN }}
 	</fieldset>
 </form>
 
-<!-- IF .pagination or TOTAL_DOWNLOADS -->
+{% if loops.pagination|length or TOTAL_DOWNLOADS %}
 	<div class="pagination">
-		{TOTAL_DOWNLOADS}
-		<!-- IF .pagination -->
-			<!-- INCLUDE pagination.html -->
-		<!-- ELSE -->
-			&bull; {PAGE_NUMBER}
-		<!-- ENDIF -->
+		{{ TOTAL_DOWNLOADS }}
+		{% if loops.pagination|length %}
+			{% INCLUDE 'pagination.html' %}
+		{% else %}
+			&bull; {{ PAGE_NUMBER }}
+		{% endif %}
 	</div>
-<!-- ENDIF -->
+{% endif %}
 
 <div class="clear"></div>
 <table cellspacing="1">
 	<thead>
 		<tr>
-			<th>{L_ACP_NEW_TITLE}</th>
-			<th>{L_ACP_NEW_VERSION}</th>
-			<th>{L_ACP_CAT}</th>
-			<th>{L_ACP_NEW_DESC}</th>
-			<th>{L_ACTION}</th>
+			<th>{{ lang('ACP_NEW_TITLE') }}</th>
+			{% if S_DM_EDS_ALLOW_DL_IMG %}
+			<th>{{ lang('ACP_NEW_IMAGE_DL') }}</th>
+			{% endif %}
+			<th>{{ lang('ACP_NEW_VERSION') }}</th>
+			<th>{{ lang('ACP_CAT') }}</th>
+			<th>{{ lang('ACP_NEW_DESC') }}</th>
+			<th>{{ lang('ACTION') }}</th>
 		</tr>
 	</thead>
 	<tbody>
-	<!-- BEGIN downloads -->
-		<!-- IF downloads.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-			<td valign="top">{downloads.TITLE}</td>
-			<td valign="top">{downloads.VERSION} </td>
-			<td valign="top">{downloads.CATNAME} </td>
-			<td valign="top">{downloads.DESC} </td>
-			<td style="width: 10%;">&nbsp;<a href="{downloads.U_COPY}">{downloads.ICON_COPY}</a> <a href="{downloads.U_EDIT}">{ICON_EDIT}</a> <a href="{downloads.U_DEL}">{ICON_DELETE}</a>&nbsp;</td>
+	{% for downloads in loops.downloads %}
+		{% if downloads.S_ROW_COUNT is even %}<tr class="row1">{% else %}<tr class="row2">{% endif %}
+			<td valign="top">{{ downloads.TITLE }}</td>
+			{% if S_DM_EDS_ALLOW_DL_IMG %}
+			<td valign="top"><img src="{{ downloads.DL_IMAGE }}" width="65" height="65" alt="{{ downloads.DL_IMAGE }}" title="{{ downloads.TITLE }}" /></td>
+			{% endif %}
+			<td valign="top">{{ downloads.VERSION }}</td>
+			<td valign="top">{{ downloads.CATNAME }}</td>
+			<td valign="top">{{ downloads.DESC }}</td>
+			<td style="width: 10%;">&nbsp;<a href="{{ downloads.U_COPY }}">{{ downloads.ICON_COPY }}</a> <a href="{{ downloads.U_EDIT }}">{{ ICON_EDIT }}</a> <a href="{{ downloads.U_DEL }}">{{ ICON_DELETE }}</a>&nbsp;</td>
 		</tr>
-		<!-- BEGINELSE -->
+		{% else %}
 		<tr>
-			<td colspan="<!-- IF S_CLEAR_ALLOWED -->6<!-- ELSE -->5<!-- ENDIF -->">{L_ACP_NO_DOWNLOADS}</td>
+			<td colspan="{% if S_CLEAR_ALLOWED %}6{% else %}5{% endif %}">{{ lang('ACP_NO_DOWNLOADS') }}</td>
 		</tr>
-	<!-- END downloads -->
+	{% endfor %}
 	</tbody>
 </table>
 
-<!-- IF .pagination or TOTAL_DOWNLOADS -->
+{% if loops.pagination|length or TOTAL_DOWNLOADS %}
 <div class="pagination">
-	{TOTAL_DOWNLOADS}
-	<!-- IF .pagination -->
-		<!-- INCLUDE pagination.html -->
-	<!-- ELSE -->
-		&bull; {PAGE_NUMBER}
-	<!-- ENDIF -->
+	{{ TOTAL_DOWNLOADS }}
+	{% if loops.pagination|length %}
+		{% INCLUDE 'pagination.html' %}
+	{% else %}
+		&bull; {{ PAGE_NUMBER }}
+	{% endif %}
 </div>
-<!-- ENDIF -->
+{% endif %}
 
-<form action="{S_DOWNLOAD_ACTION}" method="post">
+<form action="{{ S_DOWNLOAD_ACTION }}" method="post">
 	<fieldset class="display-options">
-		<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;
-		<input class="button2" type="submit" name="sort" value="{L_GO}" />
+		<span class="gensmall">{{ lang('SORT_BY') }}</span> {{ S_SELECT_SORT_KEY }} {{ S_SELECT_SORT_DIR }}&nbsp;
+		<input class="button2" type="submit" name="sort" value="{{ lang('GO') }}" />
 	</fieldset>
 </form>
 
-<!-- INCLUDE overall_footer.html -->
+{% INCLUDE 'overall_footer.html' %}

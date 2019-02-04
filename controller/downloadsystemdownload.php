@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB Extension - Download System
-* @copyright (c) 2016 dmzx - http://www.dmzx-web.net
+* @copyright (c) 2016 dmzx - https://www.dmzx-web.net
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -51,7 +51,8 @@ class downloadsystemdownload
 		\phpbb\request\request $request,
 		$root_path,
 		$dm_eds_table,
-		$dm_eds_cat_table)
+		$dm_eds_cat_table
+	)
 	{
 		$this->auth 			= $auth;
 		$this->db 				= $db;

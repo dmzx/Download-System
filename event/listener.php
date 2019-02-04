@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB Extension - Download System
-* @copyright (c) 2016 dmzx - http://www.dmzx-web.net
+* @copyright (c) 2016 dmzx - https://www.dmzx-web.net
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -31,9 +31,6 @@ class listener implements EventSubscriberInterface
 	/** @var string */
 	protected $php_ext;
 
-	/** @var \phpbb\files\factory */
-	protected $files_factory;
-
 	/**
 	* Constructor
 	*
@@ -43,7 +40,6 @@ class listener implements EventSubscriberInterface
 	* @param \phpbb\config\config				$config
 	* @param \phpbb\auth\auth					$auth
 	* @param string								$php_ext
-	* @param \phpbb\files\factory				$files_factory
 	*
 	*/
 	public function __construct(
@@ -52,8 +48,8 @@ class listener implements EventSubscriberInterface
 		\phpbb\controller\helper $helper,
 		\phpbb\config\config $config,
 		\phpbb\auth\auth $auth,
-		$php_ext,
-		\phpbb\files\factory $files_factory = null)
+		$php_ext
+	)
 	{
 		$this->user					= $user;
 		$this->template				= $template;
@@ -61,7 +57,6 @@ class listener implements EventSubscriberInterface
 		$this->config				= $config;
 		$this->auth 				= $auth;
 		$this->php_ext				= $php_ext;
-		$this->files_factory 		= $files_factory;
 	}
 
 	static public function getSubscribedEvents()
@@ -107,7 +102,6 @@ class listener implements EventSubscriberInterface
 			'DM_EDS_USE_UPLOAD'				=> $this->auth->acl_get('u_dm_eds_upload'),
 			'S_EDS_EXIST'					=> true,
 			'DOWNLOADSYSTEM_VERSION'		=> $this->config['download_system_version'],
-			'PHPBB_IS_32'					=> ($this->files_factory !== null) ? true : false,
 		));
 	}
 

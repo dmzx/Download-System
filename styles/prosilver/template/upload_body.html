@@ -1,30 +1,39 @@
-<!-- INCLUDE overall_header.html -->
+{% INCLUDE 'overall_header.html' %}
 
-<form method="post" id="add_upload" {S_FORM_ENCTYPE}>
+<form method="post" id="add_upload" {{ S_FORM_ENCTYPE }}>
 	<div class="panel">
 		<div class="inner">
-			<h2>{L_EDS_UPLOADS}</h2>
-			<p>{L_EDS_UPLOAD_MESSAGE}</p>
-			<p>{ALLOWED_SIZE}</p>
-			<fieldset class="fields2">
+			<h2>{{ lang('EDS_UPLOADS') }}</h2>
+			<p>{{ lang('EDS_UPLOAD_MESSAGE') }}</p>
+			<p>{{ ALLOWED_SIZE }}</p>
+			<fieldset class="fields1">
 				<dl>
-					<dt><label>{L_EDS_NEW_TITLE}{L_COLON}</label><br /><span>{L_EDS_NEW_TITLE_EXPLAIN}</span></dt>
-					<dd><input type="text" name="title" size="50" value="{TITLE}" /></dd>
+					<dt><label>{{ lang('EDS_NEW_TITLE') }}{{ lang('COLON') }}</label><br /><span>{{ lang('EDS_NEW_TITLE_EXPLAIN') }}</span></dt>
+					<dd><input type="text" name="title" size="50" value="{{ TITLE }}" /></dd>
 				</dl>
 				<dl>
-					<dt><label>{L_EDS_NEW_VERSION}{L_COLON}</label><br /><span>{L_EDS_NEW_VERSION_EXPLAIN}</span></dt>
-					<dd><input type="text" name="dl_version" size="15" maxlength="10" value="{DL_VERSION}" /></dd>
+					<dt><label>{{ lang('EDS_NEW_VERSION') }}{{ lang('COLON') }}</label><br /><span>{{ lang('EDS_NEW_VERSION_EXPLAIN') }}</span></dt>
+					<dd><input type="text" name="dl_version" size="15" maxlength="10" value="{{ DL_VERSION }}" /></dd>
 				</dl>
 				<dl>
-					<dt><label>{L_EDS_NEW_DESC}{L_COLON}</label><br /><span>{L_EDS_NEW_DESC_EXPLAIN}</span><br /></dt>
-					<dd><textarea rows="9" name="desc" cols="52">{DESC}</textarea></dd>
+					<dt><label for="desc">{{ lang('EDS_NEW_DESC') }}{{ lang('COLON') }}</label><br><span>{{ lang('EDS_NEW_DESC_EXPLAIN') }}</span></dt>
+					<dd>
+						<textarea name="message" rows="5" cols="60" style="width: 95%" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" data-bbcode="true">{{ DESC }}</textarea>
+					</dd>
+					<dd>
+						<label><input type="checkbox" class="radio" name="disable_bbcode_file"{% if not S_DL_CATEGORY_ADD and S_BBCODE_ENABLED_FILE == 0 %} checked="checked"{% endif %} /> {{ lang('DISABLE_BBCODE') }}</label>
+						<label><input type="checkbox" class="radio" name="disable_smilies_file"{% if not S_DL_CATEGORY_ADD and S_SMILIES_ENABLED_FILE == 0 %} checked="checked"{% endif %} /> {{ lang('DISABLE_SMILIES') }}</label>
+						<label><input type="checkbox" class="radio" name="disable_magic_url_file"{% if not S_DL_CATEGORY_ADD and S_MAGIC_URL_ENABLED_FILE == 0 %} checked="checked"{% endif %} /> {{ lang('DISABLE_MAGIC_URL') }}</label>
+					</dd>
+					<dd>&nbsp;</dd>
+					<dd><strong>{{ lang('OPTIONS') }}{{ lang('COLON') }}</strong> {{ BBCODE_STATUS }} :: {{ URL_STATUS }} :: {{ SMILIES_STATUS }}</dd>
 				</dl>
 				<dl>
-					<dt><label>{L_EDS_NEW_DL_CAT}{L_COLON}</label><br /><span>{L_EDS_NEW_DL_CAT_EXPLAIN}</span></dt>
-					<dd><select name="parent">{PARENT_OPTIONS}</select></dd>
+					<dt><label>{{ lang('EDS_NEW_DL_CAT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('EDS_NEW_DL_CAT_EXPLAIN') }}</span></dt>
+					<dd><select name="parent">{{ PARENT_OPTIONS }}</select></dd>
 				</dl>
 				<dl>
-					<dt><label>{L_EDS_NEW_FILENAME}{L_COLON}</label><br /><span>{L_EDS_NEW_FILENAME_EXPLAIN}</span></dt>
+					<dt><label>{{ lang('EDS_NEW_FILENAME') }}{{ lang('COLON') }}</label><br /><span>{{ lang('EDS_NEW_FILENAME_EXPLAIN') }}</span></dt>
 					<dd><input class="inputbox autowidth" type="file" name="filename" size="52" /></dd>
 				</dl>
 			</fieldset>
@@ -33,11 +42,11 @@
 	<div class="panel bg2">
 		<div class="inner">
 			<fieldset class="submit-buttons">
-				<input class="button1" id="submit" name="submit" value="{L_SUBMIT}" type="submit" />&nbsp;
-				{S_FORM_TOKEN}
+				<input class="button1" id="submit" name="submit" value="{{ lang('SUBMIT') }}" type="submit" />&nbsp;
+				{{ S_FORM_TOKEN }}
 			</fieldset>
 		</div>
 	</div>
 </form>
 
-<!-- INCLUDE overall_footer.html -->
+{% INCLUDE 'overall_footer.html' %}

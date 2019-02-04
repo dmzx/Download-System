@@ -1,71 +1,91 @@
-<!-- INCLUDE overall_header.html -->
-<h2>{L_EDS_TITLE}</h2>
+{% INCLUDE 'overall_header.html' %}
 
-<p>{L_EDS_TITLE_EXPLAIN}</p>
+<h2>{{ lang('EDS_TITLE') }}</h2>
+
+<p>{{ lang('EDS_TITLE_EXPLAIN') }}</p>
 
 <div class="action-bar">
-	<!-- IF .pagination or EDS_CATEGORIES -->
+	{% if loops.pagination|length or EDS_CATEGORIES %}
 	<div class="pagination">
-		 {EDS_CATEGORIES}<!-- IF EDS_SUB_CAT_SHOW --> {EDS_SUB_CATEGORIES}<!-- ENDIF -->
-		<!-- IF .pagination -->
-			<!-- INCLUDE pagination.html -->
-		<!-- ELSE -->
-			&bull; {PAGE_NUMBER}
-		<!-- ENDIF -->
+		 {{ EDS_CATEGORIES }}{% if EDS_SUB_CAT_SHOW %} {{ EDS_SUB_CATEGORIES }}{% endif %}
+		{% if loops.pagination|length %}
+			{% INCLUDE 'pagination.html' %}
+		{% else %}
+			&bull; {{ PAGE_NUMBER }}
+		{% endif %}
 	</div>
-	<!-- ENDIF -->
+	{% endif %}
 </div>
-<!-- IF S_NO_CAT -->
-{L_EDS_NO_CAT}<br /><br />
-<a href="{U_BACK}">{L_EDS_BACK_INDEX}</a>
+
+{% if S_NO_CAT %}
+{{ lang('EDS_NO_CAT') }}<br /><br />
+<a href="{{ U_BACK }}">{{ lang('EDS_BACK_INDEX') }}</a>
 <br /><br />
-<!-- ELSE -->
-	<!-- BEGIN catrow -->
-		<!-- IF catrow.S_FIRST_ROW -->
-			<div class="forabg	forumbg-table">
-				<div class="inner">
-					<table class="table1">
-						<thead>
-							<tr>
-								<th class="table1 responsive-hide" style="text-align:center;"></th>
-								<th class="table1" style="text-align:left;">{L_EDS_CATS_NAME}</th>
-								<th class="table1" style="text-align:center;">{L_EDS_NUMBER_DOWNLOADS}</th>
-								<th class="table1" style="text-align:center;">{L_EDS_LAST_FILE}</th>
-							</tr>
-						</thead>
-						<tbody>
-						<!-- ENDIF -->
-							<tr class="<!-- IF catrow.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
-								<td class="responsive-hide" style="width: 5%; text-align: center;">{catrow.CAT_FOLDER_IMG_SRC}</td>
-								<td ><a href="{catrow.U_EDS_CAT}" class="forumtitle">{catrow.CAT_NAME}</a><br /><br />
-									{catrow.CAT_DESC}
-									<br />
-									{catrow.SUBCATS}
-									<br />
-								</td>
-								<td class="posts">{catrow.NUMBER_DOWNLOADS}</td>
-								<td class="eds-lastpost" style="text-align:center;">{catrow.LAST_DOWNLOAD}</td>
-							</tr>
-						<!-- IF catrow.S_LAST_ROW -->
-						 </tbody>
-					</table>
-				</div>
-			</div>
-		<!-- ENDIF -->
-	<!-- END catrow -->
-<!-- ENDIF -->
+{% else %}
+{% for catrow in loops.catrow %}
+{% if catrow.S_FIRST_ROW %}
+<div class="forabg forumbg-table">
+	<div class="inner">
+		<table class="table1">
+			<thead>
+				<tr>
+					<th class="table1 responsive-hide" style="text-align:center;"></th>
+					{% if S_DM_EDS_ALLOW_CAT_IMG %}
+					<th class="table1" style="text-align:left;">{{ lang('EDS_CAT_IMAGE') }}</th>
+					{% endif %}
+					<th class="table1" style="text-align:left;">{{ lang('EDS_CATS_NAME') }}</th>
+					<th class="table1" style="text-align:left;">{{ lang('EDS_CAT_DESC') }}</th>
+					<th class="table1" style="text-align:center;">{{ lang('EDS_NUMBER_DOWNLOADS') }}</th>
+					<th class="table1" style="text-align:center;">{{ lang('EDS_LAST_FILE') }}</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% endif %}
+				<tr class="{% if catrow.S_ROW_COUNT is even %}bg1{% else %}bg2{% endif %}">
+					<td class="folder">
+						<span class="fa-stack fa-2x"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-download fa-stack-1x"></i></span>
+					</td>
+					{% if S_DM_EDS_ALLOW_CAT_IMG %}
+					<td class="folder">
+						<img src="{{ catrow.IMAGE }}" width="30" height="30" alt="{{ catrow.CAT_NAME }}" title="{{ catrow.CAT_NAME }}" />
+					</td>
+					{% endif %}
+					<td class="folder">
+						<a href="{{ catrow.U_EDS_CAT }}" class="forumtitlex">{{ catrow.CAT_NAME }}</a>
+						<br />
+						<br />
+						{{ catrow.SUBCATS }}
+					</td>
+					<td class="folder">
+						{{ catrow.CAT_DESC }}
+					</td>
+					<td class="posts">
+						{{ catrow.NUMBER_DOWNLOADS }}
+					</td>
+					<td class="eds-lastpost" style="text-align:center;">
+						{{ catrow.LAST_DOWNLOAD }}
+					</td>
+				</tr>
+				{% if catrow.S_LAST_ROW %}
+			 </tbody>
+		</table>
+	</div>
+</div>
+{% endif %}
+{% endfor %}
+{% endif %}
 
 <div class="action-bar">
-	<!-- IF .pagination or EDS_CATEGORIES -->
+	{% if loops.pagination|length or EDS_CATEGORIES %}
 	<div class="pagination">
-		 {EDS_CATEGORIES}<!-- IF EDS_SUB_CAT_SHOW --> {EDS_SUB_CATEGORIES}<!-- ENDIF -->
-		<!-- IF .pagination -->
-			<!-- INCLUDE pagination.html -->
-		<!-- ELSE -->
-			&bull; {PAGE_NUMBER}
-		<!-- ENDIF -->
+		 {{ EDS_CATEGORIES }}{% if EDS_SUB_CAT_SHOW %} {{ EDS_SUB_CATEGORIES }}{% endif %}
+		{% if loops.pagination|length %}
+			{% INCLUDE 'pagination.html' %}
+		{% else %}
+			&bull; {{ PAGE_NUMBER }}
+		{% endif %}
 	</div>
-	<!-- ENDIF -->
+	{% endif %}
 </div>
 
-<!-- INCLUDE overall_footer.html -->
+{% INCLUDE 'overall_footer.html' %}

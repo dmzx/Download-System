@@ -2,15 +2,19 @@
 	"name": "dmzx/downloadsystem",
 	"type": "phpbb-extension",
 	"description": "This extension will add an easy download system to your forum, where you can offer your user to download files from your webspace.",
-	"homepage": "http://www.dmzx-web.net",
-	"version": "1.0.8",
-	"time": "2017-01-03",
-	"keywords": ["phpbb", "extension", "downloadsystem"],
+	"homepage": "https://www.dmzx-web.net",
+	"version": "1.0.9",
+	"time": "2019-02-02",
+	"keywords": [
+		"phpbb",
+		"extension",
+		"downloadsystem"
+	],
 	"license": "GPL-2.0",
 	"authors": [
 		{
 			"name": "dmzx",
-			"homepage": "http://www.dmzx-web.net",
+			"homepage": "https://www.dmzx-web.net",
 			"email": "info@dmzx-web.net",
 			"role": "Extension Developer"
 		},
@@ -21,7 +25,8 @@
 		}
 	],
 	"require": {
-		"php": ">=5.3.3"
+		"php": ">=5.3.3",
+		"composer/installers": "~1.0"
 	},
 	"require-dev": {
 		"phpbb/epv": "dev-master"
@@ -29,12 +34,13 @@
 	"extra": {
 		"display-name": "Download System",
 		"soft-require": {
-			"phpbb/phpbb": ">=3.1.0,<3.3.0@dev"
+			"phpbb/phpbb": ">=3.2.0,<3.3.0@dev"
 		},
 		"version-check": {
 			"host": "www.dmzx-web.net",
 			"directory": "/versions",
-			"filename": "downloadsystem_version.json"
+			"filename": "downloadsystem_version.json",
+			"ssl": true
 		}
 	}
 }

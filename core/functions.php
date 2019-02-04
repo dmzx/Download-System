@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB Extension - Download System
-* @copyright (c) 2016 dmzx - http://www.dmzx-web.net
+* @copyright (c) 2016 dmzx - https://www.dmzx-web.net
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -13,6 +13,12 @@ class functions
 {
 	/** @var \phpbb\template\template */
 	protected $template;
+
+	/** @var \phpbb\textformatter\s9e\parser */
+	protected $parser;
+
+	/** @var \phpbb\textformatter\s9e\renderer */
+	protected $renderer;
 
 	/** @var \phpbb\user */
 	protected $user;
@@ -56,6 +62,8 @@ class functions
 	* Constructor
 	*
 	* @param \phpbb\template\template		 	$template
+	* @param \phpbb\textformatter\s9e\parser	$parser
+	* @param \phpbb\textformatter\s9e\renderer	$renderer
 	* @param \phpbb\user						$user
 	* @param \phpbb\db\driver\driver_interface	$db
 	* @param \phpbb\controller\helper		 	$helper
@@ -72,6 +80,8 @@ class functions
 	*/
 	public function __construct(
 		\phpbb\template\template $template,
+		\phpbb\textformatter\s9e\parser $parser,
+		\phpbb\textformatter\s9e\renderer $renderer,
 		\phpbb\user $user,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\controller\helper $helper,
@@ -82,9 +92,12 @@ class functions
 		$php_ext, $root_path,
 		$dm_eds_table,
 		$dm_eds_cat_table,
-		$dm_eds_config_table)
+		$dm_eds_config_table
+	)
 	{
 		$this->template 			= $template;
+		$this->parser				= $parser;
+		$this->renderer				= $renderer;
 		$this->user 				= $user;
 		$this->db 					= $db;
 		$this->helper 				= $helper;
@@ -102,10 +115,7 @@ class functions
 		{
 			include($this->root_path . 'includes/functions_posting.' . $this->php_ext);
 		}
-		if (!class_exists('parse_message'))
-		{
-			include($this->root_path . 'includes/message_parser.' . $this->php_ext);
-		}
+
 		if (!defined('PHPBB_USE_BOARD_URL_PATH'))
 		{
 			define('PHPBB_USE_BOARD_URL_PATH', true);
@@ -322,9 +332,6 @@ class functions
 	{
 		$start = $this->request->variable('start', 0);
 
-		// Setup message parser
-		$this->message_parser = new \parse_message();
-
 		// Read out config values
 		$eds_values = $this->config_values();
 
@@ -415,6 +422,7 @@ class functions
 					$this->db->sql_freeresult($result2);
 
 					$l_subcats = $this->user->lang['EDS_SUB_CAT'];
+
 					if ($row['left_id'] + 3 != $row['right_id'])
 					{
 						$l_subcats = $this->user->lang['EDS_SUB_CATS'];
@@ -460,11 +468,7 @@ class functions
 					$last_download = $this->user->lang['EDS_NO_DOWNLOADS'];
 				}
 
-				$this->message_parser->message = $row['cat_desc'];
-				$this->message_parser->bbcode_bitfield = $row['bbcode_bitfield'];
-				$this->message_parser->bbcode_uid = $row['bbcode_uid'];
-				$allow_bbcode = $allow_magic_url = $allow_smilies = true;
-				$this->message_parser->format_display($allow_bbcode, $allow_magic_url, $allow_smilies);
+				$category_image	= $row['category_image'];
 
 				// Send the results to the template
 				$this->template->assign_block_vars('catrow', array(
@@ -472,9 +476,10 @@ class functions
 					'NUMBER_DOWNLOADS'		=> $row['number_downloads'],
 					'CAT_NAME'				=> censor_text($row['cat_name']),
 					'U_EDS_CAT'				=> $this->helper->route('dmzx_downloadsystem_controller_cat', array('id' =>	$row['cat_id'])),
-					'CAT_DESC'				=> generate_text_for_display($row['cat_desc'], $row['cat_desc_uid'], $row['cat_desc_bitfield'], $row['cat_desc_options']),
+					'CAT_DESC'				=> $this->renderer->render($row['cat_desc']),
 					'CAT_FOLDER_IMG_SRC'	=> $folder_image,
 					'SUBCATS'				=> ($subcats) ? $l_subcats . ': <span style="font-weight: bold;">' . $subcats . '</span>' : '',
+					'IMAGE'					=> $this->root_path . $eds_values['dm_eds_image_cat_dir'] . '/' . $category_image,
 				));
 			}
 
@@ -486,10 +491,11 @@ class functions
 			$this->pagination->generate_template_pagination($pagination_url, 'pagination', 'start', $total_cat, $dls, $start);
 
 			$this->template->assign_vars(array(
-				'LAST_POST_IMG'			=> $this->user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
-				'EDS_CATEGORIES'		=> ($total_cat == 1) ? sprintf($this->user->lang['EDS_CAT'], $total_cat) : sprintf($this->user->lang['EDS_CATS'], $total_cat),
-				'EDS_SUB_CAT_SHOW'		=> ($total_sub_cat == 0) ? false : true,
-				'EDS_SUB_CATEGORIES'	=> ($total_sub_cat == 1) ? sprintf($this->user->lang['EDS_SUB_CATEGORY'], $total_sub_cat) : sprintf($this->user->lang['EDS_SUB_CATEGORIES'], $total_sub_cat),
+				'LAST_POST_IMG'					=> $this->user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+				'EDS_CATEGORIES'				=> ($total_cat == 1) ? sprintf($this->user->lang['EDS_CAT'], $total_cat) : sprintf($this->user->lang['EDS_CATS'], $total_cat),
+				'EDS_SUB_CAT_SHOW'				=> ($total_sub_cat == 0) ? false : true,
+				'EDS_SUB_CATEGORIES'			=> ($total_sub_cat == 1) ? sprintf($this->user->lang['EDS_SUB_CATEGORY'], $total_sub_cat) : sprintf($this->user->lang['EDS_SUB_CATEGORIES'], $total_sub_cat),
+				'S_DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
 			));
 		}
 	}
@@ -509,6 +515,7 @@ class functions
 			$author_names[] = $author['name'];
 			$author_homepages[] = sprintf('<a href="%1$s" title="%2$s">%2$s</a>', $author['homepage'], $author['name']);
 		}
+
 		$this->template->assign_vars(array(
 			'DOWNLOADSYSTEM_DISPLAY_NAME'		=> $meta['extra']['display-name'],
 			'DOWNLOADSYSTEM_AUTHOR_NAMES'		=> implode(' &amp; ', $author_names),
@@ -542,8 +549,6 @@ class functions
 
 		$lock = $eds_values['announce_lock_enable'];
 
-		$this->message_parser = new \parse_message();
-
 		$subject =	$download_subject;
 		$text =	$download_msg;
 
@@ -553,12 +558,12 @@ class functions
 			return;
 		}
 
-		$this->message_parser->message = $text;
-
 		// Grab md5 'checksum' of new message
-		$message_md5 = md5($this->message_parser->message);
+		$message_md5 = md5($this->renderer->render($text));
 
-		$this->message_parser->parse(true, true, true, true, false, true, true);
+		$text_description = $text;
+		$text_description = htmlspecialchars_decode($text_description, ENT_COMPAT);
+		$text = $this->parser->parse($text_description);
 
 		$sql = 'SELECT forum_name
 			FROM ' . FORUMS_TABLE . '
@@ -568,31 +573,31 @@ class functions
 		$this->db->sql_freeresult($result);
 
 		$data = array(
-			'forum_id'			=> $forum_id,
-			'icon_id'			=> false,
-			'poster_id' 		=> $this->user->data['user_id'],
-			'enable_bbcode'		=> true,
-			'enable_smilies'	=> true,
-			'enable_urls'		=> true,
-			'enable_sig'		=> true,
-			'message'			=> $this->message_parser->message,
-			'message_md5'		=> $message_md5,
-			'attachment_data'	=> 0,
-			'filename_data'		=> 0,
-			'bbcode_bitfield'	=> $this->message_parser->bbcode_bitfield,
-			'bbcode_uid'		=> $this->message_parser->bbcode_uid,
-			'poster_ip'			=> $this->user->ip,
-			'post_edit_locked'	=> 0,
-			'topic_title'		=> $subject,
-			'topic_status'		=> $lock,
-			'notify_set'		=> false,
-			'notify'			=> true,
-			'post_time' 		=> time(),
-			'forum_name'		=> $forum_name,
-			'enable_indexing'	=> true,
+			'forum_id'				=> $forum_id,
+			'icon_id'				=> false,
+			'poster_id' 			=> $this->user->data['user_id'],
+			'enable_bbcode'			=> true,
+			'enable_smilies'		=> true,
+			'enable_urls'			=> true,
+			'enable_sig'			=> true,
+			'message'				=> $text,
+			'message_md5'			=> $message_md5,
+			'attachment_data'		=> 0,
+			'filename_data'			=> 0,
+			'bbcode_bitfield'		=> 0,
+			'bbcode_uid'			=> 0,
+			'poster_ip'				=> $this->user->ip,
+			'post_edit_locked'		=> 0,
+			'topic_title'			=> $subject,
+			'topic_status'			=> $lock,
+			'notify_set'			=> false,
+			'notify'				=> true,
+			'post_time' 			=> time(),
+			'forum_name'			=> $forum_name,
+			'enable_indexing'		=> true,
 			'force_approved_state'	=> true,
-			'force_visibility' 	=> true,
-			'attr_id'			=> 0,
+			'force_visibility' 		=> true,
+			'attr_id'				=> 0,
 		);
 		$poll = array();
 
@@ -682,5 +687,28 @@ class functions
 		$allowed_extensions[] = 'TIFF';
 
 		return $allowed_extensions;
+	}
+
+	/**
+	* Allowed Image Extensions
+	*/
+	public function allowed_image_extensions()
+	{
+		// Here you can add additional extensions
+		// Always use lower and upper case extensions
+
+		$allowed_image_extensions = array();
+
+		// Picture files
+		$allowed_image_extensions[] = 'png';
+		$allowed_image_extensions[] = 'PNG';
+		$allowed_image_extensions[] = 'jpg';
+		$allowed_image_extensions[] = 'JPG';
+		$allowed_image_extensions[] = 'jpeg';
+		$allowed_image_extensions[] = 'JPEG';
+		$allowed_image_extensions[] = 'gif';
+		$allowed_image_extensions[] = 'GIF';
+
+		return $allowed_image_extensions;
 	}
 }

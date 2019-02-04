@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB Extension - Download System
-* @copyright (c) 2016 dmzx - http://www.dmzx-web.net
+* @copyright (c) 2016 dmzx - https://www.dmzx-web.net
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -19,6 +19,9 @@ class downloadsystem_module
 
 		// Get an instance of the admin controller
 		$admin_controller = $phpbb_container->get('dmzx.downloadsystem.controller.admin.controller');
+
+		// Add the ACP lang file
+		$user->add_lang_ext('dmzx/downloadsystem', 'acp_downloadsystem');
 
 		// Requests
 		$action = $request->variable('action', '');

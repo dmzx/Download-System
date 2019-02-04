@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB Extension - Download System
-* @copyright (c) 2016 dmzx - http://www.dmzx-web.net
+* @copyright (c) 2016 dmzx - https://www.dmzx-web.net
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -15,6 +15,12 @@ class downloadupload
 {
 	/** @var \dmzx\downloadsystem\core\functions */
 	protected $functions;
+
+	/** @var \phpbb\textformatter\s9e\parser */
+	protected $parser;
+
+	/** @var \phpbb\textformatter\s9e\renderer */
+	protected $renderer;
 
 	/** @var \phpbb\template\template */
 	protected $template;
@@ -65,6 +71,8 @@ class downloadupload
 	* Constructor
 	*
 	* @param \dmzx\downloadsystem\core\functions						$functions
+	* @param \phpbb\textformatter\s9e\parser								$parser
+	* @param \phpbb\textformatter\s9e\renderer 							$renderer
 	* @param \phpbb\template\template		 							$template
 	* @param \phpbb\user												$user
 	* @param \phpbb\auth\auth											$auth
@@ -83,6 +91,8 @@ class downloadupload
 	*/
 	public function __construct(
 		\dmzx\downloadsystem\core\functions $functions,
+		\phpbb\textformatter\s9e\parser $parser,
+		\phpbb\textformatter\s9e\renderer $renderer,
 		\phpbb\template\template $template,
 		\phpbb\user $user,
 		\phpbb\auth\auth $auth,
@@ -95,9 +105,12 @@ class downloadupload
 		$php_ext, $root_path,
 		$dm_eds_table,
 		$dm_eds_cat_table,
-		\phpbb\files\factory $files_factory = null)
+		\phpbb\files\factory $files_factory = null
+	)
 	{
 		$this->functions 			= $functions;
+		$this->parser				= $parser;
+		$this->renderer				= $renderer;
 		$this->template 			= $template;
 		$this->user 				= $user;
 		$this->auth 				= $auth;
@@ -135,18 +148,18 @@ class downloadupload
 		// Read out config values
 		$eds_values = $this->functions->config_values();
 
-		$id				= $this->request->variable('id', 0);
-		$title			= $this->request->variable('title', '', true);
-		$cat_name_show	= $this->request->variable('cat_name_show', 1);
-		$filename		= $this->request->variable('filename', '', true);
-		$desc			= $this->request->variable('desc', '', true);
-		$dl_version		= $this->request->variable('dl_version', '', true);
-		$costs_dl		= $this->request->variable('cost_per_dl', 0.00, true);
-		$cat_option 	= $this->request->variable('parent', '', true);
-		$ftp_upload		= $this->request->variable('ftp_upload', '', true);
-
-		$uid = $bitfield = $options = '';
-		$allow_bbcode = $allow_urls = $allow_smilies = true;
+		$id							= $this->request->variable('id', 0);
+		$title						= $this->request->variable('title', '', true);
+		$cat_name_show				= $this->request->variable('cat_name_show', 1);
+		$filename					= $this->request->variable('filename', '', true);
+		$desc						= $this->request->variable('desc', '', true);
+		$dl_version					= $this->request->variable('dl_version', '', true);
+		$costs_dl					= $this->request->variable('cost_per_dl', 0.00, true);
+		$cat_option 				= $this->request->variable('parent', '', true);
+		$ftp_upload					= $this->request->variable('ftp_upload', '', true);
+		$enable_bbcode_file			= !$this->request->variable('disable_bbcode_file', false);
+		$enable_smilies_file		= !$this->request->variable('disable_smilies_file', false);
+		$enable_magic_url_file		= !$this->request->variable('disable_magic_url_file', false);
 
 		$max_filesize = @ini_get('upload_max_filesize');
 		$unit = 'MB';
@@ -169,22 +182,8 @@ class downloadupload
 			// Add allowed extensions
 			$allowed_extensions = $this->functions->allowed_extensions();
 
-			if ($this->files_factory !== null)
-			{
-				$fileupload = $this->files_factory->get('upload')
-					->set_allowed_extensions($allowed_extensions);
-			}
-			else
-			{
-				generate_text_for_storage($desc, $uid, $bitfield, $options, $allow_bbcode, $allow_urls, $allow_smilies);
-
-				if (!class_exists('\fileupload'))
-				{
-					include($this->root_path . 'includes/functions_upload.' . $this->php_ext);
-				}
-				$fileupload = new \fileupload();
-				$fileupload->fileupload('', $allowed_extensions);
-			}
+			$fileupload = $this->files_factory->get('upload')
+				->set_allowed_extensions($allowed_extensions);
 
 			$target_folder = $this->request->variable('parent', 0);
 			$upload_name = $this->request->variable('filename', '');
@@ -201,7 +200,7 @@ class downloadupload
 
 			if (!$ftp_upload)
 			{
-				$upload_file = (isset($this->files_factory)) ? $fileupload->handle_upload('files.types.form', 'filename') : $fileupload->form_upload('filename');
+				$upload_file = $fileupload->handle_upload('files.types.form', 'filename');
 
 				if (!$upload_file->get('uploadname'))
 				{
@@ -229,20 +228,27 @@ class downloadupload
 				// End the upload
 				$filesize = @filesize($this->root_path . $upload_dir . '/' . $upload_file->get('uploadname'));
 				$sql_ary = array(
-					'download_title'	=> $title,
-					'download_desc'	 	=> $desc,
-					'download_filename'	=> $upload_file->get('uploadname'),
-					'download_version'	=> $dl_version,
-					'download_cat_id'	=> $cat_option,
-					'upload_time'		=> time(),
-					'cost_per_dl'		=> $costs_dl,
-					'last_changed_time'	=> time(),
-					'bbcode_uid'		=> $uid,
-					'bbcode_bitfield'	=> $bitfield,
-					'bbcode_options'	=> $options,
-					'filesize'			=> $filesize,
-					'points_user_id'	=> $this->user->data['user_id'],
+					'download_title'		=> $title,
+					'download_desc'	 		=> $desc,
+					'download_filename'		=> $upload_file->get('uploadname'),
+					'download_version'		=> $dl_version,
+					'download_cat_id'		=> $cat_option,
+					'upload_time'			=> time(),
+					'cost_per_dl'			=> $costs_dl,
+					'last_changed_time'		=> time(),
+					'filesize'				=> $filesize,
+					'points_user_id'		=> $this->user->data['user_id'],
+					'enable_bbcode_file'	=> $enable_bbcode_file,
+					'enable_smilies_file'	=> $enable_smilies_file,
+					'enable_magic_url_file'	=> $enable_magic_url_file,
 				);
+
+				!$sql_ary['enable_bbcode_file'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
+				!$sql_ary['enable_smilies_file'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
+				!$sql_ary['enable_magic_url_file'] || !$eds_values['dm_eds_allow_magic_url'] ? $this->parser->disable_magic_url() : $this->parser->enable_magic_url();
+				$download_desc = $sql_ary['download_desc'];
+				$download_desc = htmlspecialchars_decode($download_desc, ENT_COMPAT);
+				$sql_ary['download_desc'] = $this->parser->parse($download_desc);
 
 				// Check, if filesize is greater than PHP ini allows
 				if ($unit == 'MB')
@@ -280,19 +286,15 @@ class downloadupload
 				{
 					$dl_title = $title . ' v' . $dl_version;
 				}
+
 				$download_link = '[url=' . generate_board_url() . '/downloadsystemcat?id=' . $cat_option . ']' . $this->user->lang['ACP_CLICK'] . '[/url]';
 				$download_subject = sprintf($this->user->lang['ACP_ANNOUNCE_TITLE'], $dl_title);
 
-				if ($this->files_factory !== null)
-				{
-					$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_MSG'], $title, $desc, $cat_name, $download_link);
-				}
-				else
-				{
-					$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_MSG'], $title, generate_text_for_display($desc, $uid, $bitfield, $options), $cat_name, $download_link);
-				}
+				$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_MSG'], $title, $desc, $cat_name, $download_link);
+
 				$this->functions->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 			}
+
 			$this->db->sql_query('INSERT INTO ' . $this->dm_eds_table .' ' . $this->db->sql_build_array('INSERT', $sql_ary));
 			// Log message
 			$this->log_message('LOG_DOWNLOAD_ADD', $title, 'ACP_NEW_ADDED');
@@ -353,14 +355,21 @@ class downloadupload
 		$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off') ? '' : ' enctype="multipart/form-data"';
 
 		$this->template->assign_vars(array(
-			'ID'				=> $id,
-			'TITLE'				=> $title,
-			'DESC'				=> $desc,
-			'FILENAME'			=> $filename,
-			'DL_VERSION'		=> $dl_version,
-			'PARENT_OPTIONS'	=> $cat_options,
-			'ALLOWED_SIZE'		=> sprintf($this->user->lang['EDS_NEW_DOWNLOAD_SIZE'], $max_filesize, $unit),
-			'S_FORM_ENCTYPE'	=> $form_enctype,
+			'ID'						=> $id,
+			'TITLE'						=> $title,
+			'DESC'						=> $desc,
+			'FILENAME'					=> $filename,
+			'DL_VERSION'				=> $dl_version,
+			'PARENT_OPTIONS'			=> $cat_options,
+			'ALLOWED_SIZE'				=> sprintf($this->user->lang['EDS_NEW_DOWNLOAD_SIZE'], $max_filesize, $unit),
+			'S_FORM_ENCTYPE'			=> $form_enctype,
+			'S_BBCODE_ENABLED_FILE'		=> !empty($row['enable_bbcode_file']) ? $row['enable_bbcode_file'] : 0,
+			'S_SMILIES_ENABLED_FILE'	=> !empty($row['enable_smilies_file']) ? $row['enable_smilies_file'] : 0,
+			'S_MAGIC_URL_ENABLED_FILE'	=> !empty($row['enable_magic_url_file']) ? $row['enable_magic_url_file'] : 0,
+			'BBCODE_STATUS'				=> !empty($eds_values['dm_eds_allow_bbcodes']) ? $this->user->lang('BBCODE_IS_ON', '<a href="' . $this->helper->route('phpbb_help_bbcode_controller') . '">', '</a>') : $this->user->lang('BBCODE_IS_OFF', '<a href="' . $this->helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
+			'SMILIES_STATUS'			=> !empty($eds_values['dm_eds_allow_smilies']) ? $this->user->lang('SMILIES_ARE_ON') : $this->user->lang('SMILIES_ARE_OFF'),
+			'URL_STATUS'				=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
+			'S_DL_CATEGORY_ADD'			=> true,
 		));
 
 		// Build navigation link

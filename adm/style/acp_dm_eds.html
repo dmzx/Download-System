@@ -1,181 +1,210 @@
-<!-- INCLUDE overall_header.html -->
-<!-- IF S_MODE_SETUP -->
-<!-- ENDIF -->
+{% INCLUDE 'overall_header.html' %}
+{% if S_MODE_SETUP %}
+{% endif %}
 
-<!-- IF S_MODE_MANAGE -->
-<h1>{L_ACP_DOWNLOAD_SYSTEM} - {L_ACP_MANAGE_CATEGORIES}</h1>
-<p>{L_ACP_CAT_SELECT}</p>
-<br	/>
+{% if S_MODE_MANAGE %}
+<h1>{{ lang('ACP_DOWNLOAD_SYSTEM') }} - {{ lang('ACP_MANAGE_CATEGORIES') }}</h1>
+<p>{{ lang('ACP_CAT_SELECT') }}</p>
 
-<p><strong>{NAVIGATION}</strong></p>
-<form id="dm_eds" method="post" action="{S_ACTION}">
+<p><strong>{{ NAVIGATION }}</strong></p>
+<form id="dm_eds" method="post" action="{{ S_ACTION }}">
 	<fieldset class="quick">
 		<input type="hidden" name="action" value="create" />
-		<input class="button2" name="addforum" type="submit" value="{L_ACP_CAT_NEW}" />
+		<input class="button2" name="addforum" type="submit" value="{{ lang('ACP_CAT_NEW') }}" />
 	</fieldset>
-	{S_FORM_TOKEN}
+	{{ S_FORM_TOKEN }}
 </form>
-<!-- IF .catrow -->
-<table>
-	<col/><col/><col/><col class="row2" />
+
+{% if loops.catrow|length %}
+<table class="table1 forums">
+	<colgroup><col class="row1" />{% if S_DM_EDS_ALLOW_CAT_IMG %}<col class="row1" />{% endif %}<col class="row1" /><col class="row1" /><col class="row1" /><col class="row2" /></colgroup>
+	<thead>
+		<tr>
+			<th>{{ lang('ACP_DM_CATEGORIES') }}</th>
+			{% if S_DM_EDS_ALLOW_CAT_IMG %}
+			<th>{{ lang('ACP_DM_CATEGORIES_IMAGE') }}</th>
+			{% endif %}
+			<th>{{ lang('ACP_DM_CATEGORIES_NAME') }}</th>
+			<th>{{ lang('ACP_DM_CATEGORIES_DESC') }}</th>
+			<th>{{ lang('ACP_DM_CATEGORIES_SHOW_INDEX') }}</th>
+			<th>{{ lang('ACTION') }}</th>
+		</tr>
+	</thead>
 	<tbody>
-	<!-- BEGIN catrow -->
-		<!-- IF catrow.CAT_SUBS --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-			<td style="width: 5%; text-align: center;">{catrow.FOLDER_IMAGE}</td>
-			<td>
-				<strong>{catrow.CAT_NAME} <!-- IF not catrow.CAT_SUBS_SHOW -->- {L_ACP_SUB_DL_CAT}<!-- ENDIF --></strong>
-				<!-- IF catrow.CAT_DESCRIPTION --><br /><span>{catrow.CAT_DESCRIPTION}</span><!-- ENDIF -->
+		{% for catrow in loops.catrow %}
+		<tr>
+			<td class="folder">
+				<span class="fa-stack fa-2x"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-download fa-stack-1x"></i></span>
 			</td>
-			<td style="width: 10%; text-align: center;"><strong>{L_ACP_NEW_CAT_NAME_SHOW}</strong>
-				<!-- IF catrow.CAT_NAME_SHOW --><br /><span>{catrow.CAT_NAME_SHOW}</span><!-- ENDIF --></td>
+			{% if S_DM_EDS_ALLOW_CAT_IMG %}
+			<td class="folder">
+				<img src="{{ catrow.IMAGE }}" width="65" height="65" alt="{{ catrow.CAT_NAME }}" title="{{ catrow.CAT_NAME }}" />
+			</td>
+			{% endif %}
+			<td class="forum-desc">
+				<strong>{{ catrow.CAT_NAME }}</strong>
+			</td>
+			<td class="forum-desc">
+				{% if catrow.CAT_DESC %}<br><span>{{ catrow.CAT_DESC }}</span>{% endif %}
+			</td>
+			<td style="width: 10%; text-align: center;"><strong>{{ lang('ACP_NEW_CAT_NAME_SHOW') }}</strong>
+			{% if catrow.CAT_NAME_SHOW %}<br /><span>{{ catrow.CAT_NAME_SHOW }}</span>{% endif %}</td>
 			<td class="actions">
-				<!-- IF catrow.S_FIRST_ROW && not catrow.S_LAST_ROW -->
-					{ICON_MOVE_UP_DISABLED}
-					<a href="{catrow.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
-				<!-- ELSEIF not catrow.S_FIRST_ROW && not catrow.S_LAST_ROW -->
-					<a href="{catrow.U_MOVE_UP}">{ICON_MOVE_UP}</a>
-					<a href="{catrow.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
-				<!-- ELSEIF catrow.S_LAST_ROW && not catrow.S_FIRST_ROW -->
-					<a href="{catrow.U_MOVE_UP}">{ICON_MOVE_UP}</a>
-					{ICON_MOVE_DOWN_DISABLED}
-				<!-- ELSE -->
-					{ICON_MOVE_UP_DISABLED}
-					{ICON_MOVE_DOWN_DISABLED}
-				<!-- ENDIF -->
-				<a href="{catrow.U_EDIT}">{ICON_EDIT}</a>
-				<a href="{catrow.U_DELETE}">{ICON_DELETE}</a>
+				<span class="up-disabled" style="display:none;">{{ ICON_MOVE_UP_DISABLED }}</span>
+				<span class="up"><a href="{{ catrow.U_MOVE_UP }}">{{ ICON_MOVE_UP }}</a></span>
+				<span class="down-disabled" style="display:none;">{{ ICON_MOVE_DOWN_DISABLED }}</span>
+				<span class="down"><a href="{{ catrow.U_MOVE_DOWN }}">{{ ICON_MOVE_DOWN }}</a></span>
+				<a href="{{ catrow.U_EDIT }}">{{ ICON_EDIT }}</a>
+				<a href="{{ catrow.U_DELETE }}">{{ ICON_DELETE }}</a>
 			</td>
 		</tr>
-	<!-- END catrow -->
+	{% endfor %}
 	</tbody>
 </table>
-<!-- ENDIF -->
-<form id="dm_eds" method="post" action="{S_ACTION}">
+{% endif %}
+
+<form id="dm_eds" method="post" action="{{ S_ACTION }}">
 	<fieldset class="quick">
 		<input type="hidden" name="action" value="create" />
-		<input class="button2" name="addforum" type="submit" value="{L_ACP_CAT_NEW}" />
+		<input class="button2" name="addforum" type="submit" value="{{ lang('ACP_CAT_NEW') }}" />
 	</fieldset>
-	{S_FORM_TOKEN}
+	{{ S_FORM_TOKEN }}
 </form>
-<!-- ENDIF -->
+{% endif %}
 
-<!-- IF S_MODE_CREATE -->
-<h1>{L_ACP_DOWNLOAD_SYSTEM} - {L_ACP_CAT_NEW}</h1>
-<p>{L_ACP_CAT_NEW_EXPLAIN}</p>
-<br />
-<!-- ENDIF -->
+{% if S_MODE_CREATE %}
+<h1>{{ lang('ACP_DOWNLOAD_SYSTEM') }} - {{ lang('ACP_CAT_NEW') }}</h1>
+<p>{{ lang('ACP_CAT_NEW_EXPLAIN') }}</p>
+{% endif %}
 
-<!-- IF S_MODE_EDIT -->
-<h1>{L_ACP_DOWNLOAD_SYSTEM} - {L_ACP_EDIT_CAT}</h1>
-<p>{L_ACP_EDIT_CAT_EXPLAIN}</p>
-<br />
-<!-- ENDIF -->
+{% if S_MODE_EDIT %}
+<h1>{{ lang('ACP_DOWNLOAD_SYSTEM') }} - {{ lang('ACP_EDIT_CAT') }}</h1>
+<p>{{ lang('ACP_EDIT_CAT_EXPLAIN') }}</p>
+{% endif %}
 
-<!-- IF S_MODE_CREATE -->
-<form id="acp_dm_eds" method="post" action="{U_ACTION}">
+<script>
+	var form_name = 'acp_dm_eds';
+	var text_name = 'cat_desc';
+</script>
+
+{% if S_MODE_CREATE %}
+<form id="acp_dm_eds"	method="post" enctype="multipart/form-data" action="{{ U_ACTION }}">
 	<fieldset>
-		<legend><!-- IF S_MODE_CREATE -->{L_ACP_NEW_CAT}<!-- ELSE -->{L_ACP_EDIT_CAT}<!-- ENDIF --></legend>
-		<!-- IF ERROR_MSG -->
-			<div class="errorbox">
-				<h3>{L_WARNING}</h3>
-				<p>{ERROR_MSG}</p>
-			</div>
-		<!-- ENDIF -->
+		<legend>{% if S_MODE_CREATE %}{{ lang('ACP_NEW_CAT') }}{% else %}{{ lang('ACP_EDIT_CAT') }}{% endif %}</legend>
 		<dl>
-			<dt><label for="cat_name">{L_ACP_NEW_CAT_NAME}{L_COLON}</label></dt>
-			<dd><input class="text" type="text" id="cat_name" value="{CAT_NAME}" name="cat_name" size="53" maxlength="255" /></dd>
+			<dt><label for="cat_name">{{ lang('ACP_NEW_CAT_NAME') }}{{ lang('COLON') }}</label></dt>
+			<dd><input class="text" type="text" id="cat_name" value="{{ CAT_NAME }}" name="cat_name" size="53" maxlength="255" /></dd>
 		</dl>
 		<dl>
-			<dt><label>{L_ACP_NEW_SUB_CAT_NAME}{L_COLON}</label><br /><span>{L_ACP_NEW_SUB_CAT_EXPLAIN}</span></dt>
-			<dd><input class="text" type="text" id="cat_sub_dir" value="{CAT_SUB_DIR}" name="cat_sub_dir" size="53" maxlength="255" /></dd>
+			<dt><label>{{ lang('ACP_NEW_SUB_CAT_NAME') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ACP_NEW_SUB_CAT_EXPLAIN') }}</span></dt>
+			<dd><input class="text" type="text" id="cat_sub_dir" value="{{ CAT_SUB_DIR }}" name="cat_sub_dir" size="53" maxlength="255" /></dd>
 		</dl>
 		<dl>
-			<dt><label>{L_ACP_NEW_CAT_NAME_SHOW}{L_COLON}</label><br />{L_ACP_NEW_CAT_NAME_SHOW_EXPLAIN}</dt>
-			<dd><label><input type="radio" class="radio" name="cat_name_show" value="1"<!-- IF CAT_NAME_SHOW --> id="cat_name_show" checked="checked" <!-- ENDIF --> /> {L_YES}</label>
-			<label><input type="radio" class="radio" name="cat_name_show" value="0"<!-- IF not CAT_NAME_SHOW --> id="cat_name_show" checked="checked" <!-- ENDIF --> /> {L_NO}</label></dd>
+			<dt><label>{{ lang('ACP_NEW_CAT_NAME_SHOW') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_NEW_CAT_NAME_SHOW_EXPLAIN') }}</dt>
+			<dd><label><input type="radio" class="radio" name="cat_name_show" value="1"{% if CAT_NAME_SHOW %} id="cat_name_show" checked="checked" {% endif %} /> {{ lang('YES') }}</label>
+			<label><input type="radio" class="radio" name="cat_name_show" value="0"{% if not CAT_NAME_SHOW %} id="cat_name_show" checked="checked" {% endif %} /> {{ lang('NO') }}</label></dd>
 		</dl>
 		<dl>
-			<dt><label>{L_ACP_SUB_DL_CAT}{L_COLON}</label><br /><span>{L_ACP_SUB_DL_CAT_EXPLAIN}</span></dt>
-			<dd><select name="parent_id"><option value="0">{CAT_NAME_NO_SHOW}</option>{S_PARENT_OPTIONS}</select></dd>
-
+			<dt><label>{{ lang('ACP_SUB_DL_CAT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ACP_SUB_DL_CAT_EXPLAIN') }}</span></dt>
+			<dd><select name="parent_id"><option value="0">{{ CAT_NAME_NO_SHOW }}</option>{{ S_PARENT_OPTIONS }}</select></dd>
 		</dl>
 		<dl>
-			<dt><label for="cat_desc">{L_ACP_NEW_CAT_DESC}{L_COLON}</label><br /><span>{L_ACP_NEW_CAT_DESC_EXPLAIN}</span></dt>
-			<dd><textarea id="cat_desc" name="cat_desc" rows="5" cols="45">{CAT_DESC}</textarea></dd>
-			<dd><label><input type="checkbox" class="radio" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE}</label>
-			<label><input type="checkbox" class="radio" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>
-			<label><input type="checkbox" class="radio" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</label></dd>
+			<dt><label for="cat_desc">{{ lang('ACP_NEW_CAT_DESC') }}{{ lang('COLON') }}</label><br><span>{{ lang('ACP_NEW_CAT_DESC_EXPLAIN') }}</span></dt>
+			<dd>
+				{% INCLUDE 'acp_posting_buttons.html' %}
+				<textarea name="cat_desc" rows="5" cols="60" style="width: 95%" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" data-bbcode="true">{{ CAT_DESC }}</textarea>
+			</dd>
+			<dd>
+				<label><input type="checkbox" class="radio" name="disable_bbcode"{% if not S_DL_CATEGORY_ADD and S_BBCODE_ENABLED == 0 %} checked="checked"{% endif %} /> {{ lang('DISABLE_BBCODE') }}</label>
+				<label><input type="checkbox" class="radio" name="disable_smilies"{% if not S_DL_CATEGORY_ADD and S_SMILIES_ENABLED == 0 %} checked="checked"{% endif %} /> {{ lang('DISABLE_SMILIES') }}</label>
+				<label><input type="checkbox" class="radio" name="disable_magic_url"{% if not S_DL_CATEGORY_ADD and S_MAGIC_URL_ENABLED == 0 %} checked="checked"{% endif %} /> {{ lang('DISABLE_MAGIC_URL') }}</label>
+			</dd>
+			<dd>&nbsp;</dd>
+			<dd><strong>{{ lang('OPTIONS') }}{{ lang('COLON') }}</strong> {{ BBCODE_STATUS }} :: {{ URL_STATUS }} :: {{ SMILIES_STATUS }}</dd>
 		</dl>
+		{% if S_DM_EDS_ALLOW_CAT_IMG %}
+		<dl>
+			<dt><label for="category_image">{{ lang('ACP_DL_CATEGORY_IMAGE') }}{{ lang('COLON') }}</label><br><span>{{ lang('ACP_DL_CATEGORY_IMAGE_EXPLAIN') }}</span></dt>
+			<dd><input class="inputbox autowidth" type="file" name="category_image" size="52" /></dd>
+		</dl>
+		{% endif %}
 	</fieldset>
-
 	<p class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
 	</p>
-	{S_FORM_TOKEN}
-
+	{{ S_FORM_TOKEN }}
 </form>
-<!-- ENDIF -->
+{% endif %}
 
-<!-- IF S_MODE_EDIT -->
-<form id="acp_dm_eds" method="post" action="{U_ACTION}">
+{% if S_MODE_EDIT %}
+<form id="acp_dm_eds" method="post" enctype="multipart/form-data" action="{{ U_ACTION }}">
 	<fieldset>
-		<legend><!-- IF S_MODE_CREATE -->{L_ACP_NEW_CAT}<!-- ELSE -->{L_ACP_EDIT_CAT}<!-- ENDIF --></legend>
-		<!-- IF ERROR_MSG -->
-			<div class="errorbox">
-				<h3>{L_WARNING}</h3>
-				<p>{ERROR_MSG}</p>
-			</div>
-		<!-- ENDIF -->
+		<legend>{% if S_MODE_CREATE %}{{ lang('ACP_NEW_CAT') }}{% else %}{{ lang('ACP_EDIT_CAT') }}{% endif %}</legend>
 		<dl>
-			<dt><label for="cat_name">{L_ACP_NEW_CAT_NAME}{L_COLON}</label></dt>
-			<dd><input class="text" type="text" id="cat_name" value="{CAT_NAME}" name="cat_name" maxlength="255" /></dd>
+			<dt><label for="cat_name">{{ lang('ACP_NEW_CAT_NAME') }}{{ lang('COLON') }}</label></dt>
+			<dd><input class="text" type="text" id="cat_name" value="{{ CAT_NAME }}" name="cat_name" maxlength="255" /></dd>
 		</dl>
 		<dl>
-			<dt><label>{L_ACP_NEW_SUB_CAT_NAME}{L_COLON}</label><br /><span>{L_ACP_EDIT_SUB_CAT_EXPLAIN}</span></dt>
-			<dd>{CAT_SUB_DIR}</dd>
-		</dl>
-
-		<dl>
-			<dt><label>{L_ACP_NEW_CAT_NAME_SHOW}{L_COLON}</label><br />{L_ACP_NEW_CAT_NAME_SHOW_EXPLAIN}</dt>
-			<dd><label><input type="radio" class="radio" name="cat_name_show" value="1"<!-- IF CAT_NAME_SHOW --> id="cat_name_show" checked="checked" <!-- ENDIF --> /> {L_YES}</label>
-			<label><input type="radio" class="radio" name="cat_name_show" value="0"<!-- IF not CAT_NAME_SHOW --> id="cat_name_show" checked="checked" <!-- ENDIF --> /> {L_NO}</label></dd>
+			<dt><label>{{ lang('ACP_NEW_SUB_CAT_NAME') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ACP_EDIT_SUB_CAT_EXPLAIN') }}</span></dt>
+			<dd>{{ CAT_SUB_DIR }}</dd>
 		</dl>
 		<dl>
-			<dt><label>{L_ACP_SUB_DL_CAT}{L_COLON}</label><br /><span>{L_ACP_SUB_DL_CAT_EXPLAIN}</span></dt>
-			<dd><!-- IF S_HAS_SUBCATS --><select name="parent_id"><option value="0">{CAT_NAME_NO_SHOW}</option>{S_PARENT_OPTIONS}</select><!-- ELSE --><span>{L_ACP_SUB_HAS_CAT_EXPLAIN}</span><!-- ENDIF --></dd>
+			<dt><label>{{ lang('ACP_NEW_CAT_NAME_SHOW') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_NEW_CAT_NAME_SHOW_EXPLAIN') }}</dt>
+			<dd><label><input type="radio" class="radio" name="cat_name_show" value="1"{% if CAT_NAME_SHOW %} id="cat_name_show" checked="checked" {% endif %} /> {{ lang('YES') }}</label>
+			<label><input type="radio" class="radio" name="cat_name_show" value="0"{% if not CAT_NAME_SHOW %} id="cat_name_show" checked="checked" {% endif %} /> {{ lang('NO') }}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="cat_desc">{L_ACP_NEW_CAT_DESC}{L_COLON}</label><br /><span>{L_ACP_NEW_CAT_DESC_EXPLAIN}</span></dt>
-			<dd><textarea id="cat_desc" name="cat_desc" rows="5" cols="45">{CAT_DESC}</textarea></dd>
-			<dd><label><input type="checkbox" class="radio" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE}</label>
-			<label><input type="checkbox" class="radio" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>
-			<label><input type="checkbox" class="radio" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</label></dd>
+			<dt><label>{{ lang('ACP_SUB_DL_CAT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ACP_SUB_DL_CAT_EXPLAIN') }}</span></dt>
+			<dd>{% if S_HAS_SUBCATS %}<select name="parent_id"><option value="0">{{ CAT_NAME_NO_SHOW }}</option>{{ S_PARENT_OPTIONS }}</select>{% else %}<span>{{ lang('ACP_SUB_HAS_CAT_EXPLAIN') }}</span>{% endif %}</dd>
 		</dl>
+		<dl>
+			<dt><label for="cat_desc">{{ lang('ACP_NEW_CAT_DESC') }}{{ lang('COLON') }}</label><br><span>{{ lang('ACP_NEW_CAT_DESC_EXPLAIN') }}</span></dt>
+			<dd>
+				{% INCLUDE 'acp_posting_buttons.html' %}
+				<textarea name="cat_desc" rows="5" cols="60" style="width: 95%" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" data-bbcode="true">{{ CAT_DESC }}</textarea>
+			</dd>
+			<dd>
+				<label><input type="checkbox" class="radio" name="disable_bbcode"{% if not S_DL_CATEGORY_ADD and S_BBCODE_ENABLED == 0 %} checked="checked"{% endif %} /> {{ lang('DISABLE_BBCODE') }}</label>
+				<label><input type="checkbox" class="radio" name="disable_smilies"{% if not S_DL_CATEGORY_ADD and S_SMILIES_ENABLED == 0 %} checked="checked"{% endif %} /> {{ lang('DISABLE_SMILIES') }}</label>
+				<label><input type="checkbox" class="radio" name="disable_magic_url"{% if not S_DL_CATEGORY_ADD and S_MAGIC_URL_ENABLED == 0 %} checked="checked"{% endif %} /> {{ lang('DISABLE_MAGIC_URL') }}</label>
+			</dd>
+			<dd>&nbsp;</dd>
+			<dd><strong>{{ lang('OPTIONS') }}{{ lang('COLON') }}</strong> {{ BBCODE_STATUS }} :: {{ URL_STATUS }} :: {{ SMILIES_STATUS }}</dd>
+		</dl>
+		{% if S_DM_EDS_ALLOW_CAT_IMG %}
+		<dl>
+			<dt><label for="category_image">{{ lang('ACP_DL_CATEGORY_IMAGE') }}{{ lang('COLON') }}</label><br><span>{{ lang('ACP_DL_CATEGORY_IMAGE_EXPLAIN') }}</span></dt>
+			<dd><input class="inputbox autowidth" type="file" name="category_image" size="52" />&nbsp;<input id ="changecatimage" type="checkbox" name="changecatimage" /> {{ lang('ACP_CHANGECATIMAGE') }}</dd>
+		</dl>
+		<dl>
+			<dt><label for="category_current_image">{{ lang('ACP_DL_CATEGORY_IMAGE_CURRENT') }}{{ lang('COLON') }}</label></dt>
+			<dd><img name="category_current_image" src="{{ CATEGORY_IMAGE }}" width="65" height="65" alt="{{ CATEGORY_NAME }}" /></dd>
+		</dl>
+		{% endif %}
 	</fieldset>
-
 	<p class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
 	</p>
-	{S_FORM_TOKEN}
-
+	{{ S_FORM_TOKEN }}
 </form>
-<!-- ENDIF -->
+{% endif %}
 
-<!-- IF S_MODE_DELETE -->
-<form id="acp_dm_eds" method="post" action="{U_ACTION}">
+{% if S_MODE_DELETE %}
+<form id="acp_dm_eds" method="post" action="{{ U_ACTION }}">
 	<fieldset>
-		<legend><h1>{L_CONFIRM}</h1></legend>
+		<legend><h1>{{ lang('CONFIRM') }}</h1></legend>
 			<dl>
-				{CAT_DELETE}
+				{{ CAT_DELETE }}
 			</dl>
 			<p class="submit-buttons">
-				<input class="button1" type="submit" id="submit" name="submit" value="{L_YES}" />&nbsp;
-				<input class="button2" type="reset" id="reset" name="reset" value="{L_NO}" />
+				<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('YES') }}" />&nbsp;
+				<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('NO') }}" />
 			</p>
-		{S_FORM_TOKEN}
+		{{ S_FORM_TOKEN }}
 	</fieldset>
 </form>
-<!-- ENDIF -->
-<!-- INCLUDE overall_footer.html -->
+{% endif %}
+
+{% INCLUDE 'overall_footer.html' %}

@@ -10,7 +10,6 @@ services:
             - '@config'
             - '@auth'
             - '%core.php_ext%'
-            - '@?files.factory'
         tags:
             - { name: event.listener }
     dmzx.downloadsystem.controller:
@@ -26,6 +25,8 @@ services:
         class: dmzx\downloadsystem\controller\downloadupload
         arguments:
             - '@dmzx.downloadsystem.core.functions'
+            - '@text_formatter.parser'
+            - '@text_formatter.renderer'
             - '@template'
             - '@user'
             - '@auth'
@@ -44,6 +45,8 @@ services:
         class: dmzx\downloadsystem\controller\downloadsystemcat
         arguments:
             - '@dmzx.downloadsystem.core.functions'
+            - '@text_formatter.parser'
+            - '@text_formatter.renderer'
             - '@template'
             - '@user'
             - '@auth'
@@ -68,6 +71,10 @@ services:
         class: dmzx\downloadsystem\controller\admin_controller
         arguments:
             - '@dmzx.downloadsystem.core.functions'
+            - '@filesystem'
+            - '@text_formatter.parser'
+            - '@text_formatter.renderer'
+            - '@controller.helper'
             - '@template'
             - '@user'
             - '@log'
@@ -87,6 +94,8 @@ services:
         class: dmzx\downloadsystem\core\functions
         arguments:
             - '@template'
+            - '@text_formatter.parser'
+            - '@text_formatter.renderer'
             - '@user'
             - '@dbal.conn'
             - '@controller.helper'

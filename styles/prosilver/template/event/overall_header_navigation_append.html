@@ -1,4 +1,6 @@
-<!-- IF S_EDS_EXIST -->
-<li <!-- IF not PHPBB_IS_32 -->class="small-icon icon-downloads"<!-- ENDIF --> data-last-responsive="true"><a href="{U_DM_EDS}" title="{L_EDS_DOWNLOADS}" role="menuitem"><!-- IF PHPBB_IS_32 --><i class="icon fa fa-download" aria-hidden="true"></i><!-- ENDIF --><span>{L_EDS_DOWNLOADS}</span></a></li>
-<!-- IF DM_EDS_USE_UPLOAD --><li <!-- IF not PHPBB_IS_32 -->class="small-icon icon-upload"<!-- ENDIF --> data-last-responsive="true"><a href="{U_DM_EDS_UPLOAD}" title="{L_EDS_UPLOAD}" role="menuitem"><!-- IF PHPBB_IS_32 --><i class="icon fa fa-upload" aria-hidden="true"></i><!-- ENDIF --><span>{L_EDS_UPLOAD}</span></a></li><!-- ENDIF -->
-<!-- ENDIF -->
+{% if S_EDS_EXIST %}
+<li data-last-responsive="true"><a href="{{ U_DM_EDS }}" title="{{ lang('EDS_DOWNLOADS') }}" role="menuitem"><i class="icon fa fa-download" aria-hidden="true"></i><span>{{ lang('EDS_DOWNLOADS') }}</span></a></li>
+{% if DM_EDS_USE_UPLOAD %}
+<li data-last-responsive="true"><a href="{{ U_DM_EDS_UPLOAD }}" title="{{ lang('EDS_UPLOAD') }}" role="menuitem"><i class="icon fa fa-upload" aria-hidden="true"></i><span>{{ lang('EDS_UPLOAD') }}</span></a></li>
+{% endif %}
+{% endif %}

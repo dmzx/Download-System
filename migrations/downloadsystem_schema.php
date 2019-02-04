@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB Extension - Download System
-* @copyright (c) 2016 dmzx - http://www.dmzx-web.net
+* @copyright (c) 2016 dmzx - https://www.dmzx-web.net
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -21,7 +21,7 @@ class downloadsystem_schema extends \phpbb\db\migration\migration
 						'download_count'	=> array('UINT:8', 0),
 						'download_title'	=> array('VCHAR', ''),
 						'download_filename'	=> array('VCHAR', ''),
-						'download_desc'		=> array('MTEXT_UNI',	''),
+						'download_desc'		=> array('MTEXT_UNI', ''),
 						'download_version'	=> array('VCHAR:10', 0),
 						'download_cat_id'	=> array('UINT:8', 0),
 						'bbcode_bitfield'	=> array('VCHAR', ''),
@@ -41,7 +41,7 @@ class downloadsystem_schema extends \phpbb\db\migration\migration
 						'parent_id'			=> array('UINT:8', 0),
 						'left_id'			=> array('UINT:8', 0),
 						'right_id'			=> array('UINT:8', 0),
-						'cat_parents'		=> array('MTEXT_UNI',	''),
+						'cat_parents'		=> array('MTEXT_UNI', ''),
 						'cat_name'			=> array('VCHAR', 0),
 						'cat_desc'			=> array('MTEXT_UNI', 0),
 						'cat_sub_dir'		=> array('VCHAR', ''),

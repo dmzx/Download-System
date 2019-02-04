@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB Extension - Download System
-* @copyright (c) 2016 dmzx - http://www.dmzx-web.net
+* @copyright (c) 2016 dmzx - https://www.dmzx-web.net
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -15,6 +15,12 @@ class downloadsystemcat
 {
 	/** @var \dmzx\downloadsystem\core\functions */
 	protected $functions;
+
+	/** @var \phpbb\textformatter\s9e\parser */
+	protected $parser;
+
+	/** @var \phpbb\textformatter\s9e\renderer */
+	protected $renderer;
 
 	/** @var \phpbb\template\template */
 	protected $template;
@@ -56,6 +62,8 @@ class downloadsystemcat
 	* Constructor
 	*
 	* @param \dmzx\downloadsystem\core\functions		$functions
+	* @param \phpbb\textformatter\s9e\parser				$parser
+	* @param \phpbb\textformatter\s9e\renderer 			$renderer
 	* @param \phpbb\template\template		 			$template
 	* @param \phpbb\user								$user
 	* @param \phpbb\auth\auth							$auth
@@ -71,6 +79,8 @@ class downloadsystemcat
 	*/
 	public function __construct(
 		\dmzx\downloadsystem\core\functions $functions,
+		\phpbb\textformatter\s9e\parser $parser,
+		\phpbb\textformatter\s9e\renderer $renderer,
 		\phpbb\template\template $template,
 		\phpbb\user $user,
 		\phpbb\auth\auth $auth,
@@ -81,9 +91,12 @@ class downloadsystemcat
 		$php_ext,
 		$root_path,
 		$dm_eds_table,
-		$dm_eds_cat_table)
+		$dm_eds_cat_table
+	)
 	{
 		$this->functions 			= $functions;
+		$this->parser				= $parser;
+		$this->renderer				= $renderer;
 		$this->template 			= $template;
 		$this->user 				= $user;
 		$this->auth 				= $auth;
@@ -95,11 +108,6 @@ class downloadsystemcat
 		$this->root_path 			= $root_path;
 		$this->dm_eds_table 		= $dm_eds_table;
 		$this->dm_eds_cat_table 	= $dm_eds_cat_table;
-
-		if (!class_exists('parse_message'))
-		{
-			include($this->root_path . 'includes/message_parser.' . $this->php_ext);
-		}
 	}
 
 	public function handle_downloadsystemcat()
@@ -109,9 +117,6 @@ class downloadsystemcat
 
 		$start	= $this->request->variable('start', 0);
 		$number	= $eds_values['pagination_user'];
-
-		// Setup message parser
-		$this->message_parser = new \parse_message();
 
 		/**
 		* Retrieve cat id
@@ -154,12 +159,13 @@ class downloadsystemcat
 		$this->db->sql_freeresult($result);
 
 		// Select cat name
-		$sql = 'SELECT cat_name
+		$sql = 'SELECT cat_name, category_image
 			FROM ' . $this->dm_eds_cat_table. '
 			WHERE cat_id = ' . (int) $cat_id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$cat_name = $row['cat_name'];
+
 		$this->db->sql_freeresult($result);
 
 		// Check if there are downloads
@@ -195,28 +201,25 @@ class downloadsystemcat
 
 				if (!$this->auth->acl_get('u_dm_eds_download'))
 				{
-					$download = '<img src="'. $board_url. 'ext/dmzx/downloadsystem/styles/prosilver/theme/images/' . 'eds_no_download.png" title="' . sprintf($this->user->lang['EDS_NO_PERMISSION']) . '" alt=""></img>';
+					$download = '<span class="fa-stack fa-2x"><i class="fa fa-circle-thin fa-stack-2x"></i><i title="' . sprintf($this->user->lang['EDS_NO_PERMISSION']) . '" class="fa fa-download fa-stack-1x text-danger" style="color:red;"></i></span>';
 				}
 				else
 				{
-					$download = '<a href="' . $this->helper->route('dmzx_downloadsystem_controller_download', array('id' =>	$dl_id)) . '"><img src="' . $board_url. 'ext/dmzx/downloadsystem/styles/prosilver/theme/images/' . 'eds_regular_download.png" title="' . $this->user->lang['EDS_REGULAR_DOWNLOAD'] . '" alt=""></a>';
+					$download = '<a href="' . $this->helper->route('dmzx_downloadsystem_controller_download', array('id' =>	$dl_id)) . '" title="' . $this->user->lang['EDS_REGULAR_DOWNLOAD'] . '" alt=""><span class="fa-stack fa-2x"><i class="fa fa-download fa-stack-1x"></i></span></a>';
 				}
 
-				$this->message_parser->message = $row['download_desc'];
-				$this->message_parser->bbcode_bitfield = $row['bbcode_bitfield'];
-				$this->message_parser->bbcode_uid = $row['bbcode_uid'];
-				$allow_bbcode = $allow_magic_url = $allow_smilies = true;
-				$this->message_parser->format_display($allow_bbcode, $allow_magic_url, $allow_smilies);
+				$dl_image = $row['download_image'];
 
 				$this->template->assign_block_vars('catrow', array(
 					'DL_TITLE'			=> $dl_title,
 					'DL_VERSION'		=> $dl_version,
 					'DL_CLICKS'			=> $dl_clicks,
-					'DL_DESC'			=> $this->message_parser->message,
+					'DL_DESC'			=> $this->renderer->render($row['download_desc']),
 					'DL_UPLOAD_TIME' 	=> $this->user->format_date($upload_time),
 					'DL_LAST_CHANGED' 	=> $this->user->format_date($last_changed_time),
 					'DL_FILESIZE'		=> $filesize,
 					'U_DOWNLOAD'		=> $download,
+					'DL_IMAGE'			=> $this->root_path . $eds_values['dm_eds_image_dir'] . '/' . $dl_image,
 				));
 			}
 
@@ -229,11 +232,12 @@ class downloadsystemcat
 			$this->functions->assign_authors();
 
 			$this->template->assign_vars(array(
-				'CAT_NAME' 								=> $cat_name,
-				'MAIN_LINK'								=> $this->helper->route('dmzx_downloadsystem_controller'),
-				'DOWNLOADSYSTEM_FOOTER_VIEW'			=> true,
-				'TOTAL_DOWNLOADS'						=> ($total_downloads == 1) ? $this->user->lang['EDS_SINGLE'] : sprintf($this->user->lang['EDS_MULTI'], $total_downloads),
-				'L_MAIN_LINK'							=> sprintf($this->user->lang['EDS_BACK_LINK'], '<a href= "' . $this->helper->route('dmzx_downloadsystem_controller') . '">', '</a>'),
+				'CAT_NAME' 						=> $cat_name,
+				'MAIN_LINK'						=> $this->helper->route('dmzx_downloadsystem_controller'),
+				'DOWNLOADSYSTEM_FOOTER_VIEW'	=> true,
+				'TOTAL_DOWNLOADS'				=> ($total_downloads == 1) ? $this->user->lang['EDS_SINGLE'] : sprintf($this->user->lang['EDS_MULTI'], $total_downloads),
+				'L_MAIN_LINK'					=> sprintf($this->user->lang['EDS_BACK_LINK'], '<a href= "' . $this->helper->route('dmzx_downloadsystem_controller') . '">', '</a>'),
+				'S_DM_EDS_ALLOW_DL_IMG'			=> $eds_values['dm_eds_allow_dl_img'],
 			));
 		}
 

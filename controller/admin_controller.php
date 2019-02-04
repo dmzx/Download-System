@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB Extension - Download System
-* @copyright (c) 2016 dmzx - http://www.dmzx-web.net
+* @copyright (c) 2016 dmzx - https://www.dmzx-web.net
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -13,6 +13,18 @@ class admin_controller
 {
 	/** @var \dmzx\downloadsystem\core\functions */
 	protected $functions;
+
+	/** @var \phpbb\filesystem\filesystem */
+	protected $filesystem;
+
+	/** @var \phpbb\textformatter\s9e\parser */
+	protected $parser;
+
+	/** @var \phpbb\textformatter\s9e\renderer */
+	protected $renderer;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\template\template */
 	protected $template;
@@ -64,26 +76,34 @@ class admin_controller
 	/**
 	* Constructor
 	*
-	* @param \dmzx\downloadsystem\core\functions						$functions
-	* @param \phpbb\template\template		 							$template
-	* @param \phpbb\user												$user
-	* @param \phpbb\log													$log
-	* @param \phpbb\cache\service										$cache
-	* @param \phpbb\db\driver\driver_interface							$db
-	* @param \phpbb\request\request		 								$request
-	* @param \phpbb\pagination											$pagination
-	* @param \phpbb\extension\manager									$ext_manager
-	* @param \phpbb\path_helper											$path_helper
-	* @param string 													$php_ext
-	* @param string 													$root_path
-	* @param string 													$dm_eds_table
-	* @param string 													$dm_eds_cat_table
-	* @param string 													$dm_eds_config_table
-	* @param \phpbb\files\factory										$files_factory
+	* @param \dmzx\downloadsystem\core\functions			$functions
+	* @param \phpbb\filesystem\filesystem						$filesystem
+	* @param \phpbb\textformatter\s9e\parser					$parser
+	* @param \phpbb\textformatter\s9e\renderer 				$renderer
+	* @param \phpbb\controller\helper							$helper
+	* @param \phpbb\template\template		 				$template
+	* @param \phpbb\user									$user
+	* @param \phpbb\log										$log
+	* @param \phpbb\cache\service							$cache
+	* @param \phpbb\db\driver\driver_interface				$db
+	* @param \phpbb\request\request		 					$request
+	* @param \phpbb\pagination								$pagination
+	* @param \phpbb\extension\manager						$ext_manager
+	* @param \phpbb\path_helper								$path_helper
+	* @param string 										$php_ext
+	* @param string 										$root_path
+	* @param string 										$dm_eds_table
+	* @param string 										$dm_eds_cat_table
+	* @param string 										$dm_eds_config_table
+	* @param \phpbb\files\factory							$files_factory
 	*
 	*/
 	public function __construct(
 		\dmzx\downloadsystem\core\functions $functions,
+		\phpbb\filesystem\filesystem $filesystem,
+		\phpbb\textformatter\s9e\parser $parser,
+		\phpbb\textformatter\s9e\renderer $renderer,
+		\phpbb\controller\helper $helper,
 		\phpbb\template\template $template,
 		\phpbb\user $user,
 		\phpbb\log\log $log,
@@ -97,9 +117,14 @@ class admin_controller
 		$dm_eds_table,
 		$dm_eds_cat_table,
 		$dm_eds_config_table,
-		\phpbb\files\factory $files_factory = null)
+		\phpbb\files\factory $files_factory = null
+	)
 	{
 		$this->functions 			= $functions;
+		$this->filesystem			= $filesystem;
+		$this->parser				= $parser;
+		$this->renderer				= $renderer;
+		$this->helper				= $helper;
 		$this->template 			= $template;
 		$this->user 				= $user;
 		$this->log 					= $log;
@@ -123,10 +148,8 @@ class admin_controller
 		{
 			include($this->root_path . 'includes/functions_posting.' . $this->php_ext);
 		}
-		if (!class_exists('parse_message'))
-		{
-			include($this->root_path . 'includes/message_parser.' . $this->php_ext);
-		}
+
+		$this->user->add_lang('posting');
 	}
 
 	public function display_config()
@@ -142,12 +165,20 @@ class admin_controller
 		{
 			// Values for eds_config
 			$sql_ary = array (
-				'pagination_acp'		=> $this->request->variable('pagination_acp', 0),
-				'pagination_user'		=> $this->request->variable('pagination_user', 0),
-				'announce_enable'		=> $this->request->variable('announce_enable', 0),
-				'announce_forum'		=> $this->request->variable('announce_forum', 0),
-				'announce_lock_enable'	=> $this->request->variable('announce_lock_enable', 0),
-				'pagination_downloads'	=> $this->request->variable('pagination_downloads', 0),
+				'pagination_acp'			=> $this->request->variable('pagination_acp', 0),
+				'pagination_user'			=> $this->request->variable('pagination_user', 0),
+				'announce_enable'			=> $this->request->variable('announce_enable', 0),
+				'announce_forum'			=> $this->request->variable('announce_forum', 0),
+				'announce_lock_enable'		=> $this->request->variable('announce_lock_enable', 0),
+				'pagination_downloads'		=> $this->request->variable('pagination_downloads', 0),
+				'dm_eds_image_size'			=> $this->request->variable('dm_eds_image_size', 0),
+				'dm_eds_image_dir'			=> $this->request->variable('dm_eds_image_dir', 'images/downloadsystem', true),
+				'dm_eds_image_cat_dir'		=> $this->request->variable('dm_eds_image_cat_dir', 'images/downloadsystem/categories', true),
+				'dm_eds_allow_bbcodes'		=> $this->request->variable('dm_eds_allow_bbcodes', 0),
+				'dm_eds_allow_smilies'		=> $this->request->variable('dm_eds_allow_smilies', 0),
+				'dm_eds_allow_magic_url'	=> $this->request->variable('dm_eds_allow_magic_url', 0),
+				'dm_eds_allow_dl_img'		=> $this->request->variable('dm_eds_allow_dl_img', 0),
+				'dm_eds_allow_cat_img'		=> $this->request->variable('dm_eds_allow_cat_img', 0),
 			);
 
 			// Check if pagination_acp is at least 5
@@ -182,7 +213,7 @@ class admin_controller
 				$check_id = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
 
-				if ( empty($check_id) )
+				if (empty($check_id))
 				{
 					trigger_error($this->user->lang['ACP_FORUM_ID_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -200,14 +231,22 @@ class admin_controller
 		else
 		{
 			$this->template->assign_vars(array(
-				'PAGINATION_ACP'		=> $eds_values['pagination_acp'],
-				'PAGINATION_USER'		=> $eds_values['pagination_user'],
-				'ANNOUNCE_ENABLE'		=> $eds_values['announce_enable'],
-				'ANNOUNCE_FORUM'		=> $eds_values['announce_forum'],
-				'ANNOUNCE_LOCK'			=> $eds_values['announce_lock_enable'],
-				'PAGINATION_DOWNLOADS'	=> $eds_values['pagination_downloads'],
-				'U_BACK'				=> $this->u_action,
-				'U_ACTION'				=> $form_action,
+				'PAGINATION_ACP'			=> $eds_values['pagination_acp'],
+				'PAGINATION_USER'			=> $eds_values['pagination_user'],
+				'ANNOUNCE_ENABLE'			=> $eds_values['announce_enable'],
+				'ANNOUNCE_FORUM'			=> $eds_values['announce_forum'],
+				'ANNOUNCE_LOCK'				=> $eds_values['announce_lock_enable'],
+				'PAGINATION_DOWNLOADS'		=> $eds_values['pagination_downloads'],
+				'DM_EDS_IMAGE_DIR'			=> $eds_values['dm_eds_image_dir'],
+				'DM_EDS_IMAGE_CAT_DIR'		=> $eds_values['dm_eds_image_cat_dir'],
+				'DM_EDS_IMAGE_SIZE'			=> $eds_values['dm_eds_image_size'],
+				'DM_EDS_ALLOW_BBCODES'		=> $eds_values['dm_eds_allow_bbcodes'],
+				'DM_EDS_ALLOW_SMILIES'		=> $eds_values['dm_eds_allow_smilies'],
+				'DM_EDS_ALLOW_MAGIC_URL'	=> $eds_values['dm_eds_allow_magic_url'],
+				'DM_EDS_ALLOW_DL_IMG'		=> $eds_values['dm_eds_allow_dl_img'],
+				'DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
+				'U_BACK'					=> $this->u_action,
+				'U_ACTION'					=> $form_action,
 			));
 		}
 	}
@@ -281,17 +320,25 @@ class admin_controller
 		}
 
 		$this->template->assign_vars(array(
-			'ID'				=> $id,
-			'TITLE'				=> $title,
-			'DESC'				=> $desc,
-			'FILENAME'			=> $filename,
-			'DL_VERSION'		=> $dl_version,
-			'FTP_UPLOAD'		=> $ftp_upload,
-			'PARENT_OPTIONS'	=> $cat_options,
-			'ALLOWED_SIZE'		=> sprintf($this->user->lang['ACP_NEW_DOWNLOAD_SIZE'], $max_filesize, $unit),
-			'U_BACK'			=> $this->u_action,
-			'U_ACTION'			=> $form_action,
-			'L_MODE_TITLE'		=> $lang_mode,
+			'ID'					=> $id,
+			'TITLE'					=> $title,
+			'DESC'					=> $desc,
+			'FILENAME'				=> $filename,
+			'DL_VERSION'			=> $dl_version,
+			'FTP_UPLOAD'			=> $ftp_upload,
+			'PARENT_OPTIONS'		=> $cat_options,
+			'ALLOWED_SIZE'			=> sprintf($this->user->lang['ACP_NEW_DOWNLOAD_SIZE'], $max_filesize, $unit),
+			'U_BACK'				=> $this->u_action,
+			'U_ACTION'				=> $form_action,
+			'L_MODE_TITLE'			=> $lang_mode,
+			'S_BBCODE_ENABLED'		=> !empty($dm_eds_data['enable_bbcode_file']) ? $dm_eds_data['enable_bbcode_file'] : 0,
+			'S_SMILIES_ENABLED'		=> !empty($dm_eds_data['enable_smilies_file']) ? $dm_eds_data['enable_smilies_file'] : 0,
+			'S_MAGIC_URL_ENABLED'	=> !empty($dm_eds_data['enable_magic_url_file']) ? $dm_eds_data['enable_magic_url_file'] : 0,
+			'BBCODE_STATUS'			=> !empty($eds_values['dm_eds_allow_bbcodes']) ? $this->user->lang('BBCODE_IS_ON', '<a href="' . $this->helper->route('phpbb_help_bbcode_controller') . '">', '</a>') : $this->user->lang('BBCODE_IS_OFF', '<a href="' . $this->helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
+			'SMILIES_STATUS'		=> !empty($eds_values['dm_eds_allow_smilies']) ? $this->user->lang('SMILIES_ARE_ON') : $this->user->lang('SMILIES_ARE_OFF'),
+			'URL_STATUS'			=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
+			'S_DL_CATEGORY_ADD'		=> true,
+			'S_DM_EDS_ALLOW_DL_IMG'	=> $eds_values['dm_eds_allow_dl_img'],
 		));
 	}
 
@@ -306,8 +353,6 @@ class admin_controller
 		$action = $this->request->variable('action', '');
 		$action = ($this->request->is_set('submit') && !$this->request->is_set('id')) ? 'add' : $action;
 
-		$this->user->add_lang('posting');
-
 		$id	= $this->request->variable('id', 0);
 
 		$sql = 'SELECT *
@@ -315,20 +360,24 @@ class admin_controller
 			WHERE download_id = ' . (int) $id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
-		decode_message($row['download_desc'], $row['bbcode_uid']);
+		decode_message($row['download_desc']);
 		$copy_title = $row['download_title'];
 		$copy_version = $row['download_version'];
 		$copy_desc = $row['download_desc'];
 		$copy_costs_dl = $row['cost_per_dl'];
+		$download_image = $row['download_image'];
 		$this->db->sql_freeresult($result);
 
-		$id			= $this->request->variable('id', 0);
-		$title		= $this->request->variable('title', '', true);
-		$filename	= $this->request->variable('filename', '', true);
-		$desc		= $this->request->variable('desc', '', true);
-		$dl_version	= $this->request->variable('dl_version', '', true);
-		$costs_dl	= $this->request->variable('cost_per_dl', 0.00);
-		$ftp_upload = $this->request->variable('ftp_upload', '', true);
+		$id							= $this->request->variable('id', 0);
+		$title						= $this->request->variable('title', '', true);
+		$filename					= $this->request->variable('filename', '', true);
+		$desc						= $this->request->variable('desc', '', true);
+		$dl_version					= $this->request->variable('dl_version', '', true);
+		$costs_dl					= $this->request->variable('cost_per_dl', 0.00);
+		$ftp_upload 				= $this->request->variable('ftp_upload', '', true);
+		$enable_bbcode_file			= !$this->request->variable('disable_bbcode_file', false);
+		$enable_smilies_file		= !$this->request->variable('disable_smilies_file', false);
+		$enable_magic_url_file		= !$this->request->variable('disable_magic_url_file', false);
 
 		// Check if categories exists
 		$sql = 'SELECT COUNT(cat_id) AS total_cats
@@ -381,29 +430,46 @@ class admin_controller
 			$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
 		}
 
+		$upload_dl_dir = $eds_values['dm_eds_image_dir'];
+
 		$this->template->assign_vars(array(
-			'ID'				=> $id,
-			'TITLE'				=> $copy_title,
-			'DESC'				=> $copy_desc,
-			'FILENAME'			=> $filename,
-			'FTP_UPLOAD'		=> $ftp_upload,
-			'DL_VERSION'		=> $copy_version,
-			'PARENT_OPTIONS'	=> $cat_options,
-			'ALLOWED_SIZE'		=> sprintf($this->user->lang['ACP_NEW_DOWNLOAD_SIZE'], $max_filesize, $unit),
-			'U_BACK'			=> $this->u_action,
-			'U_ACTION'			=> $form_action,
-			'L_MODE_TITLE'		=> $lang_mode,
+			'ID'						=> $id,
+			'TITLE'						=> $copy_title,
+			'DESC'						=> $copy_desc,
+			'FILENAME'					=> $filename,
+			'FTP_UPLOAD'				=> $ftp_upload,
+			'DL_VERSION'				=> $copy_version,
+			'PARENT_OPTIONS'			=> $cat_options,
+			'ALLOWED_SIZE'				=> sprintf($this->user->lang['ACP_NEW_DOWNLOAD_SIZE'], $max_filesize, $unit),
+			'U_BACK'					=> $this->u_action,
+			'U_ACTION'					=> $form_action,
+			'L_MODE_TITLE'				=> $lang_mode,
+			'S_BBCODE_ENABLED_FILE'		=> !empty($dm_eds_data['enable_bbcode_file']) ? $dm_eds_data['enable_bbcode_file'] : 0,
+			'S_SMILIES_ENABLED_FILE'	=> !empty($dm_eds_data['enable_smilies_file']) ? $dm_eds_data['enable_smilies_file'] : 0,
+			'S_MAGIC_URL_ENABLED_FILE'	=> !empty($dm_eds_data['enable_magic_url_file']) ? $dm_eds_data['enable_magic_url_file'] : 0,
+			'BBCODE_STATUS'				=> !empty($eds_values['dm_eds_allow_bbcodes']) ? $this->user->lang('BBCODE_IS_ON', '<a href="' . $this->helper->route('phpbb_help_bbcode_controller') . '">', '</a>') : $this->user->lang('BBCODE_IS_OFF', '<a href="' . $this->helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
+			'SMILIES_STATUS'			=> !empty($eds_values['dm_eds_allow_smilies']) ? $this->user->lang('SMILIES_ARE_ON') : $this->user->lang('SMILIES_ARE_OFF'),
+			'URL_STATUS'				=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
+			'S_DL_CATEGORY_ADD'			=> true,
+			'DOWNLOAD_IMAGE'			=> !empty($download_image) ? $this->root_path . $upload_dl_dir . '/' . $download_image : '',
 		));
 	}
 
 	public function edit()
 	{
+		// Read out config values
+		$eds_values = $this->functions->config_values();
+
 		// Edit an existing download
 		$form_action = $this->u_action. '&amp;action=update';
 		$lang_mode = $this->user->lang['ACP_EDIT_DOWNLOADS'];
 
 		$action = $this->request->variable('action', '');
 		$action = ($this->request->is_set('submit') && !$this->request->is_set('id')) ? 'add' : $action;
+
+		$enable_bbcode_file				= !$this->request->variable('disable_bbcode_file', false);
+		$enable_smilies_file			= !$this->request->variable('disable_smilies_file', false);
+		$enable_magic_url_file			= !$this->request->variable('disable_magic_url_file', false);
 
 		$id = $this->request->variable('id', '');
 
@@ -415,7 +481,7 @@ class admin_controller
 		$result = $this->db->sql_query_limit($sql,1);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
-		decode_message($row['download_desc'], $row['bbcode_uid']);
+		decode_message($row['download_desc']);
 		$download_id = $row['download_id'];
 		$download_version = $row['download_version'];
 
@@ -457,17 +523,26 @@ class admin_controller
 			$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
 		}
 
+		$upload_dl_dir = $eds_values['dm_eds_image_dir'];
+
 		$this->template->assign_vars(array(
-			'ID'				=> $download_id,
-			'TITLE'				=> $row['download_title'],
-			'DESC'				=> $row['download_desc'],
-			'FILENAME'			=> $row['download_filename'],
-			'CATNAME'			=> $row['cat_name'],
-			'DL_VERSION'		=> $download_version,
-			'PARENT_OPTIONS'	=> $cat_options,
-			'ALLOWED_SIZE'		=> sprintf($this->user->lang['ACP_NEW_DOWNLOAD_SIZE'], $max_filesize, $unit),
-			'U_ACTION'			=> $form_action,
-			'L_MODE_TITLE'		=> $lang_mode,
+			'ID'						=> $download_id,
+			'TITLE'						=> $row['download_title'],
+			'DESC'						=> $row['download_desc'],
+			'FILENAME'					=> $row['download_filename'],
+			'CATNAME'					=> $row['cat_name'],
+			'DL_VERSION'				=> $download_version,
+			'PARENT_OPTIONS'			=> $cat_options,
+			'ALLOWED_SIZE'				=> sprintf($this->user->lang['ACP_NEW_DOWNLOAD_SIZE'], $max_filesize, $unit),
+			'U_ACTION'					=> $form_action,
+			'L_MODE_TITLE'				=> $lang_mode,
+			'S_BBCODE_ENABLED_FILE'		=> !empty($row['enable_bbcode_file']) ? $row['enable_bbcode_file'] : 0,
+			'S_SMILIES_ENABLED_FILE'	=> !empty($row['enable_smilies_file']) ? $row['enable_smilies_file'] : 0,
+			'S_MAGIC_URL_ENABLED_FILE'	=> !empty($row['enable_magic_url_file']) ? $row['enable_magic_url_file'] : 0,
+			'BBCODE_STATUS'				=> !empty($eds_values['dm_eds_allow_bbcodes']) ? $this->user->lang('BBCODE_IS_ON', '<a href="' . $this->helper->route('phpbb_help_bbcode_controller') . '">', '</a>') : $this->user->lang('BBCODE_IS_OFF', '<a href="' . $this->helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
+			'SMILIES_STATUS'			=> !empty($eds_values['dm_eds_allow_smilies']) ? $this->user->lang('SMILIES_ARE_ON') : $this->user->lang('SMILIES_ARE_OFF'),
+			'URL_STATUS'				=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
+			'DOWNLOAD_IMAGE'			=> !empty($row['download_image']) ? $this->root_path . $upload_dl_dir . '/' . $row['download_image'] : '',
 		));
 	}
 
@@ -475,23 +550,24 @@ class admin_controller
 	{
 		$filecheck = $multiplier = '';
 
-		$this->user->add_lang('posting');
-
 		// Read out config values
 		$eds_values = $this->functions->config_values();
 
-		$id					= $this->request->variable('id', 0);
-		$title				= $this->request->variable('title', '', true);
-		$filename			= $this->request->variable('filename', '', true);
-		$desc				= $this->request->variable('desc', '', true);
-		$dl_version			= $this->request->variable('dl_version', '', true);
-		$costs_dl			= $this->request->variable('cost_per_dl', 0.00, true);
-		$cat_option 		= $this->request->variable('parent', '', true);
-		$upload_time 		= time();
-		$last_changed_time 	= time();
-		$uid = $bitfield = $options = '';
-		$allow_bbcode 		= $allow_urls = $allow_smilies = true;
-		$ftp_upload			= $this->request->variable('ftp_upload', '', true);
+		$id							= $this->request->variable('id', 0);
+		$title						= $this->request->variable('title', '', true);
+		$filename					= $this->request->variable('filename', '', true);
+		$desc						= $this->request->variable('desc', '', true);
+		$dl_version					= $this->request->variable('dl_version', '', true);
+		$costs_dl					= $this->request->variable('cost_per_dl', 0.00, true);
+		$cat_option 				= $this->request->variable('parent', '', true);
+		$upload_time 				= time();
+		$last_changed_time 			= time();
+		$uid = $bitfield 			= $options = '';
+		$allow_bbcode 				= $allow_urls = $allow_smilies = true;
+		$ftp_upload					= $this->request->variable('ftp_upload', '', true);
+		$enable_bbcode_file			= !$this->request->variable('disable_bbcode_file', false);
+		$enable_smilies_file		= !$this->request->variable('disable_smilies_file', false);
+		$enable_magic_url_file		= !$this->request->variable('disable_magic_url_file', false);
 
 		if (!$ftp_upload)
 		{
@@ -510,6 +586,7 @@ class admin_controller
 
 		// Add allowed extensions
 		$allowed_extensions = $this->functions->allowed_extensions();
+		$allowed_image_extensions = $this->functions->allowed_image_extensions();
 
 		// Check if categories exists
 		$sql = 'SELECT COUNT(cat_id) AS total_cats
@@ -524,22 +601,8 @@ class admin_controller
 			trigger_error($this->user->lang['ACP_NO_CAT_UPLOAD'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		if ($this->files_factory !== null)
-		{
-			$fileupload = $this->files_factory->get('upload')
-				->set_allowed_extensions($allowed_extensions);
-		}
-		else
-		{
-			generate_text_for_storage($desc, $uid, $bitfield, $options, $allow_bbcode, $allow_urls, $allow_smilies);
-
-			if (!class_exists('\fileupload'))
-			{
-				include($this->root_path . 'includes/functions_upload.' . $this->php_ext);
-			}
-			$fileupload = new \fileupload();
-			$fileupload->fileupload('', $allowed_extensions);
-		}
+		$fileupload = $this->files_factory->get('upload')
+			->set_allowed_extensions($allowed_extensions);
 
 		$target_folder = $this->request->variable('parent', 0);
 		$upload_name = $this->request->variable('filename', '');
@@ -562,7 +625,7 @@ class admin_controller
 
 		if (!$ftp_upload)
 		{
-			$upload_file = (isset($this->files_factory)) ? $fileupload->handle_upload('files.types.form', 'filename') : $fileupload->form_upload('filename');
+			$upload_file = $fileupload->handle_upload('files.types.form', 'filename');
 
 			if (!$upload_file->get('uploadname'))
 			{
@@ -580,26 +643,54 @@ class admin_controller
 			if (sizeof($upload_file->error) && $upload_file->get('uploadname'))
 			{
 				$upload_file->remove();
-				trigger_error(implode('<br />', $upload_file->error));
+				trigger_error(implode('<br />', $upload_file->error), E_USER_WARNING);
 			}
 			// End the upload
 
 			$filesize = @filesize($this->root_path . $upload_dir . '/' . $upload_file->get('uploadname'));
 			$sql_ary = array(
-				'download_title'	=> $title,
-				'download_desc'	 	=> $desc,
-				'download_filename'	=> $upload_file->get('uploadname'),
-				'download_version'	=> $dl_version,
-				'download_cat_id'	=> $cat_option,
-				'upload_time'		=> $upload_time,
-				'cost_per_dl'		=> $costs_dl,
-				'last_changed_time'	=> $last_changed_time,
-				'bbcode_uid'		=> $uid,
-				'bbcode_bitfield'	=> $bitfield,
-				'bbcode_options'	=> $options,
-				'filesize'			=> $filesize,
-				'points_user_id'	=> $this->user->data['user_id'],
+				'download_title'			=> $title,
+				'download_desc'	 			=> $desc,
+				'download_filename'			=> $upload_file->get('uploadname'),
+				'download_version'			=> $dl_version,
+				'download_cat_id'			=> $cat_option,
+				'upload_time'				=> $upload_time,
+				'cost_per_dl'				=> $costs_dl,
+				'last_changed_time'			=> $last_changed_time,
+				'filesize'					=> $filesize,
+				'points_user_id'			=> $this->user->data['user_id'],
+				'enable_bbcode_file'		=> $enable_bbcode_file,
+				'enable_smilies_file'		=> $enable_smilies_file,
+				'enable_magic_url_file'		=> $enable_magic_url_file,
 			);
+
+			# Get an instance of the files upload class
+			$upload = $this->files_factory->get('upload')
+				-> set_max_filesize($eds_values['dm_eds_image_size'] * 1024)
+				-> set_allowed_extensions($allowed_image_extensions);
+
+			$upload_file = $upload->handle_upload('files.types.form', 'download_image');
+
+			if (sizeof($upload_file->error) && $upload_file->get('uploadname'))
+			{
+				trigger_error(implode('<br />', $upload_file->error), E_USER_WARNING);
+			}
+
+			$upload_name = $this->request->variable('download_image', '');
+
+			$upload_dir = $eds_values['dm_eds_image_dir'];
+
+			if ($upload_file->get('uploadname'))
+			{
+				$upload_file->clean_filename('unique_ext', 'dm_eds_dl_');
+				$upload_file->move_file($upload_dir, true, true, 0644);
+				@chmod($this->root_path . $upload_dir . $upload_file->get('uploadname'), 0644);
+				$sql_ary['download_image'] = $upload_file->get('realname');
+			}
+			else
+			{
+				$sql_ary['download_image'] = 'default_dl.png';
+			}
 
 			// Check, if filesize is greater than PHP ini allows
 			if ($unit == 'MB')
@@ -611,7 +702,7 @@ class admin_controller
 				$multiplier = 1024;
 			}
 
-			if ($filesize	> ($max_filesize * $multiplier))
+			if ($filesize > ($max_filesize * $multiplier))
 			{
 				@unlink($this->root_path . $upload_dir . '/' . $upload_file->get('uploadname'));
 				trigger_error($this->user->lang['ACP_FILE_TOO_BIG'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -627,21 +718,28 @@ class admin_controller
 
 			$filesize = @filesize($this->root_path . $upload_dir . '/' . $ftp_upload);
 			$sql_ary = array(
-				'download_title'	=> $title,
-				'download_desc'	 	=> $desc,
-				'download_filename'	=> $ftp_upload,
-				'download_version'	=> $dl_version,
-				'download_cat_id'	=> $cat_option,
-				'upload_time'		=> $upload_time,
-				'cost_per_dl'		=> $costs_dl,
-				'last_changed_time'	=> $last_changed_time,
-				'bbcode_uid'		=> $uid,
-				'bbcode_bitfield'	=> $bitfield,
-				'bbcode_options'	=> $options,
-				'filesize'			=> $filesize,
-				'points_user_id'	=> $this->user->data['user_id'],
+				'download_title'			=> $title,
+				'download_desc'	 			=> $desc,
+				'download_filename'			=> $ftp_upload,
+				'download_version'			=> $dl_version,
+				'download_cat_id'			=> $cat_option,
+				'upload_time'				=> $upload_time,
+				'cost_per_dl'				=> $costs_dl,
+				'last_changed_time'			=> $last_changed_time,
+				'filesize'					=> $filesize,
+				'points_user_id'			=> $this->user->data['user_id'],
+				'enable_bbcode_file'		=> $enable_bbcode_file,
+				'enable_smilies_file'		=> $enable_smilies_file,
+				'enable_magic_url_file'		=> $enable_magic_url_file,
 			);
 		}
+
+		!$sql_ary['enable_bbcode_file'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
+		!$sql_ary['enable_smilies_file'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
+		!$sql_ary['enable_magic_url_file'] || !$eds_values['dm_eds_allow_magic_url'] ? $this->parser->disable_magic_url() : $this->parser->enable_magic_url();
+		$download_desc = $sql_ary['download_desc'];
+		$download_desc = htmlspecialchars_decode($download_desc, ENT_COMPAT);
+		$sql_ary['download_desc'] = $this->parser->parse($download_desc);
 
 		// Announce download, if enabled
 		if ($eds_values['announce_enable'] == 1)
@@ -666,15 +764,8 @@ class admin_controller
 			$download_link = '[url=' . generate_board_url() . '/downloadsystemcat?id=' . $cat_option . ']' . $this->user->lang['ACP_CLICK'] . '[/url]';
 			$download_subject = sprintf($this->user->lang['ACP_ANNOUNCE_TITLE'], $dl_title);
 
-			if ($this->files_factory !== null)
-			{
-				$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_MSG'], $title, $desc, $cat_name, $download_link);
-			}
-			else
-			{
-				$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_MSG'], $title, generate_text_for_display($desc, $uid, $bitfield, $options), $cat_name, $download_link);
+			$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_MSG'], $title, $desc, $cat_name, $download_link);
 
-			}
 			$this->functions->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 		}
 
@@ -682,7 +773,6 @@ class admin_controller
 
 		// Log message
 		$this->log_message('LOG_DOWNLOAD_ADD', $title, 'ACP_NEW_ADDED');
-
 	}
 
 	public function update()
@@ -692,8 +782,6 @@ class admin_controller
 
 		// Read out config values
 		$eds_values = $this->functions->config_values();
-
-		$this->user->add_lang('posting');
 
 		$id = $this->request->variable('id', '');
 
@@ -710,37 +798,27 @@ class admin_controller
 		$current_filesize = $row['filesize'];
 		$this->db->sql_freeresult($result);
 
-		$title 				= $this->request->variable('title', '', true);
-		$v_cat_id			= $this->request->variable('parent', '');
-		$dl_version			= $this->request->variable('dl_version', '', true);
-		$costs_dl			= $this->request->variable('cost_per_dl', 0.00);
-		$last_changed_time 	= time();
-		$desc 				= $this->request->variable('desc', '', true);
-		$announce_up 		= $this->request->variable('announce_up', '');
-		$ftp_upload			= $this->request->variable('ftp_upload', '', true);
-
-		$uid = $bitfield = $options = ''; // will be modified by generate_text_for_storage
-		$allow_bbcode = $allow_urls = $allow_smilies = true;
+		$title 						= $this->request->variable('title', '', true);
+		$v_cat_id					= $this->request->variable('parent', '');
+		$dl_version					= $this->request->variable('dl_version', '', true);
+		$costs_dl					= $this->request->variable('cost_per_dl', 0.00);
+		$cat_option 				= $this->request->variable('parent', '', true);
+		$upload_time 				= time();
+		$last_changed_time 			= time();
+		$desc 						= $this->request->variable('desc', '', true);
+		$announce_up 				= $this->request->variable('announce_up', '');
+		$ftp_upload					= $this->request->variable('ftp_upload', '', true);
+		$enable_bbcode_file			= !$this->request->variable('disable_bbcode_file', false);
+		$enable_smilies_file		= !$this->request->variable('disable_smilies_file', false);
+		$enable_magic_url_file		= !$this->request->variable('disable_magic_url_file', false);
+		$changedlimage 				= $this->request->variable('changedlimage', '');
 
 		// Add allowed extensions
 		$allowed_extensions = $this->functions->allowed_extensions();
+		$allowed_image_extensions = $this->functions->allowed_image_extensions();
 
-		if ($this->files_factory !== null)
-		{
-			$fileupload = $this->files_factory->get('upload')
-				->set_allowed_extensions($allowed_extensions);
-		}
-		else
-		{
-			generate_text_for_storage($desc, $uid, $bitfield, $options, $allow_bbcode, $allow_urls, $allow_smilies);
-
-			if (!class_exists('\fileupload'))
-			{
-				include($this->root_path . 'includes/functions_upload.' . $this->php_ext);
-			}
-			$fileupload = new \fileupload();
-			$fileupload->fileupload('', $allowed_extensions);
-		}
+		$fileupload = $this->files_factory->get('upload')
+			->set_allowed_extensions($allowed_extensions);
 
 		$target_folder = $this->request->variable('parent', 0);
 		$upload_name = $this->request->variable('filename', '');
@@ -763,7 +841,7 @@ class admin_controller
 
 		if (!$ftp_upload)
 		{
-			$upload_file = (isset($this->files_factory)) ? $fileupload->handle_upload('files.types.form', 'filename') : $fileupload->form_upload('filename');
+			$upload_file = $fileupload->handle_upload('files.types.form', 'filename');
 
 			$new_filename = $upload_file->get('uploadname');
 
@@ -783,26 +861,55 @@ class admin_controller
 				if (sizeof($upload_file->error) && $upload_file->get('uploadname'))
 				{
 					$upload_file->remove();
-					trigger_error(implode('<br />', $upload_file->error));
+					trigger_error(implode('<br />', $upload_file->error), E_USER_WARNING);
 				}
 
 				$filesize = @filesize($this->root_path . $upload_dir . '/' . $new_filename);
 			}
 
 			$sql_ary = array(
-				'download_title'	=> $title,
-				'download_version'	=> $dl_version,
-				'download_desc'		=> $desc,
-				'download_filename'	=> $new_filename,
-				'download_cat_id'	=> $v_cat_id,
-				'cost_per_dl'		=> $costs_dl,
-				'last_changed_time' => $last_changed_time,
-				'bbcode_uid'		=> $uid,
-				'bbcode_bitfield'	=> $bitfield,
-				'bbcode_options'	=> $options,
-				'filesize'			=> $filesize,
-				'points_user_id'	=> $this->user->data['user_id'],
+				'download_title'		=> $title,
+				'download_version'		=> $dl_version,
+				'download_desc'			=> $desc,
+				'download_filename'		=> $new_filename,
+				'download_cat_id'		=> $v_cat_id,
+				'cost_per_dl'			=> $costs_dl,
+				'last_changed_time' 	=> $last_changed_time,
+				'filesize'				=> $filesize,
+				'points_user_id'		=> $this->user->data['user_id'],
+				'enable_bbcode_file'	=> $enable_bbcode_file,
+				'enable_smilies_file'	=> $enable_smilies_file,
+				'enable_magic_url_file'	=> $enable_magic_url_file,
 			);
+
+			# Get an instance of the files upload class
+			$upload = $this->files_factory->get('upload')
+				-> set_max_filesize($eds_values['dm_eds_image_size'] * 1024)
+				-> set_allowed_extensions($allowed_image_extensions);
+
+			$upload_file = $upload->handle_upload('files.types.form', 'download_image');
+
+			if (sizeof($upload_file->error) && $upload_file->get('uploadname'))
+			{
+				trigger_error(implode('<br />', $upload_file->error), E_USER_WARNING);
+			}
+
+			$upload_dir = $eds_values['dm_eds_image_dir'];
+
+			if ($upload_file->get('uploadname') && $changedlimage != '')
+			{
+				$upload_file->clean_filename('unique_ext', 'dm_eds_dl_');
+				$upload_file->move_file($upload_dir, true, true, 0644);
+				@chmod($this->root_path . $upload_dir . $upload_file->get('uploadname'), 0644);
+				$sql_ary['download_image'] = $upload_file->get('realname');
+			}
+
+			!$sql_ary['enable_bbcode_file'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
+			!$sql_ary['enable_smilies_file'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
+			!$sql_ary['enable_magic_url_file'] || !$eds_values['dm_eds_allow_magic_url'] ? $this->parser->disable_magic_url() : $this->parser->enable_magic_url();
+			$download_desc = $sql_ary['download_desc'];
+			$download_desc = htmlspecialchars_decode($download_desc, ENT_COMPAT);
+			$sql_ary['download_desc'] = $this->parser->parse($download_desc);
 
 			// If the title is empty, return an error
 			if ($title == '')
@@ -856,15 +963,8 @@ class admin_controller
 							$download_link = '[url=' . generate_board_url() . '/downloadsystemcat?id=' . $v_cat_id . ']' . $this->user->lang['ACP_CLICK'] . '[/url]';
 							$download_subject = sprintf($this->user->lang['ACP_ANNOUNCE_UP_TITLE'], $dl_title);
 
-							if ($this->files_factory !== null)
-							{
-								$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, $desc, $cat_name, $download_link);
-							}
-							else
-							{
-								$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, generate_text_for_display($desc, $uid, $bitfield, $options), $cat_name, $download_link);
+							$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, $desc, $cat_name, $download_link);
 
-							}
 							$this->functions->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 						}
 
@@ -905,17 +1005,11 @@ class admin_controller
 						$download_link = '[url=' . generate_board_url() . '/downloadsystemcat?id=' . $v_cat_id . ']' . $this->user->lang['ACP_CLICK'] . '[/url]';
 						$download_subject = sprintf($this->user->lang['ACP_ANNOUNCE_UP_TITLE'], $dl_title);
 
-						if ($this->files_factory !== null)
-						{
-							$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, $desc, $cat_name, $download_link);
-						}
-						else
-						{
-							$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, generate_text_for_display($desc, $uid, $bitfield, $options), $cat_name, $download_link);
+						$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_UP_MSG'], $title, $desc, $cat_name, $download_link);
 
-						}
 						$this->functions->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 					}
+
 					$this->db->sql_query('UPDATE ' . $this->dm_eds_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE download_id = ' . (int) $id);
 					$this->cache->destroy('sql', $this->dm_eds_table);
 
@@ -936,20 +1030,35 @@ class admin_controller
 
 			$filesize = @filesize($this->root_path . $upload_dir . '/' . $ftp_upload);
 			$sql_ary = array(
-				'download_title'	=> $title,
-				'download_desc'	 	=> $desc,
-				'download_filename'	=> $ftp_upload,
-				'download_version'	=> $dl_version,
-				'download_cat_id'	=> $cat_option,
-				'upload_time'		=> $upload_time,
-				'cost_per_dl'		=> $costs_dl,
-				'last_changed_time'	=> $last_changed_time,
-				'bbcode_uid'		=> $uid,
-				'bbcode_bitfield'	=> $bitfield,
-				'bbcode_options'	=> $options,
-				'filesize'			=> $filesize,
-				'points_user_id'	=> $this->user->data['user_id'],
+				'download_title'		=> $title,
+				'download_desc'	 		=> $desc,
+				'download_filename'		=> $ftp_upload,
+				'download_version'		=> $dl_version,
+				'download_cat_id'		=> $cat_option,
+				'upload_time'			=> $upload_time,
+				'cost_per_dl'			=> $costs_dl,
+				'last_changed_time'		=> $last_changed_time,
+				'filesize'				=> $filesize,
+				'points_user_id'		=> $this->user->data['user_id'],
+				'enable_bbcode_file'	=> $enable_bbcode_file,
+				'enable_smilies_file'	=> $enable_smilies_file,
+				'enable_magic_url_file'	=> $enable_magic_url_file,
 			);
+
+			!$sql_ary['enable_bbcode_file'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
+			!$sql_ary['enable_smilies_file'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
+			!$sql_ary['enable_magic_url_file'] || !$eds_values['dm_eds_allow_magic_url'] ? $this->parser->disable_magic_url() : $this->parser->enable_magic_url();
+			$download_desc = $sql_ary['download_desc'];
+			$download_desc = htmlspecialchars_decode($download_desc, ENT_COMPAT);
+			$sql_ary['download_desc'] = $this->parser->parse($download_desc);
+
+			$this->db->sql_query('UPDATE ' . $this->dm_eds_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE download_id = ' . (int) $id);
+			$this->cache->destroy('sql', $this->dm_eds_table);
+
+			// Log message
+			$this->log_message('LOG_DOWNLOAD_UPDATED', $title, 'ACP_DOWNLOAD_UPDATED');
+
+			return;
 		}
 	}
 
@@ -957,10 +1066,13 @@ class admin_controller
 	{
 		$id = $this->request->variable('id', '');
 
+		// Read out config values
+		$eds_values = $this->functions->config_values();
+
 		// Delete an existing download
 		if (confirm_box(true))
 		{
-			$sql = 'SELECT c.cat_sub_dir, d.download_filename
+			$sql = 'SELECT c.cat_sub_dir, d.download_filename, d.download_image
 				FROM ' . $this->dm_eds_cat_table . ' c
 				LEFT JOIN ' . $this->dm_eds_table . ' d
 					ON c.cat_id = d.download_cat_id
@@ -968,6 +1080,7 @@ class admin_controller
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$cat_dir = $row['cat_sub_dir'];
+			$download_image = $row['download_image'];
 			$file_name = $row['download_filename'];
 			$this->db->sql_freeresult($result);
 
@@ -977,6 +1090,12 @@ class admin_controller
 			$sql = 'DELETE FROM ' . $this->dm_eds_table . '
 				WHERE download_id = '. (int) $id;
 			$this->db->sql_query($sql);
+
+			# Delete the download image
+			if ($this->filesystem->exists($this->root_path . $eds_values['dm_eds_image_dir'] . '/' . $download_image))
+			{
+				$this->filesystem->remove($this->root_path . $eds_values['dm_eds_image_dir'] . '/' . $download_image);
+			}
 
 			// Log message
 			$this->log_message('LOG_DOWNLOAD_DELETED', $file_name, 'ACP_DOWNLOAD_DELETED');
@@ -994,11 +1113,6 @@ class admin_controller
 
 	public function display_downloads()
 	{
-		$this->user->add_lang('posting');
-
-		// Setup message parser
-		$this->message_parser = new \parse_message();
-
 		$action 		= $this->request->is_set_post('submit');
 		$id				= $this->request->variable('id', 0);
 		$form_action 	= $this->u_action. '&amp;action=add';
@@ -1044,17 +1158,11 @@ class admin_controller
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$this->message_parser->message = $row['download_desc'];
-			$this->message_parser->bbcode_bitfield = $row['bbcode_bitfield'];
-			$this->message_parser->bbcode_uid = $row['bbcode_uid'];
-			$allow_bbcode = $allow_magic_url = $allow_smilies = true;
-			$this->message_parser->format_display($allow_bbcode, $allow_magic_url, $allow_smilies);
-
 			$this->template->assign_block_vars('downloads', array(
 				'ICON_COPY'		=> '<img src="' . $this->root_path . 'adm/images/file_new.gif" alt="' . $this->user->lang['ACP_COPY_NEW'] . '" title="' . $this->user->lang['ACP_COPY_NEW'] . '" />',
 				'TITLE'			=> $row['download_title'],
 				'FILENAME'		=> $row['download_filename'],
-				'DESC'			=> $this->message_parser->message,
+				'DESC'			=> $this->renderer->render($row['download_desc']),
 				'VERSION'		=> $row['download_version'],
 				'DL_COST'		=> ($row['cost_per_dl'] == 0 ? $this->user->lang['ACP_COST_FREE'] : $row['cost_per_dl']),
 				'SUB_DIR'		=> $row['cat_sub_dir'],
@@ -1062,22 +1170,25 @@ class admin_controller
 				'U_COPY'		=> $this->u_action . '&amp;action=copy_new&amp;id=' .$row['download_id'],
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' .$row['download_id'],
 				'U_DEL'			=> $this->u_action . '&amp;action=delete&amp;id=' .$row['download_id'],
+				'DL_IMAGE'		=> $this->root_path . $eds_values['dm_eds_image_dir'] . '/' . $row['download_image'],
 			));
 		}
 		$this->db->sql_freeresult($result);
 
 		$base_url = $this->u_action;
+
 		//Start pagination
 		$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_downloads, $number, $start);
 
 		$this->template->assign_vars(array(
-			'S_DOWNLOAD_ACTION' => $this->u_action,
-			'S_SELECT_SORT_DIR'	=> $s_sort_dir,
-			'S_SELECT_SORT_KEY'	=> $s_sort_key,
-			'TOTAL_DOWNLOADS'	=> ($total_downloads == 1) ? $this->user->lang['ACP_SINGLE_DOWNLOAD'] : sprintf($this->user->lang['ACP_MULTI_DOWNLOAD'], $total_downloads),
-			'U_NEW_DOWNLOAD'	=> $this->u_action . '&amp;action=new_download',
-			'L_MODE_TITLE'		=> $lang_mode,
-			'U_EDIT_ACTION'		=> $this->u_action,
+			'S_DOWNLOAD_ACTION'		=> $this->u_action,
+			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
+			'S_SELECT_SORT_KEY'		=> $s_sort_key,
+			'TOTAL_DOWNLOADS'		=> ($total_downloads == 1) ? $this->user->lang['ACP_SINGLE_DOWNLOAD'] : sprintf($this->user->lang['ACP_MULTI_DOWNLOAD'], $total_downloads),
+			'U_NEW_DOWNLOAD'		=> $this->u_action . '&amp;action=new_download',
+			'L_MODE_TITLE'			=> $lang_mode,
+			'U_EDIT_ACTION'			=> $this->u_action,
+			'S_DM_EDS_ALLOW_DL_IMG'	=> $eds_values['dm_eds_allow_dl_img'],
 		));
 	}
 
@@ -1088,10 +1199,15 @@ class admin_controller
 	{
 		$catrow = array();
 		$parent_id = $this->request->variable('parent_id', 0);
+
+		// Read out config values
+		$eds_values = $this->functions->config_values();
+
 		$this->template->assign_vars(array(
 			'S_MODE_MANAGE'	=> true,
 			'S_ACTION'		=> $this->u_action . '&amp;action=create&amp;parent_id=' . $parent_id,
 		));
+
 		if (!$parent_id)
 		{
 			$navigation = $this->user->lang['ACP_CAT_INDEX'];
@@ -1112,6 +1228,7 @@ class admin_controller
 				}
 			}
 		}
+
 		$dm_eds = array();
 		$sql = 'SELECT *
 			FROM ' . $this->dm_eds_cat_table . '
@@ -1131,6 +1248,7 @@ class admin_controller
 				'FOLDER_IMAGE'			=> $folder_image,
 				'U_CAT'					=> $this->u_action . '&amp;parent_id=' . $dm_eds[$i]['cat_id'],
 				'CAT_NAME'				=> $dm_eds[$i]['cat_name'],
+				'CAT_DESC'				=> $this->renderer->render($dm_eds[$i]['cat_desc']),
 				'CAT_SUBS'				=> ($dm_eds[$i]['left_id'] + 1 == $dm_eds[$i]['right_id'] && !$dm_eds[$i]['cat_id'] == $dm_eds[$i]['parent_id']) ? true : false,
 				'CAT_SUBS_SHOW'			=> ($dm_eds[$i]['left_id'] + 1 != $dm_eds[$i]['right_id'] && $dm_eds[$i]['cat_id'] != $parent_id	|| $dm_eds[$i]['parent_id'] == 0) ? true : false,
 				'CAT_NAME_SHOW'			=> ($dm_eds[$i]['cat_name_show'] == 1) ? $this->user->lang['ACP_CAT_NAME_SHOW_YES'] : $this->user->lang['ACP_CAT_NAME_SHOW_NO'],
@@ -1139,14 +1257,16 @@ class admin_controller
 				'U_MOVE_DOWN'			=> $this->u_action . '&amp;action=move&amp;move=move_down&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 				'U_EDIT'				=> $this->u_action . '&amp;action=edit&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 				'U_DELETE'				=> $this->u_action . '&amp;action=delete&amp;cat_id=' . $dm_eds[$i]['cat_id'],
+				'IMAGE'					=> $this->root_path . $eds_values['dm_eds_image_cat_dir'] . '/' . $dm_eds[$i]['category_image'],
 			));
 		}
 
 		$this->template->assign_vars(array(
-			'NAVIGATION'		=> $navigation,
-			'S_DM_EDS'			=> $parent_id,
-			'U_EDIT'			=> ($parent_id) ? $this->u_action . '&amp;action=edit&amp;cat_id=' . $parent_id : '',
-			'U_DELETE'			=> ($parent_id) ? $this->u_action . '&amp;action=delete&amp;cat_id=' . $parent_id : '',
+			'NAVIGATION'					=> $navigation,
+			'S_DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
+			'S_DM_EDS'						=> $parent_id,
+			'U_EDIT'						=> ($parent_id) ? $this->u_action . '&amp;action=edit&amp;cat_id=' . $parent_id : '',
+			'U_DELETE'						=> ($parent_id) ? $this->u_action . '&amp;action=delete&amp;cat_id=' . $parent_id : '',
 		));
 	}
 
@@ -1155,6 +1275,11 @@ class admin_controller
 	*/
 	public function create_cat()
 	{
+		// Read out config values
+		$eds_values = $this->functions->config_values();
+
+		$allowed_image_extensions = $this->functions->allowed_image_extensions();
+
 		if ($this->request->is_set('submit'))
 		{
 			$dm_eds_data = array();
@@ -1166,9 +1291,17 @@ class admin_controller
 				'cat_desc'			=> $this->request->variable('cat_desc', '', true),
 				'cat_desc_options'	=> 7,
 				'cat_name_show'		=> $this->request->variable('cat_name_show', 0),
+				'enable_bbcode'		=> !$this->request->variable('disable_bbcode', false),
+				'enable_smilies'	=> !$this->request->variable('disable_smilies', false),
+				'enable_magic_url'	=> !$this->request->variable('disable_magic_url', false)
 			);
 
-			generate_text_for_storage($dm_eds_data['cat_desc'], $dm_eds_data['cat_desc_uid'], $dm_eds_data['cat_desc_bitfield'], $dm_eds_data['cat_desc_options'], $this->request->variable('desc_parse_bbcode', false), $this->request->variable('desc_parse_urls', false), $this->request->variable('desc_parse_smilies', false));
+			!$dm_eds_data['enable_bbcode'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
+			!$dm_eds_data['enable_smilies'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
+			!$dm_eds_data['enable_magic_url'] || !$eds_values['dm_eds_allow_magic_url'] ? $this->parser->disable_magic_url() : $this->parser->enable_magic_url();
+			$category_description = $dm_eds_data['cat_desc'];
+			$category_description = htmlspecialchars_decode($category_description, ENT_COMPAT);
+			$dm_eds_data['cat_desc'] = $this->parser->parse($category_description);
 
 			// Create variable for the cat_sub_dir name
 			$cat_sub_dir_name = '';
@@ -1181,7 +1314,6 @@ class admin_controller
 			}
 
 			// Do the check, if cat_sub_dir has valid characters only
-
 			// Let's make an array of allowed characters
 			$allowed = range('a', 'z'); //latin letters
 			$allowed = array_merge($allowed, range(0, 9)); //numbers
@@ -1193,6 +1325,34 @@ class admin_controller
 			// Now split the new category name into single parts
 			$new_dir_name = str_split($cat_sub_dir_name); //works only in PHP5!
 
+			# Get an instance of the files upload class
+			$upload = $this->files_factory->get('upload')
+				-> set_max_filesize($eds_values['dm_eds_image_size'] * 1024)
+				-> set_allowed_extensions($allowed_image_extensions);
+
+			$upload_file = $upload->handle_upload('files.types.form', 'category_image');
+
+			if (sizeof($upload_file->error) && $upload_file->get('uploadname'))
+			{
+				trigger_error(implode('<br />', $upload_file->error), E_USER_WARNING);
+			}
+
+			$upload_name = $this->request->variable('category_image', '');
+
+			$upload_dir = $eds_values['dm_eds_image_cat_dir'];
+
+			if ($upload_file->get('uploadname'))
+			{
+				$upload_file->clean_filename('unique_ext', 'dm_eds_cat_');
+				$upload_file->move_file($upload_dir, true, true, 0644);
+				@chmod($this->root_path . $upload_dir . $upload_file->get('uploadname'), 0644);
+				$dm_eds_data['category_image'] = $upload_file->get('realname');
+			}
+			else
+			{
+				$dm_eds_data['category_image'] = 'default_cat.png';
+			}
+
 			// Check each character if it's allowed
 			foreach ($new_dir_name as $var)
 			{
@@ -1203,7 +1363,8 @@ class admin_controller
 			}
 
 			// Check if sub dir name already exists
-			$sql = 'SELECT * FROM ' . $this->dm_eds_cat_table . "
+			$sql = 'SELECT *
+				FROM ' . $this->dm_eds_cat_table . "
 				WHERE cat_sub_dir LIKE '$cat_sub_dir_name'";
 			$result= $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
@@ -1250,6 +1411,7 @@ class admin_controller
 				$dm_eds_data['left_id'] = $row['right_id'] + 1;
 				$dm_eds_data['right_id'] = $row['right_id'] + 2;
 			}
+
 			$this->db->sql_query('INSERT INTO ' . $this->dm_eds_cat_table . ' ' . $this->db->sql_build_array('INSERT', $dm_eds_data));
 			$this->cache->destroy('sql', $this->dm_eds_cat_table);
 
@@ -1272,14 +1434,19 @@ class admin_controller
 
 		$parent_options = $this->functions->make_cat_select($this->request->variable('parent_id', 0), false, false, false, false);
 		$this->template->assign_vars(array(
-			'S_MODE_CREATE'				=> true,
-			'S_ACTION'					=> $this->u_action . '&amp;parent_id=' . $this->request->variable('parent_id', 0),
-			'S_DESC_BBCODE_CHECKED'		=> true,
-			'S_DESC_SMILIES_CHECKED'	=> true,
-			'S_DESC_URLS_CHECKED'		=> true,
-			'S_PARENT_OPTIONS'			=> $parent_options,
-			'CAT_NAME_SHOW'				=> $this->request->variable('cat_name_show', 1),
-			'CAT_NAME_NO_SHOW'			=> $this->user->lang['ACP_SUB_NO_CAT'],
+			'S_MODE_CREATE'					=> true,
+			'S_ACTION'						=> $this->u_action . '&amp;parent_id=' . $this->request->variable('parent_id', 0),
+			'S_BBCODE_ENABLED'				=> !empty($dm_eds_data['enable_bbcode']) ? $dm_eds_data['enable_bbcode'] : 0,
+			'S_SMILIES_ENABLED'				=> !empty($dm_eds_data['enable_smilies']) ? $dm_eds_data['enable_smilies'] : 0,
+			'S_MAGIC_URL_ENABLED'			=> !empty($dm_eds_data['enable_magic_url']) ? $dm_eds_data['enable_magic_url'] : 0,
+			'BBCODE_STATUS'					=> !empty($eds_values['dm_eds_allow_bbcodes']) ? $this->user->lang('BBCODE_IS_ON', '<a href="' . $this->helper->route('phpbb_help_bbcode_controller') . '">', '</a>') : $this->user->lang('BBCODE_IS_OFF', '<a href="' . $this->helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
+			'SMILIES_STATUS'				=> !empty($eds_values['dm_eds_allow_smilies']) ? $this->user->lang('SMILIES_ARE_ON') : $this->user->lang('SMILIES_ARE_OFF'),
+			'URL_STATUS'					=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
+			'S_PARENT_OPTIONS'				=> $parent_options,
+			'CAT_NAME_SHOW'					=> $this->request->variable('cat_name_show', 1),
+			'CAT_NAME_NO_SHOW'				=> $this->user->lang['ACP_SUB_NO_CAT'],
+			'S_DL_CATEGORY_ADD'				=> true,
+			'S_DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
 		));
 	}
 
@@ -1293,18 +1460,35 @@ class admin_controller
 			trigger_error($this->user->lang['ACP_NO_CAT_ID'], E_USER_WARNING);
 		}
 
+		$changecatimage = $this->request->variable('changecatimage', '');
+
+		// Read out config values
+		$eds_values = $this->functions->config_values();
+
+		$allowed_image_extensions = $this->functions->allowed_image_extensions();
+
 		if ($this->request->is_set('submit'))
 		{
 			$dm_eds_data = array();
 			$dm_eds_data = array(
-				'cat_name'						=> $this->request->variable('cat_name', '', true),
-				'parent_id'						=> $this->request->variable('parent_id', 0),
-				'cat_parents'					=> '',
-				'cat_desc_options'				=> 7,
-				'cat_desc'						=> $this->request->variable('cat_desc', '', true),
-				'cat_name_show'					=> $this->request->variable('cat_name_show', 0),
+				'cat_name'					=> $this->request->variable('cat_name', '', true),
+				'parent_id'					=> $this->request->variable('parent_id', 0),
+				'cat_parents'				=> '',
+				'cat_desc_options'			=> 7,
+				'cat_desc'					=> $this->request->variable('cat_desc', '', true),
+				'cat_name_show'				=> $this->request->variable('cat_name_show', 0),
+				'enable_bbcode'				=> !$this->request->variable('disable_bbcode', false),
+				'enable_smilies'			=> !$this->request->variable('disable_smilies', false),
+				'enable_magic_url'			=> !$this->request->variable('disable_magic_url', false)
 			);
-			generate_text_for_storage($dm_eds_data['cat_desc'], $dm_eds_data['cat_desc_uid'], $dm_eds_data['cat_desc_bitfield'], $dm_eds_data['cat_desc_options'], $this->request->variable('desc_parse_bbcode', false), $this->request->variable('desc_parse_urls', false), $this->request->variable('desc_parse_smilies', false));
+
+			!$dm_eds_data['enable_bbcode'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
+			!$dm_eds_data['enable_smilies'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
+			!$dm_eds_data['enable_magic_url'] || !$eds_values['dm_eds_allow_magic_url'] ? $this->parser->disable_magic_url() : $this->parser->enable_magic_url();
+			$category_description = $dm_eds_data['cat_desc'];
+			$category_description = htmlspecialchars_decode($category_description, ENT_COMPAT);
+			$dm_eds_data['cat_desc'] = $this->parser->parse($category_description);
+
 			$row = $this->functions->get_cat_info($cat_id);
 
 			if ($row['parent_id'] != $dm_eds_data['parent_id'])
@@ -1396,9 +1580,31 @@ class admin_controller
 				$this->db->sql_query($sql);
 			}
 
+			# Get an instance of the files upload class
+			$upload = $this->files_factory->get('upload')
+				-> set_max_filesize($eds_values['dm_eds_image_size'] * 1024)
+				-> set_allowed_extensions($allowed_image_extensions);
+
+			$upload_file = $upload->handle_upload('files.types.form', 'category_image');
+
+			if (sizeof($upload_file->error) && $upload_file->get('uploadname'))
+			{
+				trigger_error(implode('<br />', $upload_file->error), E_USER_WARNING);
+			}
+
+			$upload_dir = $eds_values['dm_eds_image_cat_dir'];
+
+			if ($upload_file->get('uploadname') && $changecatimage != '')
+			{
+				$upload_file->clean_filename('unique_ext', 'dm_eds_cat_');
+				$upload_file->move_file($upload_dir, true, true, 0644);
+				@chmod($this->root_path . $upload_dir . $upload_file->get('uploadname'), 0644);
+				$dm_eds_data['category_image'] = $upload_file->get('realname');
+			}
+
 			$sql = 'UPDATE ' . $this->dm_eds_cat_table . '
-					SET ' . $this->db->sql_build_array('UPDATE', $dm_eds_data) . '
-					WHERE cat_id	= ' . (int) $cat_id;
+				SET ' . $this->db->sql_build_array('UPDATE', $dm_eds_data) . '
+				WHERE cat_id	= ' . (int) $cat_id;
 			$this->db->sql_query($sql);
 			$this->cache->destroy('sql', $this->dm_eds_cat_table);
 
@@ -1415,6 +1621,7 @@ class admin_controller
 		{
 			trigger_error($this->user->lang['ACP_CAT_NOT_EXIST'], E_USER_WARNING);
 		}
+
 		$dm_eds_data = $this->db->sql_fetchrow($result);
 		$dm_eds_desc_data = generate_text_for_edit($dm_eds_data['cat_desc'], $dm_eds_data['cat_desc_uid'], $dm_eds_data['cat_desc_options']);
 
@@ -1430,20 +1637,27 @@ class admin_controller
 			$subcategories = true;
 		}
 
+		$upload_dir = $eds_values['dm_eds_image_cat_dir'];
+
 		$this->template->assign_vars(array(
-			'S_MODE_EDIT'				=> true,
-			'S_ACTION'					=> $this->u_action . '&amp;action=edit&amp;cat_id=' . $cat_id,
-			'S_PARENT_OPTIONS'			=> $parents_list,
-			'CAT_NAME'					=> $dm_eds_data['cat_name'],
-			'CAT_DESC'					=> $dm_eds_desc_data['text'],
-			'CAT_SUB_DIR'				=> $dm_eds_data['cat_sub_dir'],
-			'S_DESC_BBCODE_CHECKED'		=> ($dm_eds_desc_data['allow_bbcode']) ? true : false,
-			'S_DESC_SMILIES_CHECKED'	=> ($dm_eds_desc_data['allow_smilies']) ? true : false,
-			'S_DESC_URLS_CHECKED'		=> ($dm_eds_desc_data['allow_urls']) ? true : false,
-			'S_HAS_SUBCATS'				=> $subcategories,
-			'S_MODE'					=> 'edit',
-			'CAT_NAME_SHOW'				=> $dm_eds_data['cat_name_show'],
-			'CAT_NAME_NO_SHOW'			=> $this->user->lang['ACP_SUB_NO_CAT'],
+			'S_MODE_EDIT'					=> true,
+			'S_ACTION'						=> $this->u_action . '&amp;action=edit&amp;cat_id=' . $cat_id,
+			'S_PARENT_OPTIONS'				=> $parents_list,
+			'CAT_NAME'						=> $dm_eds_data['cat_name'],
+			'CATEGORY_IMAGE'				=> !empty($dm_eds_data['category_image']) ? $this->root_path . $upload_dir . '/' . $dm_eds_data['category_image'] : '',
+			'CAT_DESC'						=> $dm_eds_desc_data['text'],
+			'CAT_SUB_DIR'					=> $dm_eds_data['cat_sub_dir'],
+			'S_BBCODE_ENABLED'				=> !empty($dm_eds_data['enable_bbcode']) ? $dm_eds_data['enable_bbcode'] : 0,
+			'S_SMILIES_ENABLED'				=> !empty($dm_eds_data['enable_smilies']) ? $dm_eds_data['enable_smilies'] : 0,
+			'S_MAGIC_URL_ENABLED'			=> !empty($dm_eds_data['enable_magic_url']) ? $dm_eds_data['enable_magic_url'] : 0,
+			'BBCODE_STATUS'					=> !empty($eds_values['dm_eds_allow_bbcodes']) ? $this->user->lang('BBCODE_IS_ON', '<a href="' . $this->helper->route('phpbb_help_bbcode_controller') . '">', '</a>') : $this->user->lang('BBCODE_IS_OFF', '<a href="' . $this->helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
+			'SMILIES_STATUS'				=> !empty($eds_values['dm_eds_allow_smilies']) ? $this->user->lang('SMILIES_ARE_ON') : $this->user->lang('SMILIES_ARE_OFF'),
+			'URL_STATUS'					=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
+			'S_HAS_SUBCATS'					=> $subcategories,
+			'S_MODE'						=> 'edit',
+			'CAT_NAME_SHOW'					=> $dm_eds_data['cat_name_show'],
+			'CAT_NAME_NO_SHOW'				=> $this->user->lang['ACP_SUB_NO_CAT'],
+			'S_DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
 		));
 	}
 
@@ -1468,6 +1682,9 @@ class admin_controller
 			}
 		}
 
+		// Read out config values
+		$eds_values = $this->functions->config_values();
+
 		if ($this->request->is_set('submit'))
 		{
 			$dm_eds = $this->functions->get_cat_info($cat_id);
@@ -1484,13 +1701,14 @@ class admin_controller
 			}
 
 			// Get cat directory name
-			$sql = 'SELECT cat_sub_dir, cat_name
+			$sql = 'SELECT cat_sub_dir, cat_name, category_image
 				FROM ' . $this->dm_eds_cat_table . '
 				WHERE cat_id = ' . (int) $cat_id;
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$sub_cat_dir = $row['cat_sub_dir'];
 			$cat_name = $row['cat_name'];
+			$category_image = $row['category_image'];
 			$this->db->sql_freeresult($result);
 
 			// Check if category has files
@@ -1522,6 +1740,11 @@ class admin_controller
 				WHERE cat_id = '$cat_id'";
 			$result = $this->db->sql_query($sql);
 			$this->cache->destroy('sql', $this->dm_eds_cat_table);
+
+			if (!empty($category_image) && $this->filesystem->exists($this->root_path . $eds_values['dm_eds_image_cat_dir'] . '/' . $category_image))
+			{
+				$this->filesystem->remove($this->root_path . $eds_values['dm_eds_image_cat_dir'] . '/' . $category_image);
+			}
 
 			// Remove the folder and all of its content
 			$this->remove_dir($sub_cat_dir);
@@ -1590,6 +1813,7 @@ class admin_controller
 				FROM ' . $this->dm_eds_cat_table . "
 				WHERE cat_id = '$cat_id'";
 			$result = $this->db->sql_query($sql);
+
 			if ($this->db->sql_affectedrows($result) == 0)
 			{
 				trigger_error($this->user->lang['ACP_CAT_NOT_EXIST'], E_USER_WARNING);
@@ -1598,7 +1822,7 @@ class admin_controller
 		$move = $this->request->variable('move', '', true);
 		$moving = $this->functions->get_cat_info($cat_id);
 
-		$sql = 'SELECT cat_id, left_id, right_id
+		$sql = 'SELECT cat_id, left_id, right_id, cat_name
 			FROM ' . $this->dm_eds_cat_table . "
 			WHERE parent_id = {$moving['parent_id']}
 				AND " . (($move == 'move_up') ? "right_id < {$moving['right_id']} ORDER BY right_id DESC" : "left_id > {$moving['left_id']} ORDER BY left_id ASC");
@@ -1656,7 +1880,8 @@ class admin_controller
 				AND right_id BETWEEN {$left_id} AND {$right_id}";
 		$this->db->sql_query($sql);
 		$this->cache->destroy('sql', $this->dm_eds_cat_table);
-	//	redirect($this->u_action . '&amp;parent_id=' . $moving['parent_id']);
+
+		return $target['cat_name'];
 	}
 
 	/**
