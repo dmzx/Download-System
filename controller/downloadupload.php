@@ -205,13 +205,13 @@ class downloadupload
 				if (!$upload_file->get('uploadname'))
 				{
 					meta_refresh(3, $this->helper->route('dmzx_downloadsystem_controller_upload'));
-					throw new http_exception(400, 'ACP_NO_FILENAME');
+					throw new http_exception(400, 'EDS_NO_FILENAME');
 				}
 
 				if (file_exists($this->root_path . $upload_dir . '/' . $upload_file->get('uploadname')))
 				{
 					meta_refresh(3, $this->helper->route('dmzx_downloadsystem_controller_upload'));
-					throw new http_exception(400, 'ACP_UPLOAD_FILE_EXISTS');
+					throw new http_exception(400, 'EDS_UPLOAD_FILE_EXISTS');
 				}
 
 				$upload_file->move_file($upload_dir, false, false, false);
@@ -241,6 +241,7 @@ class downloadupload
 					'enable_bbcode_file'	=> $enable_bbcode_file,
 					'enable_smilies_file'	=> $enable_smilies_file,
 					'enable_magic_url_file'	=> $enable_magic_url_file,
+					'download_image' 		=> 'default_dl.png',
 				);
 
 				!$sql_ary['enable_bbcode_file'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
@@ -263,7 +264,7 @@ class downloadupload
 				if ($filesize > ($max_filesize * $multiplier))
 				{
 					@unlink($this->root_path . $upload_dir . '/' . $upload_file->get('uploadname'));
-					throw new http_exception(400, 'ACP_FILE_TOO_BIG');
+					throw new http_exception(400, 'EDS_FILE_TOO_BIG');
 				}
 			}
 
@@ -287,17 +288,17 @@ class downloadupload
 					$dl_title = $title . ' v' . $dl_version;
 				}
 
-				$download_link = '[url=' . generate_board_url() . '/downloadsystemcat?id=' . $cat_option . ']' . $this->user->lang['ACP_CLICK'] . '[/url]';
-				$download_subject = sprintf($this->user->lang['ACP_ANNOUNCE_TITLE'], $dl_title);
+				$download_link = '[url=' . generate_board_url() . '/downloadsystemcat?id=' . $cat_option . ']' . $this->user->lang['EDS_CLICK'] . '[/url]';
+				$download_subject = sprintf($this->user->lang['EDS_ANNOUNCE_TITLE'], $dl_title);
 
-				$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_MSG'], $title, $desc, $cat_name, $download_link);
+				$download_msg = sprintf($this->user->lang['EDS_ANNOUNCE_MSG'], $title, $desc, $cat_name, $download_link);
 
 				$this->functions->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 			}
 
 			$this->db->sql_query('INSERT INTO ' . $this->dm_eds_table .' ' . $this->db->sql_build_array('INSERT', $sql_ary));
 			// Log message
-			$this->log_message('LOG_DOWNLOAD_ADD', $title, 'ACP_NEW_ADDED');
+			$this->log_message('LOG_DOWNLOAD_ADD', $title, 'EDS_NEW_ADDED');
 		}
 
 		if ($this->auth->acl_get('a_'))
@@ -340,6 +341,7 @@ class downloadupload
 		$this->db->sql_freeresult($result);
 
 		$cat_options = '';
+
 		foreach ($cats as $key => $value)
 		{
 			if ($key == $row2['download_cat_id'])

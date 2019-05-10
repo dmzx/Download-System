@@ -6,7 +6,6 @@
 <h1>{{ lang('ACP_DOWNLOAD_SYSTEM') }} - {{ lang('ACP_MANAGE_CATEGORIES') }}</h1>
 <p>{{ lang('ACP_CAT_SELECT') }}</p>
 
-<p><strong>{{ NAVIGATION }}</strong></p>
 <form id="dm_eds" method="post" action="{{ S_ACTION }}">
 	<fieldset class="quick">
 		<input type="hidden" name="action" value="create" />
@@ -34,7 +33,7 @@
 		{% for catrow in loops.catrow %}
 		<tr>
 			<td class="folder">
-				<span class="fa-stack fa-2x"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-download fa-stack-1x"></i></span>
+				{{ catrow.FOLDER_FA_ICON }}
 			</td>
 			{% if S_DM_EDS_ALLOW_CAT_IMG %}
 			<td class="folder">
@@ -42,7 +41,7 @@
 			</td>
 			{% endif %}
 			<td class="forum-desc">
-				<strong>{{ catrow.CAT_NAME }}</strong>
+				<strong>{{ catrow.CAT_NAME }}{% if not catrow.CAT_SUBS_SHOW %}- {{ lang('ACP_SUB_DL_CAT') }}&nbsp;{{ catrow.CAT_MAIN_NAME}}{% endif %}</strong>
 			</td>
 			<td class="forum-desc">
 				{% if catrow.CAT_DESC %}<br><span>{{ catrow.CAT_DESC }}</span>{% endif %}
@@ -51,11 +50,11 @@
 			{% if catrow.CAT_NAME_SHOW %}<br /><span>{{ catrow.CAT_NAME_SHOW }}</span>{% endif %}</td>
 			<td class="actions">
 				<span class="up-disabled" style="display:none;">{{ ICON_MOVE_UP_DISABLED }}</span>
-				<span class="up"><a href="{{ catrow.U_MOVE_UP }}">{{ ICON_MOVE_UP }}</a></span>
+				<span class="up"><a href="{{ catrow.U_MOVE_UP }}" data-ajax="row_up">{{ ICON_MOVE_UP }}</a></span>
 				<span class="down-disabled" style="display:none;">{{ ICON_MOVE_DOWN_DISABLED }}</span>
-				<span class="down"><a href="{{ catrow.U_MOVE_DOWN }}">{{ ICON_MOVE_DOWN }}</a></span>
+				<span class="down"><a href="{{ catrow.U_MOVE_DOWN }}" data-ajax="row_down">{{ ICON_MOVE_DOWN }}</a></span>
 				<a href="{{ catrow.U_EDIT }}">{{ ICON_EDIT }}</a>
-				<a href="{{ catrow.U_DELETE }}">{{ ICON_DELETE }}</a>
+				<a href="{{ catrow.U_DELETE }}" data-ajax="row_delete">{{ ICON_DELETE }}</a>
 			</td>
 		</tr>
 	{% endfor %}
@@ -88,7 +87,7 @@
 </script>
 
 {% if S_MODE_CREATE %}
-<form id="acp_dm_eds"	method="post" enctype="multipart/form-data" action="{{ U_ACTION }}">
+<form id="acp_dm_eds" method="post" enctype="multipart/form-data" action="{{ U_ACTION }}">
 	<fieldset>
 		<legend>{% if S_MODE_CREATE %}{{ lang('ACP_NEW_CAT') }}{% else %}{{ lang('ACP_EDIT_CAT') }}{% endif %}</legend>
 		<dl>
@@ -188,22 +187,6 @@
 		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
 	</p>
 	{{ S_FORM_TOKEN }}
-</form>
-{% endif %}
-
-{% if S_MODE_DELETE %}
-<form id="acp_dm_eds" method="post" action="{{ U_ACTION }}">
-	<fieldset>
-		<legend><h1>{{ lang('CONFIRM') }}</h1></legend>
-			<dl>
-				{{ CAT_DELETE }}
-			</dl>
-			<p class="submit-buttons">
-				<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('YES') }}" />&nbsp;
-				<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('NO') }}" />
-			</p>
-		{{ S_FORM_TOKEN }}
-	</fieldset>
 </form>
 {% endif %}
 

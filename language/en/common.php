@@ -109,4 +109,20 @@ $lang = array_merge($lang, array(
 	'EDS_SUBCAT_FILE'					=> '1 file',
 	'EDS_SUBCAT_FILES'					=> '%1$d files',
 	'EDS_DL_IMAGE'						=> 'Image',
+	'EDS_UPLOAD_FILE_EXISTS'			=> 'The file you like to upload, does already exist in this category!',
+	'EDS_NO_FILENAME'					=> 'You have to enter a file, which belongs to your upload!',
+	'EDS_FILE_TOO_BIG'					=> 'The file is bigger, than your host allows!',
+	'EDS_CLICK'							=> 'here',
+	'EDS_ANNOUNCE_TITLE'				=> '%1$s',
+	'EDS_ANNOUNCE_MSG'					=> 'Hello,
+
+we have a new download!
+
+[b]Title:[/b] %1$s
+[b]Description:[/b] %2$s
+[b]Category:[/b] %3$s
+[b]Click %4$s to go to the download page![/b]
+
+Have fun!',
+	'EDS_NEW_ADDED'							=> 'Your entry was successfully added to the database',
 ));

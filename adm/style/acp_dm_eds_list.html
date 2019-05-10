@@ -49,7 +49,7 @@
 			<td valign="top">{{ downloads.VERSION }}</td>
 			<td valign="top">{{ downloads.CATNAME }}</td>
 			<td valign="top">{{ downloads.DESC }}</td>
-			<td style="width: 10%;">&nbsp;<a href="{{ downloads.U_COPY }}">{{ downloads.ICON_COPY }}</a> <a href="{{ downloads.U_EDIT }}">{{ ICON_EDIT }}</a> <a href="{{ downloads.U_DEL }}">{{ ICON_DELETE }}</a>&nbsp;</td>
+			<td style="width: 10%;">&nbsp;<a href="{{ downloads.U_COPY }}">{{ downloads.ICON_COPY }}</a>&nbsp;<a href="{{ downloads.U_EDIT }}">{{ ICON_EDIT }}</a>&nbsp;<a href="{{ downloads.U_DEL }}" data-ajax="row_delete">{{ ICON_DELETE }}</a>&nbsp;</td>
 		</tr>
 		{% else %}
 		<tr>

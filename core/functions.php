@@ -14,9 +14,6 @@ class functions
 	/** @var \phpbb\template\template */
 	protected $template;
 
-	/** @var \phpbb\textformatter\s9e\parser */
-	protected $parser;
-
 	/** @var \phpbb\textformatter\s9e\renderer */
 	protected $renderer;
 
@@ -62,7 +59,6 @@ class functions
 	* Constructor
 	*
 	* @param \phpbb\template\template		 	$template
-	* @param \phpbb\textformatter\s9e\parser	$parser
 	* @param \phpbb\textformatter\s9e\renderer	$renderer
 	* @param \phpbb\user						$user
 	* @param \phpbb\db\driver\driver_interface	$db
@@ -80,7 +76,6 @@ class functions
 	*/
 	public function __construct(
 		\phpbb\template\template $template,
-		\phpbb\textformatter\s9e\parser $parser,
 		\phpbb\textformatter\s9e\renderer $renderer,
 		\phpbb\user $user,
 		\phpbb\db\driver\driver_interface $db,
@@ -96,7 +91,6 @@ class functions
 	)
 	{
 		$this->template 			= $template;
-		$this->parser				= $parser;
 		$this->renderer				= $renderer;
 		$this->user 				= $user;
 		$this->db 					= $db;
@@ -479,7 +473,7 @@ class functions
 					'CAT_DESC'				=> $this->renderer->render($row['cat_desc']),
 					'CAT_FOLDER_IMG_SRC'	=> $folder_image,
 					'SUBCATS'				=> ($subcats) ? $l_subcats . ': <span style="font-weight: bold;">' . $subcats . '</span>' : '',
-					'IMAGE'					=> $this->root_path . $eds_values['dm_eds_image_cat_dir'] . '/' . $category_image,
+					'IMAGE'					=> generate_board_url() . '/' . $eds_values['dm_eds_image_cat_dir'] . '/' . $category_image,
 				));
 			}
 
@@ -558,12 +552,19 @@ class functions
 			return;
 		}
 
-		// Grab md5 'checksum' of new message
-		$message_md5 = md5($this->renderer->render($text));
+		if (!class_exists('parse_message'))
+		{
+			include($this->root_path . 'includes/message_parser.' . $this->php_ext);
+		}
 
-		$text_description = $text;
-		$text_description = htmlspecialchars_decode($text_description, ENT_COMPAT);
-		$text = $this->parser->parse($text_description);
+		$message_parser = new \parse_message();
+
+		$message_parser->message = $text;
+
+		// Grab md5 'checksum' of new message
+		$message_md5 = md5($message_parser->message);
+
+		$message_parser->parse(true, true, true, true, false, true, true);
 
 		$sql = 'SELECT forum_name
 			FROM ' . FORUMS_TABLE . '
@@ -580,12 +581,12 @@ class functions
 			'enable_smilies'		=> true,
 			'enable_urls'			=> true,
 			'enable_sig'			=> true,
-			'message'				=> $text,
+			'message'				=> $message_parser->message,
 			'message_md5'			=> $message_md5,
 			'attachment_data'		=> 0,
 			'filename_data'			=> 0,
-			'bbcode_bitfield'		=> 0,
-			'bbcode_uid'			=> 0,
+			'bbcode_bitfield'		=> $message_parser->bbcode_bitfield,
+			'bbcode_uid'			=> $message_parser->bbcode_uid,
 			'poster_ip'				=> $this->user->ip,
 			'post_edit_locked'		=> 0,
 			'topic_title'			=> $subject,

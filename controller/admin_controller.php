@@ -53,6 +53,9 @@ class admin_controller
 	/** @var \phpbb\path_helper */
 	protected $path_helper;
 
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var string */
 	protected $php_ext;
 
@@ -77,10 +80,10 @@ class admin_controller
 	* Constructor
 	*
 	* @param \dmzx\downloadsystem\core\functions			$functions
-	* @param \phpbb\filesystem\filesystem						$filesystem
-	* @param \phpbb\textformatter\s9e\parser					$parser
+	* @param \phpbb\filesystem\filesystem					$filesystem
+	* @param \phpbb\textformatter\s9e\parser				$parser
 	* @param \phpbb\textformatter\s9e\renderer 				$renderer
-	* @param \phpbb\controller\helper							$helper
+	* @param \phpbb\controller\helper						$helper
 	* @param \phpbb\template\template		 				$template
 	* @param \phpbb\user									$user
 	* @param \phpbb\log										$log
@@ -90,6 +93,7 @@ class admin_controller
 	* @param \phpbb\pagination								$pagination
 	* @param \phpbb\extension\manager						$ext_manager
 	* @param \phpbb\path_helper								$path_helper
+	* @param \phpbb\config\config							$config
 	* @param string 										$php_ext
 	* @param string 										$root_path
 	* @param string 										$dm_eds_table
@@ -113,6 +117,7 @@ class admin_controller
 		\phpbb\pagination $pagination,
 		\phpbb\extension\manager $ext_manager,
 		\phpbb\path_helper $path_helper,
+		\phpbb\config\config $config,
 		$php_ext, $root_path,
 		$dm_eds_table,
 		$dm_eds_cat_table,
@@ -134,6 +139,7 @@ class admin_controller
 		$this->pagination 			= $pagination;
 		$this->ext_manager	 		= $ext_manager;
 		$this->path_helper	 		= $path_helper;
+		$this->config				= $config;
 		$this->php_ext 				= $php_ext;
 		$this->root_path 			= $root_path;
 		$this->dm_eds_table 		= $dm_eds_table;
@@ -245,6 +251,7 @@ class admin_controller
 				'DM_EDS_ALLOW_MAGIC_URL'	=> $eds_values['dm_eds_allow_magic_url'],
 				'DM_EDS_ALLOW_DL_IMG'		=> $eds_values['dm_eds_allow_dl_img'],
 				'DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
+				'DM_EDS_VERSION'			=> $this->config['download_system_version'],
 				'U_BACK'					=> $this->u_action,
 				'U_ACTION'					=> $form_action,
 			));
@@ -296,6 +303,7 @@ class admin_controller
 		$this->db->sql_freeresult($result);
 
 		$cat_options = '';
+
 		foreach ($cats as $key => $value)
 		{
 			if ($key == $row2['download_cat_id'])
@@ -396,7 +404,9 @@ class admin_controller
 			FROM ' . $this->dm_eds_cat_table . '
 			ORDER BY LOWER(cat_name)';
 		$result = $this->db->sql_query($sql);
+
 		$cats = array();
+
 		while ($row2 = $this->db->sql_fetchrow($result))
 		{
 			$cats[$row2['cat_id']] = array(
@@ -407,6 +417,7 @@ class admin_controller
 		$this->db->sql_freeresult($result);
 
 		$cat_options = '';
+
 		foreach ($cats as $key => $value)
 		{
 			if ($key == $row2['download_cat_id'])
@@ -489,7 +500,9 @@ class admin_controller
 			FROM ' . $this->dm_eds_cat_table . '
 			ORDER BY LOWER(cat_name)';
 		$result = $this->db->sql_query($sql);
+
 		$cats = array();
+
 		while ($row2 = $this->db->sql_fetchrow($result))
 		{
 			$cats[$row2['cat_id']] = array(
@@ -500,6 +513,7 @@ class admin_controller
 		$this->db->sql_freeresult($result);
 
 		$cat_options = '';
+
 		foreach ($cats as $key => $value)
 		{
 			if ($key == $row['download_cat_id'])
@@ -762,9 +776,9 @@ class admin_controller
 			}
 
 			$download_link = '[url=' . generate_board_url() . '/downloadsystemcat?id=' . $cat_option . ']' . $this->user->lang['ACP_CLICK'] . '[/url]';
-			$download_subject = sprintf($this->user->lang['ACP_ANNOUNCE_TITLE'], $dl_title);
+			$download_subject = $this->user->lang('ACP_ANNOUNCE_TITLE', $dl_title);
 
-			$download_msg = sprintf($this->user->lang['ACP_ANNOUNCE_MSG'], $title, $desc, $cat_name, $download_link);
+			$download_msg = $this->user->lang('ACP_ANNOUNCE_MSG', $title, $desc, $cat_name, $download_link);
 
 			$this->functions->create_announcement($download_subject, $download_msg, $eds_values['announce_forum']);
 		}
@@ -1094,11 +1108,25 @@ class admin_controller
 			# Delete the download image
 			if ($this->filesystem->exists($this->root_path . $eds_values['dm_eds_image_dir'] . '/' . $download_image))
 			{
-				$this->filesystem->remove($this->root_path . $eds_values['dm_eds_image_dir'] . '/' . $download_image);
+				if ($download_image != 'default_dl.png')
+				{
+					$this->filesystem->remove($this->root_path . $eds_values['dm_eds_image_dir'] . '/' . $download_image);
+				}
 			}
 
 			// Log message
 			$this->log_message('LOG_DOWNLOAD_DELETED', $file_name, 'ACP_DOWNLOAD_DELETED');
+
+			if ($this->request->is_ajax())
+			{
+				$json_response->send(array(
+					'MESSAGE_TITLE'	=> $this->user->lang('INFORMATION'),
+					'MESSAGE_TEXT'	=> $this->user->lang('ACP_REALLY_DELETE'),
+					'REFRESH_DATA'	=> array(
+						'time'	=> 3
+					)
+				));
+			}
 		}
 		else
 		{
@@ -1170,7 +1198,7 @@ class admin_controller
 				'U_COPY'		=> $this->u_action . '&amp;action=copy_new&amp;id=' .$row['download_id'],
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' .$row['download_id'],
 				'U_DEL'			=> $this->u_action . '&amp;action=delete&amp;id=' .$row['download_id'],
-				'DL_IMAGE'		=> $this->root_path . $eds_values['dm_eds_image_dir'] . '/' . $row['download_image'],
+				'DL_IMAGE'		=> generate_board_url() . '/' . $eds_values['dm_eds_image_dir'] . '/' . $row['download_image'],
 			));
 		}
 		$this->db->sql_freeresult($result);
@@ -1208,32 +1236,12 @@ class admin_controller
 			'S_ACTION'		=> $this->u_action . '&amp;action=create&amp;parent_id=' . $parent_id,
 		));
 
-		if (!$parent_id)
-		{
-			$navigation = $this->user->lang['ACP_CAT_INDEX'];
-		}
-		else
-		{
-			$navigation = '<a href="' . $this->u_action . '">' . $this->user->lang['ACP_CAT_INDEX'] . '</a>';
-			$dm_eds_nav = $this->functions->get_cat_branch($parent_id, 'parents', 'descending');
-			foreach ($dm_eds_nav as $row)
-			{
-				if ($row['cat_id'] == $parent_id)
-				{
-					$navigation .= ' -&gt; ' . $row['cat_name'];
-				}
-				else
-				{
-					$navigation .= ' -&gt; <a href="' . $this->u_action . '&amp;parent_id=' . $row['cat_id'] . '">' . $row['cat_name'] . '</a>';
-				}
-			}
-		}
-
 		$dm_eds = array();
 		$sql = 'SELECT *
 			FROM ' . $this->dm_eds_cat_table . '
 			ORDER BY left_id ASC';
 		$result = $this->db->sql_query($sql);
+
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$dm_eds[] = $row;
@@ -1241,28 +1249,39 @@ class admin_controller
 
 		for ($i = 0; $i < count($dm_eds); $i++)
 		{
-			$folder_image = ($dm_eds[$i]['left_id'] + 1 != $dm_eds[$i]['right_id']) ? '<img src="images/icon_subfolder.gif" alt="' . $this->user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder.gif" alt="' . $this->user->lang['FOLDER'] . '" />';
-			$url = $this->u_action . "&amp;parent_id=$parent_id&amp;cat_id={$dm_eds[$i]['cat_id']}";
+			$folder_fa_icon = ($dm_eds[$i]['left_id'] + 1 != $dm_eds[$i]['right_id']) ? '<span class="fa-stack fa-2x"><i class="fa fa-circle-thin fa-stack-2x"></i><i title="' . $this->user->lang['ACP_CAT_SUB'] . '" class="fa fa-folder-open fa-stack-1x"></i></span>' : '<span class="fa-stack fa-2x"><i class="fa fa-circle-thin fa-stack-2x"></i><i title="' . $this->user->lang['ACP_CAT'] . '" class="fa fa-folder fa-stack-1x"></i></span>';
+
+			$cat_main_name = '';
+			$dm_eds_nav = $this->functions->get_cat_branch($dm_eds[$i]['parent_id'], 'parents', 'descending');
+
+			foreach ($dm_eds_nav as $row)
+			{
+				if ($row['cat_id'] == $dm_eds[$i]['parent_id'])
+				{
+					$cat_main_name = $this->user->lang['ACP_CAT_OF'] . '&nbsp;' . $row['cat_name'];
+				}
+
+			}
 
 			$this->template->assign_block_vars('catrow', array(
-				'FOLDER_IMAGE'			=> $folder_image,
+				'FOLDER_FA_ICON'		=> $folder_fa_icon,
 				'U_CAT'					=> $this->u_action . '&amp;parent_id=' . $dm_eds[$i]['cat_id'],
 				'CAT_NAME'				=> $dm_eds[$i]['cat_name'],
 				'CAT_DESC'				=> $this->renderer->render($dm_eds[$i]['cat_desc']),
 				'CAT_SUBS'				=> ($dm_eds[$i]['left_id'] + 1 == $dm_eds[$i]['right_id'] && !$dm_eds[$i]['cat_id'] == $dm_eds[$i]['parent_id']) ? true : false,
-				'CAT_SUBS_SHOW'			=> ($dm_eds[$i]['left_id'] + 1 != $dm_eds[$i]['right_id'] && $dm_eds[$i]['cat_id'] != $parent_id	|| $dm_eds[$i]['parent_id'] == 0) ? true : false,
+				'CAT_SUBS_SHOW'			=> ($dm_eds[$i]['left_id'] + 1 != $dm_eds[$i]['right_id'] && $dm_eds[$i]['cat_id'] != $parent_id || $dm_eds[$i]['parent_id'] == 0) ? true : false,
+				'CAT_MAIN_NAME'			=> $cat_main_name,
 				'CAT_NAME_SHOW'			=> ($dm_eds[$i]['cat_name_show'] == 1) ? $this->user->lang['ACP_CAT_NAME_SHOW_YES'] : $this->user->lang['ACP_CAT_NAME_SHOW_NO'],
 				'CAT_DESCRIPTION'		=> generate_text_for_display($dm_eds[$i]['cat_desc'], $dm_eds[$i]['cat_desc_uid'], $dm_eds[$i]['cat_desc_bitfield'], $dm_eds[$i]['cat_desc_options']),
 				'U_MOVE_UP'				=> $this->u_action . '&amp;action=move&amp;move=move_up&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 				'U_MOVE_DOWN'			=> $this->u_action . '&amp;action=move&amp;move=move_down&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 				'U_EDIT'				=> $this->u_action . '&amp;action=edit&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 				'U_DELETE'				=> $this->u_action . '&amp;action=delete&amp;cat_id=' . $dm_eds[$i]['cat_id'],
-				'IMAGE'					=> $this->root_path . $eds_values['dm_eds_image_cat_dir'] . '/' . $dm_eds[$i]['category_image'],
+				'IMAGE'					=> generate_board_url() . '/' . $eds_values['dm_eds_image_cat_dir'] . '/' . $dm_eds[$i]['category_image'],
 			));
 		}
 
 		$this->template->assign_vars(array(
-			'NAVIGATION'					=> $navigation,
 			'S_DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
 			'S_DM_EDS'						=> $parent_id,
 			'U_EDIT'						=> ($parent_id) ? $this->u_action . '&amp;action=edit&amp;cat_id=' . $parent_id : '',
@@ -1368,6 +1387,7 @@ class admin_controller
 				WHERE cat_sub_dir LIKE '$cat_sub_dir_name'";
 			$result= $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
+
 			if ($row)
 			{
 				trigger_error($this->user->lang['ACP_CAT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -1522,6 +1542,7 @@ class admin_controller
 						SET left_id = left_id - ' . $moving_ids . '
 						WHERE left_id >= ' . $row['left_id'];
 					$this->db->sql_query($sql);
+
 					//right_id
 					$sql = 'UPDATE ' . $this->dm_eds_cat_table . '
 						SET right_id = right_id - ' . $moving_ids . '
@@ -1537,6 +1558,7 @@ class admin_controller
 						WHERE left_id >= ' . $row['left_id'] . '
 							AND right_id <= ' . $stop_updating;
 					$this->db->sql_query($sql);
+
 					//right_id
 					$sql = 'UPDATE ' . $this->dm_eds_cat_table . '
 						SET right_id = right_id - ' . $moving_ids . '
@@ -1553,6 +1575,7 @@ class admin_controller
 						WHERE left_id >= ' . $parent['right_id'] . '
 							AND right_id <= ' . $stop_updating;
 					$this->db->sql_query($sql);
+
 					//right_id
 					$sql = 'UPDATE ' . $this->dm_eds_cat_table . '
 						SET right_id = right_id + ' . $moving_ids . '
@@ -1676,6 +1699,7 @@ class admin_controller
 				FROM ' . $this->dm_eds_cat_table . "
 				WHERE cat_id = '$cat_id'";
 			$result = $this->db->sql_query($sql);
+
 			if ($this->db->sql_affectedrows($result) == 0)
 			{
 				trigger_error($this->user->lang['ACP_CAT_NOT_EXIST'], E_USER_WARNING);
@@ -1685,11 +1709,38 @@ class admin_controller
 		// Read out config values
 		$eds_values = $this->functions->config_values();
 
-		if ($this->request->is_set('submit'))
+		$catname = '';
+		$sql = 'SELECT ec.*, COUNT(ed.download_id) AS downloads
+			FROM ' . $this->dm_eds_cat_table . ' AS ec
+			LEFT JOIN ' . $this->dm_eds_table . ' AS ed
+				ON ec.cat_id = ed.download_cat_id
+			WHERE ec.cat_id = ' . (int) $cat_id . '
+			GROUP BY ec.cat_id';
+		$result = $this->db->sql_query($sql);
+
+		$subs_found = false;
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			if ($row['cat_id'] == $cat_id)
+			{
+				$thiseds = $row;
+				$subs_found = true;
+			}
+			else
+			{
+				$edsrow[] = $row;
+			}
+
+			$catname = $row['cat_name'];
+		}
+
+		if (confirm_box(true))
 		{
 			$dm_eds = $this->functions->get_cat_info($cat_id);
 			$handle_subs = $this->request->variable('handle_subs', 0);
 			$handle_downloads = $this->request->variable('handle_downloads', 0);
+
 			if (($dm_eds['right_id'] - $dm_eds['left_id']) > 2)
 			{
 				//handle subs if there
@@ -1731,71 +1782,58 @@ class admin_controller
 				SET left_id = left_id - 2
 				WHERE left_id > ' . $dm_eds['left_id'];
 			$this->db->sql_query($sql);
+
 			//right_id
 			$sql = 'UPDATE ' . $this->dm_eds_cat_table . '
 				SET right_id = right_id - 2
 				WHERE right_id > ' . $dm_eds['left_id'];
 			$this->db->sql_query($sql);
+
 			$sql = 'DELETE FROM ' . $this->dm_eds_cat_table . "
 				WHERE cat_id = '$cat_id'";
 			$result = $this->db->sql_query($sql);
 			$this->cache->destroy('sql', $this->dm_eds_cat_table);
 
-			if (!empty($category_image) && $this->filesystem->exists($this->root_path . $eds_values['dm_eds_image_cat_dir'] . '/' . $category_image))
-			{
-				$this->filesystem->remove($this->root_path . $eds_values['dm_eds_image_cat_dir'] . '/' . $category_image);
-			}
-
 			// Remove the folder and all of its content
 			$this->remove_dir($sub_cat_dir);
 
+			if ($this->filesystem->exists($this->root_path . $eds_values['dm_eds_image_cat_dir'] . '/' . $category_image))
+			{
+				if ($category_image != 'default_cat.png')
+				{
+					$this->filesystem->remove($this->root_path . $eds_values['dm_eds_image_cat_dir'] . '/' . $category_image);
+				}
+			}
+
 			// Log message
 			$this->log_message('LOG_CATEGORY_DELETED', $cat_name, 'ACP_CAT_DELETE_DONE');
+
+			if ($this->request->is_ajax())
+			{
+				$json_response->send(array(
+					'MESSAGE_TITLE'	=> $this->user->lang('INFORMATION'),
+					'MESSAGE_TEXT'	=> $this->user->lang('ACP_DEL_CAT', $catname),
+					'REFRESH_DATA'	=> array(
+						'time'	=> 3
+					)
+				));
+			}
 		}
-
-		$catname = '';
-		$sql = 'SELECT ec.*, COUNT(ed.download_id) AS downloads
-			FROM ' . $this->dm_eds_cat_table . ' AS ec
-			LEFT JOIN ' . $this->dm_eds_table . ' AS ed
-				ON ec.cat_id = ed.download_cat_id
-			WHERE ec.cat_id = ' . (int) $cat_id . '
-			GROUP BY ec.cat_id';
-		$result = $this->db->sql_query($sql);
-
-		$subs_found = false;
-		while ($row = $this->db->sql_fetchrow($result))
+		else
 		{
-			if ($row['cat_id'] == $cat_id)
-			{
-				$thiseds = $row;
-				$subs_found = true;
-			}
-			else
-			{
-				$edsrow[] = $row;
-			}
-
-			$catname = $row['cat_name'];
+			confirm_box(false, $this->user->lang('ACP_DEL_CAT', $catname), build_hidden_fields(array(
+				'cat_id'	=> $cat_id,
+				'action'	=> 'delete',
+				))
+			);
 		}
+		redirect($this->u_action);
 
 		if (!$subs_found)
 		{
 			trigger_error($this->user->lang['ACP_CAT_NOT_EXIST'], E_USER_WARNING);
 		}
 		$this->db->sql_freeresult($result);
-
-		$this->template->assign_vars(array(
-			'S_MODE_DELETE'				=> true,
-			'S_CAT_ACTION'				=> $this->u_action . '&amp;action=delete&amp;dm_eds_id=' . $cat_id,
-			'CAT_DELETE'				=> sprintf($this->user->lang['ACP_DEL_CAT'], $catname),
-			'S_PARENT_OPTIONS'			=> $this->functions->make_cat_select($thiseds['parent_id'], $cat_id),
-			'S_HAS_CHILDREN'			=> ($thiseds['left_id'] + 1 != $thiseds['right_id']) ? true : false,
-			'S_HAS_DOWNLOADS'			=> ($thiseds['downloads'] > 0) ? true : false,
-			'CAT_NAME'					=> $catname,
-			'CAT_DESC'					=> generate_text_for_display($thiseds['cat_desc'], $thiseds['cat_desc_uid'], $thiseds['cat_desc_bitfield'], $thiseds['cat_desc_options']),
-			'S_MOVE_DM_EDS_OPTIONS'		=> $this->functions->make_cat_select(false, $cat_id),
-			'S_MOVE_IMAGE_OPTIONS'		=> $this->functions->make_cat_select(false, $cat_id, true),
-		));
 	}
 
 	/**
@@ -1822,6 +1860,11 @@ class admin_controller
 		$move = $this->request->variable('move', '', true);
 		$moving = $this->functions->get_cat_info($cat_id);
 
+		if ($this->request->is_ajax())
+		{
+			$json_response->send(array('success' => ($moving !== false)));
+		}
+
 		$sql = 'SELECT cat_id, left_id, right_id, cat_name
 			FROM ' . $this->dm_eds_cat_table . "
 			WHERE parent_id = {$moving['parent_id']}
@@ -1829,6 +1872,7 @@ class admin_controller
 		$result = $this->db->sql_query_limit($sql, 1);
 
 		$target = array();
+
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$target = $row;

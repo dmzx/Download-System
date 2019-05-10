@@ -84,6 +84,7 @@ services:
             - '@pagination'
             - '@ext.manager'
             - '@path_helper'
+            - '@config'
             - '%core.php_ext%'
             - '%core.root_path%'
             - '%dmzx.downloadsystem.table.dm_eds%'
@@ -94,7 +95,6 @@ services:
         class: dmzx\downloadsystem\core\functions
         arguments:
             - '@template'
-            - '@text_formatter.parser'
             - '@text_formatter.renderer'
             - '@user'
             - '@dbal.conn'
