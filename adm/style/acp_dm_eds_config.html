@@ -1,6 +1,9 @@
 {% INCLUDE 'overall_header.html' %}
 
-<h1>{{ lang('ACP_DOWNLOAD_SYSTEM') }} - {{ lang('ACP_MANAGE_CONFIG') }}</h1>
+{% INCLUDECSS '@dmzx_downloadsystem/assets/css/switchery.css' %}
+{% INCLUDEJS '@dmzx_downloadsystem/assets/js/switchery.js' %}
+
+<h1>{{ lang('ACP_DOWNLOAD_SYSTEM') }} - {{ lang('ACP_MANAGE_CONFIG') }} <a href="{{ U_ABOUT }}"><i class="fa fa-info-circle"></i></a></h1>
 
 <p><img src="https://img.shields.io/badge/{{ lang('Version') }}-{{ DM_EDS_VERSION }}-green.svg?style=plastic" /></p>
 
@@ -35,41 +38,34 @@
 		</dl>
 		<dl>
 			<dt><label>{{ lang('ACP_DM_EDS_ALLOW_DL_IMG') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_DM_EDS_ALLOW_DL_IMG_EXPLAIN') }}</dt>
-			<dd><label><input type="radio" class="radio" name="dm_eds_allow_dl_img" value="1"{% if DM_EDS_ALLOW_DL_IMG %} id="dm_eds_allow_dl_img" checked="checked" {% endif %} /> {{ lang('YES') }}</label>
-			<label><input type="radio" class="radio" name="dm_eds_allow_dl_img" value="0"{% if not DM_EDS_ALLOW_DL_IMG %} id="dm_eds_allow_dl_img" checked="checked" {% endif %} /> {{ lang('NO') }}</label></dd>
+			<dd><input type="checkbox" class="js-switch" id="dm_eds_allow_dl_img" name="dm_eds_allow_dl_img" value="1"{% if DM_EDS_ALLOW_DL_IMG %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
 			<dt><label>{{ lang('ACP_DM_EDS_ALLOW_CAT_IMG') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_DM_EDS_ALLOW_CAT_IMG_EXPLAIN') }}</dt>
-			<dd><label><input type="radio" class="radio" name="dm_eds_allow_cat_img" value="1"{% if DM_EDS_ALLOW_CAT_IMG %} id="dm_eds_allow_cat_img" checked="checked" {% endif %} /> {{ lang('YES') }}</label>
-			<label><input type="radio" class="radio" name="dm_eds_allow_cat_img" value="0"{% if not DM_EDS_ALLOW_CAT_IMG %} id="dm_eds_allow_cat_img" checked="checked" {% endif %} /> {{ lang('NO') }}</label></dd>
+			<dd><input type="checkbox" class="js-switch" id="dm_eds_allow_cat_img" name="dm_eds_allow_cat_img" value="1"{% if DM_EDS_ALLOW_CAT_IMG %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
 			<dt><label>{{ lang('ACP_DM_EDS_ALLOW_BBCODES') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_DM_EDS_ALLOW_BBCODES_EXPLAIN') }}</dt>
-			<dd><label><input type="radio" class="radio" name="dm_eds_allow_bbcodes" value="1"{% if DM_EDS_ALLOW_BBCODES %} id="dm_eds_allow_bbcodes" checked="checked" {% endif %} /> {{ lang('YES') }}</label>
-			<label><input type="radio" class="radio" name="dm_eds_allow_bbcodes" value="0"{% if not DM_EDS_ALLOW_BBCODES %} id="dm_eds_allow_bbcodes" checked="checked" {% endif %} /> {{ lang('NO') }}</label></dd>
+			<dd><input type="checkbox" class="js-switch" id="dm_eds_allow_bbcodes" name="dm_eds_allow_bbcodes" value="1"{% if DM_EDS_ALLOW_BBCODES %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
 			<dt><label>{{ lang('DM_EDS_ALLOW_SMILIES') }}{{ lang('COLON') }}</label><br />{{ lang('DM_EDS_ALLOW_SMILIES_EXPLAIN') }}</dt>
-			<dd><label><input type="radio" class="radio" name="dm_eds_allow_smilies" value="1"{% if DM_EDS_ALLOW_SMILIES %} id="dm_eds_allow_smilies" checked="checked" {% endif %} /> {{ lang('YES') }}</label>
-			<label><input type="radio" class="radio" name="dm_eds_allow_smilies" value="0"{% if not DM_EDS_ALLOW_SMILIES %} id="dm_eds_allow_smilies" checked="checked" {% endif %} /> {{ lang('NO') }}</label></dd>
+			<dd><input type="checkbox" class="js-switch" id="dm_eds_allow_smilies" name="dm_eds_allow_smilies" value="1"{% if DM_EDS_ALLOW_SMILIES %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
 			<dt><label>{{ lang('ACP_DM_EDS_ALLOW_MAGIC_URL') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_DM_EDS_ALLOW_MAGIC_URL_EXPLAIN') }}</dt>
-			<dd><label><input type="radio" class="radio" name="dm_eds_allow_magic_url" value="1"{% if DM_EDS_ALLOW_MAGIC_URL %} id="dm_eds_allow_magic_url" checked="checked" {% endif %} /> {{ lang('YES') }}</label>
-			<label><input type="radio" class="radio" name="dm_eds_allow_magic_url" value="0"{% if not DM_EDS_ALLOW_MAGIC_URL %} id="dm_eds_allow_magic_url" checked="checked" {% endif %} /> {{ lang('NO') }}</label></dd>
+			<dd><input type="checkbox" class="js-switch" id="dm_eds_allow_magic_url" name="dm_eds_allow_magic_url" value="1"{% if DM_EDS_ALLOW_MAGIC_URL %} checked="checked"{% endif %} /></dd>
 		</dl>
 	</fieldset>
 	<fieldset>
 		<legend>{{ lang('ACP_ANNOUNCE_SETTINGS') }}</legend>
 		<dl>
 			<dt><label>{{ lang('ACP_ANNOUNCE_ENABLE') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_ANNOUNCE_ENABLE_EXPLAIN') }}</dt>
-			<dd><label><input type="radio" class="radio" name="announce_enable" value="1"{% if ANNOUNCE_ENABLE %} id="announce_enable" checked="checked" {% endif %} /> {{ lang('YES') }}</label>
-			<label><input type="radio" class="radio" name="announce_enable" value="0"{% if not ANNOUNCE_ENABLE %} id="announce_enable" checked="checked" {% endif %} /> {{ lang('NO') }}</label></dd>
+			<dd><input type="checkbox" class="js-switch" id="announce_enable" name="announce_enable" value="1"{% if ANNOUNCE_ENABLE %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
 			<dt><label>{{ lang('ACP_ANNOUNCE_LOCK') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_ANNOUNCE_LOCK_EXPLAIN') }}</dt>
-			<dd><label><input type="radio" class="radio" name="announce_lock_enable" value="1"{% if ANNOUNCE_LOCK %} id="announce_lock_enable" checked="checked" {% endif %} /> {{ lang('YES') }}</label>
-			<label><input type="radio" class="radio" name="announce_lock_enable" value="0"{% if not ANNOUNCE_LOCK %} id="announce_lock_enable" checked="checked" {% endif %} /> {{ lang('NO') }}</label></dd>
+			<dd><input type="checkbox" class="js-switch" id="announce_lock_enable" name="announce_lock_enable" value="1"{% if ANNOUNCE_LOCK %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
 			<dt><label>{{ lang('ACP_ANNOUNCE_ID') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_ANNOUNCE_ID_EXPLAIN') }}</dt>
@@ -82,4 +78,5 @@
 	</p>
 </form>
 
+{% INCLUDEJS '@dmzx_downloadsystem/assets/js/downloadsystem.js' %}
 {% INCLUDE 'overall_footer.html' %}

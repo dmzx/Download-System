@@ -341,7 +341,6 @@ class downloadupload
 		$this->db->sql_freeresult($result);
 
 		$cat_options = '';
-
 		foreach ($cats as $key => $value)
 		{
 			if ($key == $row2['download_cat_id'])

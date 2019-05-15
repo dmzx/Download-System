@@ -1,0 +1,29 @@
+{% INCLUDE 'overall_header.html' %}
+
+{% INCLUDECSS 'assets/css/bootstrap.min.css' %}
+
+<fieldset>
+	<div id="back-top" class="container-fluid anchor">
+		<div class="row">
+			<a href="{{ U_BACK }}" style="float: {{ S_CONTENT_FLOW_END }};">&laquo; {{ lang('BACK') }}</a>
+			<section id="about-changelog" class="anchor">
+				<h3>{{ lang('CHANGELOG') }}</h3>
+				{% for history in loops.history %}
+				<section id="{{ history.U_CHANGES }}" class="anchor">
+					<p><em>{{ history.CHANGES_SINCE }}</em></p>
+					<ul>
+						{% for changelog in history.changelog %}
+						<li>{{ changelog.CHANGE }}</li>
+						{% endfor %}
+					</ul>
+				</section>
+				{% endfor %}
+			</section>
+			<a href="#back-top" class="top">
+				<i class="icon fa-chevron-circle-up fa-fw icon-gray" aria-hidden="true"></i><span> {{ lang('BACK_TO_TOP') }}</span>
+			</a>
+		</div>
+	</div>
+</fieldset>
+
+{% INCLUDE 'overall_footer.html' %}

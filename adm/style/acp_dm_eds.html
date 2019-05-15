@@ -1,6 +1,7 @@
 {% INCLUDE 'overall_header.html' %}
-{% if S_MODE_SETUP %}
-{% endif %}
+
+{% INCLUDECSS '@dmzx_downloadsystem/assets/css/switchery.css' %}
+{% INCLUDEJS '@dmzx_downloadsystem/assets/js/switchery.js' %}
 
 {% if S_MODE_MANAGE %}
 <h1>{{ lang('ACP_DOWNLOAD_SYSTEM') }} - {{ lang('ACP_MANAGE_CATEGORIES') }}</h1>
@@ -100,8 +101,7 @@
 		</dl>
 		<dl>
 			<dt><label>{{ lang('ACP_NEW_CAT_NAME_SHOW') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_NEW_CAT_NAME_SHOW_EXPLAIN') }}</dt>
-			<dd><label><input type="radio" class="radio" name="cat_name_show" value="1"{% if CAT_NAME_SHOW %} id="cat_name_show" checked="checked" {% endif %} /> {{ lang('YES') }}</label>
-			<label><input type="radio" class="radio" name="cat_name_show" value="0"{% if not CAT_NAME_SHOW %} id="cat_name_show" checked="checked" {% endif %} /> {{ lang('NO') }}</label></dd>
+			<dd><input type="checkbox" class="js-switch" id="cat_name_show" name="cat_name_show" value="1"{% if CAT_NAME_SHOW %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
 			<dt><label>{{ lang('ACP_SUB_DL_CAT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ACP_SUB_DL_CAT_EXPLAIN') }}</span></dt>
@@ -150,8 +150,7 @@
 		</dl>
 		<dl>
 			<dt><label>{{ lang('ACP_NEW_CAT_NAME_SHOW') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_NEW_CAT_NAME_SHOW_EXPLAIN') }}</dt>
-			<dd><label><input type="radio" class="radio" name="cat_name_show" value="1"{% if CAT_NAME_SHOW %} id="cat_name_show" checked="checked" {% endif %} /> {{ lang('YES') }}</label>
-			<label><input type="radio" class="radio" name="cat_name_show" value="0"{% if not CAT_NAME_SHOW %} id="cat_name_show" checked="checked" {% endif %} /> {{ lang('NO') }}</label></dd>
+			<dd><input type="checkbox" class="js-switch" id="cat_name_show" name="cat_name_show" value="1"{% if CAT_NAME_SHOW %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
 			<dt><label>{{ lang('ACP_SUB_DL_CAT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ACP_SUB_DL_CAT_EXPLAIN') }}</span></dt>
@@ -190,4 +189,5 @@
 </form>
 {% endif %}
 
+{% INCLUDEJS '@dmzx_downloadsystem/assets/js/downloadsystem.js' %}
 {% INCLUDE 'overall_footer.html' %}

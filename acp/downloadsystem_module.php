@@ -40,6 +40,14 @@ class downloadsystem_module
 			case 'config':
 				$this->page_title = $user->lang['ACP_MANAGE_CONFIG'];
 				$this->tpl_name = 'acp_dm_eds_config';
+
+				switch ($action)
+				{
+					case 'about':
+						$this->page_title = $user->lang['ACP_MANAGE_CONFIG'];
+						$this->tpl_name = 'acp_dm_eds_about';
+					break;
+				}
 				$admin_controller->display_config();
 			break;
 

@@ -254,7 +254,51 @@ class admin_controller
 				'DM_EDS_VERSION'			=> $this->config['download_system_version'],
 				'U_BACK'					=> $this->u_action,
 				'U_ACTION'					=> $form_action,
+				'U_ABOUT'					=> $this->u_action. '&amp;action=about',
 			));
+		}
+
+		include($this->ext_path_web . 'includes/Parsedown.' . $this->php_ext);
+
+		$Parsedown = new \Parsedown();
+
+		$s_about = $this->u_action. '&amp;action=about';
+
+		if ($s_about)
+		{
+			$changelog_file = $this->ext_path_web . 'CHANGELOG.md';
+
+			if (file_exists($changelog_file))
+			{
+				// let's get the changelog :)
+				$data = file($changelog_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+				// We do not want the first line.
+				unset($data[0]);
+
+				foreach ($data as $row)
+				{
+					$row = ltrim($row);
+
+					if ($row[0] === '#')
+					{
+						$key = substr($row, 3);
+
+						$this->template->assign_block_vars('history', array(
+							'CHANGES_SINCE'	=> $key,
+							'U_CHANGES'	=> strtolower(str_replace(array(' ', '.'), array('-', ''), $key)),
+						));
+					}
+					else if ($row[0] === '-')
+					{
+						$change = substr($row, 2);
+
+						$this->template->assign_block_vars('history.changelog', array(
+							'CHANGE'	=> $Parsedown->line($change),
+						));
+					}
+				}
+			}
 		}
 	}
 
@@ -1260,7 +1304,6 @@ class admin_controller
 				{
 					$cat_main_name = $this->user->lang['ACP_CAT_OF'] . '&nbsp;' . $row['cat_name'];
 				}
-
 			}
 
 			$this->template->assign_block_vars('catrow', array(

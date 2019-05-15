@@ -219,7 +219,7 @@ class downloadsystemcat
 					'DL_LAST_CHANGED' 	=> $this->user->format_date($last_changed_time),
 					'DL_FILESIZE'		=> $filesize,
 					'U_DOWNLOAD'		=> $download,
-					'DL_IMAGE'			=> generate_board_url() . '/' . $eds_values['dm_eds_image_dir'] . '/' . $dl_image,
+					'DL_IMAGE'			=> $this->root_path . $eds_values['dm_eds_image_dir'] . '/' . $dl_image,
 				));
 			}
 

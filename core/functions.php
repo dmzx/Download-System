@@ -473,7 +473,7 @@ class functions
 					'CAT_DESC'				=> $this->renderer->render($row['cat_desc']),
 					'CAT_FOLDER_IMG_SRC'	=> $folder_image,
 					'SUBCATS'				=> ($subcats) ? $l_subcats . ': <span style="font-weight: bold;">' . $subcats . '</span>' : '',
-					'IMAGE'					=> generate_board_url() . '/' . $eds_values['dm_eds_image_cat_dir'] . '/' . $category_image,
+					'IMAGE'					=> $this->root_path . $eds_values['dm_eds_image_cat_dir'] . '/' . $category_image,
 				));
 			}
 

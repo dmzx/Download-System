@@ -70,11 +70,5 @@ div.eds-legend {
 	font-size: 1.1em;
 }
 .forumtitlex {
-        padding-top: 12px;
-}
-.icon-downloads { 
-	background-image: url("./images/icon_downloads.png"); 
-}
-.icon-upload { 
-	background-image: url("./images/icon_upload.png"); 
+    padding-top: 12px;
 }
