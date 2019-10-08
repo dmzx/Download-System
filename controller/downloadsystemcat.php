@@ -118,6 +118,8 @@ class downloadsystemcat
 		$start	= $this->request->variable('start', 0);
 		$number	= $eds_values['pagination_user'];
 
+		$json_response = new \phpbb\json_response;
+
 		/**
 		* Retrieve cat id
 		*/
@@ -201,11 +203,11 @@ class downloadsystemcat
 
 				if (!$this->auth->acl_get('u_dm_eds_download'))
 				{
-					$download = '<span class="fa-stack fa-2x"><i class="fa fa-circle-thin fa-stack-2x"></i><i title="' . sprintf($this->user->lang['EDS_NO_PERMISSION']) . '" class="fa fa-download fa-stack-1x text-danger" style="color:red;"></i></span>';
+					$download = '<span class="fa-stack fa-2x"><i class="fa fa-circle-thin fa-stack-2x"></i><i title="' . sprintf($this->user->lang['EDS_NO_PERMISSION']) . '" class="fa fa-download fa-stack-1x text-danger" style="color:red;" data-ajax="no_access"></i></span>';
 				}
 				else
 				{
-					$download = '<a href="' . $this->helper->route('dmzx_downloadsystem_controller_download', array('id' =>	$dl_id)) . '" title="' . $this->user->lang['EDS_REGULAR_DOWNLOAD'] . '" alt=""><span class="fa-stack fa-2x"><i class="fa fa-download fa-stack-1x"></i></span></a>';
+					$download = '<a href="' . $this->helper->route('dmzx_downloadsystem_controller_download', array('id' =>	$dl_id)) . '" title="' . $this->user->lang['EDS_REGULAR_DOWNLOAD'] . '" alt=""><span class="fa-stack fa-2x"><i class="fa fa-download fa-stack-1x" data-ajax="access"></i></span></a>';
 				}
 
 				$dl_image = $row['download_image'];
@@ -221,6 +223,10 @@ class downloadsystemcat
 					'U_DOWNLOAD'		=> $download,
 					'DL_IMAGE'			=> generate_board_url() . '/' . $eds_values['dm_eds_image_dir'] . '/' . $dl_image,
 				));
+
+				$this->template->assign_vars(array(
+					'DL_IMAGE_ALERT'			=> generate_board_url() . '/' . $eds_values['dm_eds_image_dir'] . '/' . $dl_image,
+				));
 			}
 
 			$this->db->sql_freeresult($result);
@@ -233,11 +239,14 @@ class downloadsystemcat
 
 			$this->template->assign_vars(array(
 				'CAT_NAME' 						=> $cat_name,
+				'EDS_DOWNLOAD_FILE_LINK'		=> $this->helper->route('dmzx_downloadsystem_controller_download', array('id' => $dl_id)),
 				'MAIN_LINK'						=> $this->helper->route('dmzx_downloadsystem_controller'),
 				'DOWNLOADSYSTEM_FOOTER_VIEW'	=> true,
 				'TOTAL_DOWNLOADS'				=> ($total_downloads == 1) ? $this->user->lang['EDS_SINGLE'] : sprintf($this->user->lang['EDS_MULTI'], $total_downloads),
 				'L_MAIN_LINK'					=> sprintf($this->user->lang['EDS_BACK_LINK'], '<a href= "' . $this->helper->route('dmzx_downloadsystem_controller') . '">', '</a>'),
 				'S_DM_EDS_ALLOW_DL_IMG'			=> $eds_values['dm_eds_allow_dl_img'],
+				'EDS_DOWNLOAD_SHOW_DONATION'	=> $eds_values['show_donation'],
+				'EDS_DOWNLOAD_DONATION_URL'		=> $eds_values['donation_url'],
 			));
 		}
 

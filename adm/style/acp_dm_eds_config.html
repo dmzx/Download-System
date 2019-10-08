@@ -56,6 +56,14 @@
 			<dt><label>{{ lang('ACP_DM_EDS_ALLOW_MAGIC_URL') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_DM_EDS_ALLOW_MAGIC_URL_EXPLAIN') }}</dt>
 			<dd><input type="checkbox" class="js-switch" id="dm_eds_allow_magic_url" name="dm_eds_allow_magic_url" value="1"{% if DM_EDS_ALLOW_MAGIC_URL %} checked="checked"{% endif %} /></dd>
 		</dl>
+		<dl>
+			<dt><label>{{ lang('ACP_SHOW_DONATION') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_SHOW_DONATION_EXPLAIN') }}</dt>
+			<dd><input type="checkbox" class="js-switch" id="show_donation" name="show_donation" value="1"{% if SHOW_DONATION %} checked="checked"{% endif %} /></dd>
+		</dl>
+		<dl class="show_donation_toggle"<!-- IF SHOW_DONATION --> style="display: none;"<!-- ENDIF -->>
+			<dt><label for="donation_url">{{ lang('ACP_DONATION_URL') }}{{ lang('COLON') }}</label><br><span>{{ lang('ACP_DONATION_URL_EXPLAIN') }}</span></dt>
+			<dd><input type="url" id="donation_url" name="donation_url" size="60" maxlength="400" value="{{ DONATION_URL }}"></dd>
+		</dl>
 	</fieldset>
 	<fieldset>
 		<legend>{{ lang('ACP_ANNOUNCE_SETTINGS') }}</legend>
@@ -79,4 +87,5 @@
 </form>
 
 {% INCLUDEJS '@dmzx_downloadsystem/assets/js/downloadsystem.js' %}
+
 {% INCLUDE 'overall_footer.html' %}

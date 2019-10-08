@@ -185,6 +185,8 @@ class admin_controller
 				'dm_eds_allow_magic_url'	=> $this->request->variable('dm_eds_allow_magic_url', 0),
 				'dm_eds_allow_dl_img'		=> $this->request->variable('dm_eds_allow_dl_img', 0),
 				'dm_eds_allow_cat_img'		=> $this->request->variable('dm_eds_allow_cat_img', 0),
+				'show_donation'				=> $this->request->variable('show_donation', 0),
+				'donation_url'				=> $this->request->variable('donation_url', '', true),
 			);
 
 			// Check if pagination_acp is at least 5
@@ -251,6 +253,8 @@ class admin_controller
 				'DM_EDS_ALLOW_MAGIC_URL'	=> $eds_values['dm_eds_allow_magic_url'],
 				'DM_EDS_ALLOW_DL_IMG'		=> $eds_values['dm_eds_allow_dl_img'],
 				'DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
+				'SHOW_DONATION'				=> $eds_values['show_donation'],
+				'DONATION_URL'				=> $eds_values['donation_url'],
 				'DM_EDS_VERSION'			=> $this->config['download_system_version'],
 				'U_BACK'					=> $this->u_action,
 				'U_ACTION'					=> $form_action,

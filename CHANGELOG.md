@@ -1,5 +1,10 @@
 # Downloadsystem Changelog
 
+## Changes in 1.1.2
+- Code added sweetalert2
+- Fixed category move up and down.
+- Added link for donation in ACP settings.
+
 ## Changes in 1.1.1
 - Code update for ACP pages.
 

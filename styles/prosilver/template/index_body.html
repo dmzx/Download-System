@@ -18,9 +18,8 @@
 </div>
 
 {% if S_NO_CAT %}
-{{ lang('EDS_NO_CAT') }}<br /><br />
-<a href="{{ U_BACK }}">{{ lang('EDS_BACK_INDEX') }}</a>
-<br /><br />
+	<div class="hidden" id="alertnocat"></div>
+	<a href="{{ U_BACK }}">{{ lang('EDS_BACK_INDEX') }}</a>
 {% else %}
 {% for catrow in loops.catrow %}
 {% if catrow.S_FIRST_ROW %}
@@ -51,7 +50,7 @@
 					</td>
 					{% endif %}
 					<td class="folder">
-						<a href="{{ catrow.U_EDS_CAT }}" class="forumtitlex">{{ catrow.CAT_NAME }}</a>
+						<a href="{{ catrow.U_EDS_CAT }}" data-ajax="forumtitlex" class="forumtitlex">{{ catrow.CAT_NAME }}</a>
 						<br />
 						<br />
 						{{ catrow.SUBCATS }}

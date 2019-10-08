@@ -1,0 +1,30 @@
+{% INCLUDEJS '@dmzx_downloadsystem/js/downloadsystem.js' %}
+
+<script>
+var downloadSystem = {
+
+	file_link		: '{{ EDS_DOWNLOAD_FILE_LINK | escape('js') }}',
+	donationUrl		: '{{ EDS_DOWNLOAD_DONATION_URL | escape('js') }}',
+	showDonation	: {{ EDS_DOWNLOAD_SHOW_DONATION ? 'true' : 'false' }},
+	downloadImage	: '{{ DL_IMAGE_ALERT | escape('js') }}',
+
+	lang: {
+		download				: '{{ lang('EDS_DOWNLOAD') | escape('js') }}',
+		file_download			: '{{ lang('EDS_DOWNLOAD_FILE') | escape('js') }}',
+		donate					: '{{ lang('EDS_DOWNLOAD_DONATE') | escape('js') }}',
+		download_start			: '{{ lang('EDS_DOWNLOAD_START') | escape('js') }}',
+		donate_thanks			: '{{ lang('EDS_DOWNLOAD_DONATE_THX') | escape('js') }}',
+		no_permission			: '{{ lang('EDS_DOWNLOAD_NO_PERM') | escape('js') }}',
+		not_download			: '{{ lang('EDS_DOWNLOAD_NOT_DOWNLOAD') | escape('js') }}',
+		donate_message			: '{{ lang('EDS_DOWNLOAD_DONATE_MES') | escape('js') }}',
+		redirect				: '{{ lang('EDS_DOWNLOAD_REDIRECT') | escape('js') }}',
+		noCategory				: '{{ lang('EDS_NO_CAT') | escape('js') }}',
+		noFile					: '{{ lang('EDS_NO_DOWNLOADS') | escape('js') }}'
+	}
+};
+</script>
+
+{% if not definition.INCLUDED_SWEETALERT2ALLMINJS %}
+	{% INCLUDEJS '@dmzx_downloadsystem/js/sweetalert2.all.min.js' %}
+	{% DEFINE INCLUDED_SWEETALERT2ALLMINJS = true %}
+{% endif %}

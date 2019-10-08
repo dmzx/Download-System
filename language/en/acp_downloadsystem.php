@@ -219,4 +219,8 @@ Have fun!',
 	'ACP_DM_CATEGORIES_NAME'				=> 'Category name',
 	'ACP_DM_CATEGORIES_DESC'				=> 'Description',
 	'ACP_DM_CATEGORIES_SHOW_INDEX' 			=> 'Show on upload page',
+	'ACP_SHOW_DONATION'						=> 'Show donation button before downloading a file',
+	'ACP_SHOW_DONATION_EXPLAIN' 			=> 'Will display donation button when downloading a file.',
+	'ACP_DONATION_URL'						=> 'URL to donation page',
+	'ACP_DONATION_URL_EXPLAIN' 				=> 'Set URL to donation page. Will open in new tab and download will start automatically.',
 ));
