@@ -1,5 +1,8 @@
 # Downloadsystem Changelog
 
+## Changes in 1.1.3
+- Fixed downloading multiple files in one folder.
+
 ## Changes in 1.1.2
 - Code added sweetalert2
 - Fixed category move up and down.

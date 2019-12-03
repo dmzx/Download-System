@@ -207,7 +207,7 @@ class downloadsystemcat
 				}
 				else
 				{
-					$download = '<a href="' . $this->helper->route('dmzx_downloadsystem_controller_download', array('id' =>	$dl_id)) . '" title="' . $this->user->lang['EDS_REGULAR_DOWNLOAD'] . '" alt=""><span class="fa-stack fa-2x"><i class="fa fa-download fa-stack-1x" data-ajax="access"></i></span></a>';
+					$download = '<a href="' . $this->helper->route('dmzx_downloadsystem_controller_download', array('id' =>	$dl_id)) . '" title="' . $this->user->lang['EDS_REGULAR_DOWNLOAD'] . '" alt=""><span class="fa-stack fa-2x"><i class="fa fa-download fa-stack-1x" id="' . $dl_id . '" data-ajax="access"></i></span></a>';
 				}
 
 				$dl_image = $row['download_image'];
@@ -239,7 +239,7 @@ class downloadsystemcat
 
 			$this->template->assign_vars(array(
 				'CAT_NAME' 						=> $cat_name,
-				'EDS_DOWNLOAD_FILE_LINK'		=> $this->helper->route('dmzx_downloadsystem_controller_download', array('id' => $dl_id)),
+				'EDS_DOWNLOAD_FILE_LINK'		=> $this->helper->route('dmzx_downloadsystem_controller_download'),
 				'MAIN_LINK'						=> $this->helper->route('dmzx_downloadsystem_controller'),
 				'DOWNLOADSYSTEM_FOOTER_VIEW'	=> true,
 				'TOTAL_DOWNLOADS'				=> ($total_downloads == 1) ? $this->user->lang['EDS_SINGLE'] : sprintf($this->user->lang['EDS_MULTI'], $total_downloads),

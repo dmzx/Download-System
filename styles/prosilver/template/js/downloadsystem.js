@@ -14,6 +14,8 @@
 	});
 
 	phpbb.addAjaxCallback('access', function(e) {
+		var id = $(this).attr('id');
+
 		if (downloadSystem.showDonation) {
 			swal.fire({
 				title: downloadSystem.lang.file_download,
@@ -38,7 +40,7 @@
 						timer: 4000,
 					});
 
-					window.location.href = downloadSystem.file_link;
+					window.location.href = downloadSystem.file_link + '?id=' + id;
 				} else if (result.dismiss === Swal.DismissReason.cancel) {
 
 					swal.fire({
@@ -49,7 +51,7 @@
 						timer: 1500,
 					});
 
-					window.location.href = downloadSystem.file_link;
+					window.location.href = downloadSystem.file_link + '?id=' + id;
 				}
 			});
 		}
@@ -63,10 +65,8 @@
 				timer: 1500,
 			});
 
-			window.location.href = downloadSystem.file_link;
+			window.location.href = downloadSystem.file_link + '?id=' + id;
 		}
-
-		e.preventDefault();
 	});
 
 	phpbb.addAjaxCallback('forumtitlex', function(e) {
