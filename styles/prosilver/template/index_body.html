@@ -4,7 +4,7 @@
 
 <p>{{ lang('EDS_TITLE_EXPLAIN') }}</p>
 
-<div class="action-bar">
+<div class="action-bar bar-top">
 	{% if loops.pagination|length or EDS_CATEGORIES %}
 	<div class="pagination">
 		 {{ EDS_CATEGORIES }}{% if EDS_SUB_CAT_SHOW %} {{ EDS_SUB_CATEGORIES }}{% endif %}
@@ -74,7 +74,7 @@
 {% endfor %}
 {% endif %}
 
-<div class="action-bar">
+<div class="action-bar bar-bottom">
 	{% if loops.pagination|length or EDS_CATEGORIES %}
 	<div class="pagination">
 		 {{ EDS_CATEGORIES }}{% if EDS_SUB_CAT_SHOW %} {{ EDS_SUB_CATEGORIES }}{% endif %}

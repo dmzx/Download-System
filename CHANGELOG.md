@@ -1,5 +1,9 @@
 # Downloadsystem Changelog
 
+## Changes in 1.1.5
+- Added file extension to fa download icon.
+- Added download count in ACP.
+
 ## Changes in 1.1.4
 - Code update tables.yml
 

@@ -470,7 +470,7 @@ class functions
 					'NUMBER_DOWNLOADS'		=> $row['number_downloads'],
 					'CAT_NAME'				=> censor_text($row['cat_name']),
 					'U_EDS_CAT'				=> $this->helper->route('dmzx_downloadsystem_controller_cat', array('id' =>	$row['cat_id'])),
-					'CAT_DESC'				=> $this->renderer->render($row['cat_desc']),
+					'CAT_DESC'				=> $this->renderer->render(html_entity_decode($row['cat_desc'])),
 					'CAT_FOLDER_IMG_SRC'	=> $folder_image,
 					'SUBCATS'				=> ($subcats) ? $l_subcats . ': <span style="font-weight: bold;">' . $subcats . '</span>' : '',
 					'IMAGE'					=> generate_board_url() . '/' . $eds_values['dm_eds_image_cat_dir'] . '/' . $category_image,

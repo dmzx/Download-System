@@ -1,69 +1,74 @@
-td.eds-title {
+.eds-title {
 	width: 25%;
 	overflow: hidden;
 	text-align: left;
 	line-height: 2.2em;
-	font-size: 1.1em;
 }
 
-td.eds-version {
+.eds-version {
 	width: 5%;
-	min-width: 60px;
 	overflow: hidden;
 	text-align: center;
 	line-height: 2.2em;
-	font-size: 1.1em;
 }
 
-td.eds-desc {
+.eds-desc {
 	width: 35%;
 	overflow: hidden;
 	margin-left: 2px;
 	margin-right: 2px;
 	text-align: left;
 	line-height: 1.2em;
-	font-size: 1.1em;
 }
 
-td.eds-desc-small {
+.eds-cat {
+	width: 20%;
+	overflow: hidden;
+	margin-left: 2px;
+	margin-right: 2px;
+	text-align: left;
+	line-height: 1.2em;
+}
+
+.eds-desc-small {
 	width: 30%;
 	margin-left: 2px;
 	margin-right: 2px;
 	text-align: left;
 	line-height: 1.2em;
-	font-size: 1.1em;
 }
 
-td.eds-count {
+.eds-count {
+	width: 5%;
+	overflow: hidden;
+	text-align: center;
+}
+
+.eds-image {
 	width: 10%;
 	overflow: hidden;
 	text-align: center;
-	font-size: 1.1em;
 }
 
-td.eds-cost {
+.eds-cost {
 	width: 8%;
 	min-width: 100px;
 	overflow: hidden;
 	text-align: center;
-	font-size: 1.1em;
 }
 
-td.eds-filesize {
+.eds-filesize {
 	width: 8%;
 	min-width: 60px;
 	overflow: hidden;
 	text-align: center;
 	line-height: 1.2em;
-	font-size: 1.1em;
 }
 
-td.eds-dl {
+.eds-dl {
 	width: 68px;
 	min-width: 60px;
 	text-align: center;
-	font-size: 1.1em;
-	
 }
 
 .eds-ext{
@@ -73,18 +78,16 @@ td.eds-dl {
     text-align: center;
 }
 
-td.eds-lastpost {
+.eds-lastpost {
 	width: 30%;
 	min-width: 60px;
 	text-align: left;
-	font-size: 1.1em;
 }
 
-div.eds-legend {
+.eds-legend {
 	text-align: center;
 	vertical-align: middle;
 	line-height: 1.2em;
-	font-size: 1.1em;
 }
 
 .forumtitlex {

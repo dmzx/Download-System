@@ -200,6 +200,7 @@ class downloadsystemcat
 				$upload_time 		= $row['upload_time'];
 				$last_changed_time 	= $row['last_changed_time'];
 				$filesize			= $row['filesize'] > 1048576 ? round($row['filesize']/1048576, 2) . ' MB' : round($row['filesize']/1024) . ' kB';
+				$dl_filename 		= pathinfo($row['download_filename'], PATHINFO_EXTENSION);
 
 				if (!$this->auth->acl_get('u_dm_eds_download'))
 				{
@@ -207,7 +208,7 @@ class downloadsystemcat
 				}
 				else
 				{
-					$download = '<a href="' . $this->helper->route('dmzx_downloadsystem_controller_download', array('id' =>	$dl_id)) . '" title="' . $this->user->lang['EDS_REGULAR_DOWNLOAD'] . '" alt=""><span class="fa-stack fa-2x"><i class="fa fa-download fa-stack-1x" id="' . $dl_id . '" data-ajax="access"></i></span></a>';
+					$download = '<a href="' . $this->helper->route('dmzx_downloadsystem_controller_download', array('id' =>	$dl_id)) . '" title="' . $this->user->lang['EDS_REGULAR_DOWNLOAD'] . '" alt=""><span class="fa-stack fa-2x"><i class="fa fa-download fa-stack-1x" id="' . $dl_id . '" data-ajax="access"></i><span class="eds-ext">' . $dl_filename . '</span></span></a>';
 				}
 
 				$dl_image = $row['download_image'];
@@ -216,7 +217,7 @@ class downloadsystemcat
 					'DL_TITLE'			=> $dl_title,
 					'DL_VERSION'		=> $dl_version,
 					'DL_CLICKS'			=> $dl_clicks,
-					'DL_DESC'			=> $this->renderer->render($row['download_desc']),
+					'DL_DESC'			=> $this->renderer->render(html_entity_decode($row['download_desc'])),
 					'DL_UPLOAD_TIME' 	=> $this->user->format_date($upload_time),
 					'DL_LAST_CHANGED' 	=> $this->user->format_date($last_changed_time),
 					'DL_FILESIZE'		=> $filesize,
