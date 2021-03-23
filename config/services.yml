@@ -2,7 +2,7 @@ imports:
     - { resource: tables.yml }
 services:
     dmzx.downloadsystem.listener:
-        class: dmzx\downloadsystem\event\listener
+        class: 'dmzx\downloadsystem\event\listener'
         arguments:
             - '@user'
             - '@template'
@@ -11,9 +11,9 @@ services:
             - '@auth'
             - '%core.php_ext%'
         tags:
-            - { name: event.listener }
+            - { name: 'event.listener' }
     dmzx.downloadsystem.controller:
-        class: dmzx\downloadsystem\controller\download
+        class: 'dmzx\downloadsystem\controller\download'
         arguments:
             - '@dmzx.downloadsystem.core.functions'
             - '@template'
@@ -22,7 +22,7 @@ services:
             - '@request'
             - '@controller.helper'
     dmzx.downloadsystem.controller.upload:
-        class: dmzx\downloadsystem\controller\downloadupload
+        class: 'dmzx\downloadsystem\controller\downloadupload'
         arguments:
             - '@dmzx.downloadsystem.core.functions'
             - '@text_formatter.parser'
@@ -42,7 +42,7 @@ services:
             - '%dmzx.downloadsystem.table.dm_eds_cat%'
             - '@?files.factory'
     dmzx.downloadsystem.controller.cat:
-        class: dmzx\downloadsystem\controller\downloadsystemcat
+        class: 'dmzx\downloadsystem\controller\downloadsystemcat'
         arguments:
             - '@dmzx.downloadsystem.core.functions'
             - '@text_formatter.parser'
@@ -59,7 +59,7 @@ services:
             - '%dmzx.downloadsystem.table.dm_eds%'
             - '%dmzx.downloadsystem.table.dm_eds_cat%'
     dmzx.downloadsystem.controller.download:
-        class: dmzx\downloadsystem\controller\downloadsystemdownload
+        class: 'dmzx\downloadsystem\controller\downloadsystemdownload'
         arguments:
             - '@auth'
             - '@dbal.conn'
@@ -68,7 +68,7 @@ services:
             - '%dmzx.downloadsystem.table.dm_eds%'
             - '%dmzx.downloadsystem.table.dm_eds_cat%'
     dmzx.downloadsystem.controller.admin.controller:
-        class: dmzx\downloadsystem\controller\admin_controller
+        class: 'dmzx\downloadsystem\controller\admin_controller'
         arguments:
             - '@dmzx.downloadsystem.core.functions'
             - '@filesystem'
@@ -92,7 +92,7 @@ services:
             - '%dmzx.downloadsystem.table.dm_eds_config%'
             - '@?files.factory'
     dmzx.downloadsystem.core.functions:
-        class: dmzx\downloadsystem\core\functions
+        class: 'dmzx\downloadsystem\core\functions'
         arguments:
             - '@template'
             - '@text_formatter.renderer'

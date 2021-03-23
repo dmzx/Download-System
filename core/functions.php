@@ -352,18 +352,18 @@ class functions
 		$total_sub_cat = $row['total_sub_cat'];
 		$this->db->sql_freeresult($result);
 
-		// Select cat name
-		$sql = 'SELECT cat_name
-			FROM ' . $this->dm_eds_cat_table. '
-			WHERE cat_id = ' . (int) $cat_id;
-		$result = $this->db->sql_query($sql, 60);
-		$row = $this->db->sql_fetchrow($result);
-		$cat_name = $row['cat_name'];
-		$this->db->sql_freeresult($result);
-
 		// Check if there are downloads
 		if ($total_cat == 0)
 		{
+			// Select cat name
+			$sql = 'SELECT cat_name
+				FROM ' . $this->dm_eds_cat_table. '
+				WHERE cat_id = ' . (int) $cat_id;
+			$result = $this->db->sql_query($sql, 60);
+			$row = $this->db->sql_fetchrow($result);
+			$cat_name = $row['cat_name'];
+			$this->db->sql_freeresult($result);
+			
 			$this->template->assign_vars(array(
 				'CAT_NAME'		=> $cat_name,
 				'S_NO_CAT'		=> true,

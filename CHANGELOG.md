@@ -1,5 +1,8 @@
 # Downloadsystem Changelog
 
+## Changes in 1.1.6
+- Code update in acp controller and composer.
+
 ## Changes in 1.1.5
 - Added file extension to fa download icon.
 - Added download count in ACP.

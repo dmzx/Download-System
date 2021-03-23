@@ -354,7 +354,7 @@ class admin_controller
 
 		foreach ($cats as $key => $value)
 		{
-			if ($key == $row2['download_cat_id'])
+			if ($key == isset($row2['download_cat_id']))
 			{
 				$cat_options .= '<option value="' . $value['cat_id'] . '" selected="selected">' . $value['cat_title'] . '</option>';
 			}
@@ -468,7 +468,7 @@ class admin_controller
 
 		foreach ($cats as $key => $value)
 		{
-			if ($key == $row2['download_cat_id'])
+			if ($key == isset($row2['download_cat_id']))
 			{
 				$cat_options .= '<option value="' . $value['cat_id'] . '" selected="selected">' . $value['cat_title'] . '</option>';
 			}
@@ -699,8 +699,7 @@ class admin_controller
 				trigger_error($this->user->lang['ACP_UPLOAD_FILE_EXISTS'] . adm_back_link($this->u_action), E_USER_WARNING);//continue;
 			}
 
-			$upload_file->move_file($upload_dir, false, false, false);
-			@chmod($this->ext_path_web . 'files/' . $upload_file->get('uploadname'), 0644);
+			$upload_file->move_file($upload_dir, false, false, 0644);
 
 			if (sizeof($upload_file->error) && $upload_file->get('uploadname'))
 			{
@@ -746,7 +745,6 @@ class admin_controller
 			{
 				$upload_file->clean_filename('unique_ext', 'dm_eds_dl_');
 				$upload_file->move_file($upload_dir, true, true, 0644);
-				@chmod($this->root_path . $upload_dir . $upload_file->get('uploadname'), 0644);
 				$sql_ary['download_image'] = $upload_file->get('realname');
 			}
 			else
@@ -917,8 +915,7 @@ class admin_controller
 				$delete_file = $this->ext_path_web . 'files/' . $current_cat_name .'/' . $current_filename;
 				@unlink($delete_file);
 
-				$upload_file->move_file($upload_dir, false, false, false);
-				@chmod($this->ext_path_web . 'files/' . $upload_file->get('uploadname'), 0644);
+				$upload_file->move_file($upload_dir, false, false, 0644);
 
 				if (sizeof($upload_file->error) && $upload_file->get('uploadname'))
 				{
@@ -962,7 +959,6 @@ class admin_controller
 			{
 				$upload_file->clean_filename('unique_ext', 'dm_eds_dl_');
 				$upload_file->move_file($upload_dir, true, true, 0644);
-				@chmod($this->root_path . $upload_dir . $upload_file->get('uploadname'), 0644);
 				$sql_ary['download_image'] = $upload_file->get('realname');
 			}
 
@@ -1412,7 +1408,6 @@ class admin_controller
 			{
 				$upload_file->clean_filename('unique_ext', 'dm_eds_cat_');
 				$upload_file->move_file($upload_dir, true, true, 0644);
-				@chmod($this->root_path . $upload_dir . $upload_file->get('uploadname'), 0644);
 				$dm_eds_data['category_image'] = $upload_file->get('realname');
 			}
 			else
@@ -1669,7 +1664,6 @@ class admin_controller
 			{
 				$upload_file->clean_filename('unique_ext', 'dm_eds_cat_');
 				$upload_file->move_file($upload_dir, true, true, 0644);
-				@chmod($this->root_path . $upload_dir . $upload_file->get('uploadname'), 0644);
 				$dm_eds_data['category_image'] = $upload_file->get('realname');
 			}
 
