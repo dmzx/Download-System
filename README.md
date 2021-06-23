@@ -1,6 +1,6 @@
 # Download System Extension
 
-[![Build Status](https://travis-ci.org/dmzx/Download-System.svg?branch=master)](https://travis-ci.org/dmzx/Download-System)
+[![Build Status](https://travis-ci.com/dmzx/Download-System.svg?branch=master)](https://travis-ci.com/dmzx/Download-System)
 
 ## Install
 1. Download the latest release.
