@@ -343,7 +343,7 @@ class downloadupload
 		$cat_options = '';
 		foreach ($cats as $key => $value)
 		{
-			if ($key == $row2['download_cat_id'])
+			if ($key ??= $row2['download_cat_id'])
 			{
 				$cat_options .= '<option value="' . $value['cat_id'] . '" selected="selected">' . $value['cat_title'] . '</option>';
 			}

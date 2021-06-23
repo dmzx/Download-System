@@ -9,6 +9,8 @@
 
 namespace dmzx\downloadsystem\core;
 
+use phpbb\exception\http_exception;
+
 class functions
 {
 	/** @var \phpbb\template\template */
@@ -361,9 +363,9 @@ class functions
 				WHERE cat_id = ' . (int) $cat_id;
 			$result = $this->db->sql_query($sql, 60);
 			$row = $this->db->sql_fetchrow($result);
-			$cat_name = $row['cat_name'];
+			$cat_name = @$row['cat_name'];
 			$this->db->sql_freeresult($result);
-			
+
 			$this->template->assign_vars(array(
 				'CAT_NAME'		=> $cat_name,
 				'S_NO_CAT'		=> true,

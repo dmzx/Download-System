@@ -16,15 +16,15 @@
 	<fieldset>
 		<legend>{{ lang('ACP_NEW_DOWNLOAD') }}</legend>
 		<dl>
-			<dt><label>{{ lang('ACP_NEW_TITLE') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ACP_NEW_TITLE_EXPLAIN') }}</span></dt>
+			<dt><label>{{ lang('ACP_NEW_TITLE') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_NEW_TITLE_EXPLAIN') }}</span></dt>
 			<dd><input type="text" name="title" size="50" value="{{ TITLE }}" /></dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('ACP_NEW_VERSION') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ACP_NEW_VERSION_EXPLAIN') }}</span></dt>
+			<dt><label>{{ lang('ACP_NEW_VERSION') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_NEW_VERSION_EXPLAIN') }}</span></dt>
 			<dd><input type="text" name="dl_version" size="15" maxlength="10" value="{{ DL_VERSION }}" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="desc">{{ lang('ACP_NEW_DESC') }}{{ lang('COLON') }}</label><br><span>{{ lang('ACP_NEW_DESC_EXPLAIN') }}</span></dt>
+			<dt><label for="desc">{{ lang('ACP_NEW_DESC') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_NEW_DESC_EXPLAIN') }}</span></dt>
 			<dd>
 				{% INCLUDE 'acp_posting_buttons.html' %}
 				<textarea name="desc" rows="5" cols="60" style="width: 95%" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" data-bbcode="true">{{ DESC }}</textarea>
@@ -35,15 +35,15 @@
 				<label><input type="checkbox" class="radio" name="disable_magic_url"{% if not S_DL_CATEGORY_ADD and S_MAGIC_URL_ENABLED == 0 %} checked="checked"{% endif %} /> {{ lang('DISABLE_MAGIC_URL') }}</label>
 			</dd>
 			<dd>&nbsp;</dd>
-			<dd><strong>{{ lang('OPTIONS') }}{{ lang('COLON') }}</strong> {{ BBCODE_STATUS }} :: {{ URL_STATUS }} :: {{ SMILIES_STATUS }}</dd>
+			<dd><strong>{{ lang('OPTIONS') ~ lang('COLON') }}</strong> {{ BBCODE_STATUS }} :: {{ URL_STATUS }} :: {{ SMILIES_STATUS }}</dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('ACP_NEW_DL_CAT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ACP_NEW_DL_CAT_EXPLAIN') }}</span></dt>
+			<dt><label>{{ lang('ACP_NEW_DL_CAT') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_NEW_DL_CAT_EXPLAIN') }}</span></dt>
 			<dd><select name="parent">{{ PARENT_OPTIONS }}</select></dd>
 		</dl>
 		{% if S_DM_EDS_ALLOW_DL_IMG %}
 		<dl>
-			<dt><label for="download_image">{{ lang('ACP_DL_DOWNLOAD_IMAGE') }}{{ lang('COLON') }}</label><br><span>{{ lang('ACP_DL_DOWNLOAD_IMAGE_EXPLAIN') }}</span></dt>
+			<dt><label for="download_image">{{ lang('ACP_DL_DOWNLOAD_IMAGE') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_DL_DOWNLOAD_IMAGE_EXPLAIN') }}</span></dt>
 			<dd><input class="inputbox autowidth" type="file" name="download_image" size="52" /></dd>
 		</dl>
 		{% endif %}
@@ -52,11 +52,11 @@
 		<legend>{{ lang('ACP_UPLOAD_METHOD') }}</legend>
 		<p>{{ lang('ACP_UPLOAD_METHOD_EXPLAIN') }}</p>
 		<dl>
-			<dt><label>{{ lang('ACP_NEW_FTP_FILENAME') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ACP_NEW_FTP_FILENAME_EXPLAIN') }}</span></dt>
+			<dt><label>{{ lang('ACP_NEW_FTP_FILENAME') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_NEW_FTP_FILENAME_EXPLAIN') }}</span></dt>
 			<dd><input type="text" name="ftp_upload" size="50" value="{{ FTP_UPLOAD }}" /></dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('ACP_NEW_FILENAME') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ACP_NEW_FILENAME_EXPLAIN') }}</span></dt>
+			<dt><label>{{ lang('ACP_NEW_FILENAME') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_NEW_FILENAME_EXPLAIN') }}</span></dt>
 			<dd><input class="inputbox autowidth" type="file" name="filename" size="52" /></dd>
 		</dl>
 	</fieldset>

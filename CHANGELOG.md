@@ -1,5 +1,9 @@
 # Downloadsystem Changelog
 
+## Changes in 1.1.7
+- Fixed errors on upload page and ACP.
+- Code update.
+
 ## Changes in 1.1.6
 - Code update in acp controller and composer.
 

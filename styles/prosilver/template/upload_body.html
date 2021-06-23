@@ -14,15 +14,15 @@
 			<p>{{ ALLOWED_SIZE }}</p>
 			<fieldset class="fields1">
 				<dl>
-					<dt><label>{{ lang('EDS_NEW_TITLE') }}{{ lang('COLON') }}</label><br /><span>{{ lang('EDS_NEW_TITLE_EXPLAIN') }}</span></dt>
+					<dt><label>{{ lang('EDS_NEW_TITLE') ~ lang('COLON') }}</label><br><span>{{ lang('EDS_NEW_TITLE_EXPLAIN') }}</span></dt>
 					<dd><input type="text" name="title" size="50" value="{{ TITLE }}" /></dd>
 				</dl>
 				<dl>
-					<dt><label>{{ lang('EDS_NEW_VERSION') }}{{ lang('COLON') }}</label><br /><span>{{ lang('EDS_NEW_VERSION_EXPLAIN') }}</span></dt>
+					<dt><label>{{ lang('EDS_NEW_VERSION') ~ lang('COLON') }}</label><br><span>{{ lang('EDS_NEW_VERSION_EXPLAIN') }}</span></dt>
 					<dd><input type="text" name="dl_version" size="15" maxlength="10" value="{{ DL_VERSION }}" /></dd>
 				</dl>
 				<dl>
-					<dt><label for="desc">{{ lang('EDS_NEW_DESC') }}{{ lang('COLON') }}</label><br><span>{{ lang('EDS_NEW_DESC_EXPLAIN') }}</span></dt>
+					<dt><label for="desc">{{ lang('EDS_NEW_DESC') ~ lang('COLON') }}</label><br><span>{{ lang('EDS_NEW_DESC_EXPLAIN') }}</span></dt>
 					<dd>
 						<textarea name="desc" rows="5" cols="60" style="width: 95%" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" data-bbcode="true">{{ DESC }}</textarea>
 					</dd>
@@ -32,14 +32,14 @@
 						<label><input type="checkbox" class="radio" name="disable_magic_url_file"{% if not S_DL_CATEGORY_ADD and S_MAGIC_URL_ENABLED_FILE == 0 %} checked="checked"{% endif %} /> {{ lang('DISABLE_MAGIC_URL') }}</label>
 					</dd>
 					<dd>&nbsp;</dd>
-					<dd><strong>{{ lang('OPTIONS') }}{{ lang('COLON') }}</strong> {{ BBCODE_STATUS }} :: {{ URL_STATUS }} :: {{ SMILIES_STATUS }}</dd>
+					<dd><strong>{{ lang('OPTIONS') ~ lang('COLON') }}</strong> {{ BBCODE_STATUS }} :: {{ URL_STATUS }} :: {{ SMILIES_STATUS }}</dd>
 				</dl>
 				<dl>
-					<dt><label>{{ lang('EDS_NEW_DL_CAT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('EDS_NEW_DL_CAT_EXPLAIN') }}</span></dt>
+					<dt><label>{{ lang('EDS_NEW_DL_CAT') ~ lang('COLON') }}</label><br><span>{{ lang('EDS_NEW_DL_CAT_EXPLAIN') }}</span></dt>
 					<dd><select name="parent">{{ PARENT_OPTIONS }}</select></dd>
 				</dl>
 				<dl>
-					<dt><label>{{ lang('EDS_NEW_FILENAME') }}{{ lang('COLON') }}</label><br /><span>{{ lang('EDS_NEW_FILENAME_EXPLAIN') }}</span></dt>
+					<dt><label>{{ lang('EDS_NEW_FILENAME') ~ lang('COLON') }}</label><br><span>{{ lang('EDS_NEW_FILENAME_EXPLAIN') }}</span></dt>
 					<dd><input class="inputbox autowidth" type="file" name="filename" size="52" /></dd>
 				</dl>
 			</fieldset>

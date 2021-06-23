@@ -13,70 +13,70 @@
 	<fieldset>
 		<legend>{{ lang('ACP_MANAGE_CONFIG') }}</legend>
 		<dl>
-			<dt><label>{{ lang('ACP_PAGINATION_ACP') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ACP_PAGINATION_ACP_EXPLAIN') }}</span></dt>
+			<dt><label>{{ lang('ACP_PAGINATION_ACP') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PAGINATION_ACP_EXPLAIN') }}</span></dt>
 			<dd><input type="text" name="pagination_acp" size="5" maxlength="3" value="{{ PAGINATION_ACP }}" /></dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('ACP_PAGINATION_DOWNLOADS') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ACP_PAGINATION_DOWNLOADS_EXPLAIN') }}</span></dt>
+			<dt><label>{{ lang('ACP_PAGINATION_DOWNLOADS') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PAGINATION_DOWNLOADS_EXPLAIN') }}</span></dt>
 			<dd><input type="text" name="pagination_downloads" size="5" maxlength="3" value="{{ PAGINATION_DOWNLOADS }}" /></dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('ACP_PAGINATION_USER') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ACP_PAGINATION_USER_EXPLAIN') }}</span></dt>
+			<dt><label>{{ lang('ACP_PAGINATION_USER') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PAGINATION_USER_EXPLAIN') }}</span></dt>
 			<dd><input type="text" name="pagination_user" size="5" maxlength="3" value="{{ PAGINATION_USER }}" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="dm_eds_image_size">{{ lang('ACP_DM_EDS_IMAGE_SIZE') }}{{ lang('COLON') }}</label><br><span>{{ lang('ACP_DM_EDS_IMAGE_SIZE_EXPLAIN') }}</span></dt>
+			<dt><label for="dm_eds_image_size">{{ lang('ACP_DM_EDS_IMAGE_SIZE') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_DM_EDS_IMAGE_SIZE_EXPLAIN') }}</span></dt>
 			<dd><input type="number" id="dm_eds_image_size" name="dm_eds_image_size" value="{{ DM_EDS_IMAGE_SIZE }}"> <label for="dm_eds_image_size">{{ lang('KIB') }}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="dm_eds_image_dir">{{ lang('ACP_DM_EDS_IMAGE_DIR') }}{{ lang('COLON') }}</label><br><span>{{ lang('ACP_DM_EDS_IMAGE_DIR_EXPLAIN') }}</span></dt>
+			<dt><label for="dm_eds_image_dir">{{ lang('ACP_DM_EDS_IMAGE_DIR') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_DM_EDS_IMAGE_DIR_EXPLAIN') }}</span></dt>
 			<dd><input type="text" id="dm_eds_image_dir" name="dm_eds_image_dir" size="40" maxlength="40" value="{{ DM_EDS_IMAGE_DIR }}"></dd>
 		</dl>
 		<dl>
-			<dt><label for="dm_eds_image_cat_dir">{{ lang('ACP_DM_EDS_IMAGE_CAT_DIR') }}{{ lang('COLON') }}</label><br><span>{{ lang('ACP_DM_EDS_IMAGE_CAT_DIR_EXPLAIN') }}</span></dt>
+			<dt><label for="dm_eds_image_cat_dir">{{ lang('ACP_DM_EDS_IMAGE_CAT_DIR') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_DM_EDS_IMAGE_CAT_DIR_EXPLAIN') }}</span></dt>
 			<dd><input type="text" id="dm_eds_image_cat_dir" name="dm_eds_image_cat_dir" size="40" maxlength="40" value="{{ DM_EDS_IMAGE_CAT_DIR }}"></dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('ACP_DM_EDS_ALLOW_DL_IMG') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_DM_EDS_ALLOW_DL_IMG_EXPLAIN') }}</dt>
+			<dt><label>{{ lang('ACP_DM_EDS_ALLOW_DL_IMG') ~ lang('COLON') }}</label><br>{{ lang('ACP_DM_EDS_ALLOW_DL_IMG_EXPLAIN') }}</dt>
 			<dd><input type="checkbox" class="js-switch" id="dm_eds_allow_dl_img" name="dm_eds_allow_dl_img" value="1"{% if DM_EDS_ALLOW_DL_IMG %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('ACP_DM_EDS_ALLOW_CAT_IMG') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_DM_EDS_ALLOW_CAT_IMG_EXPLAIN') }}</dt>
+			<dt><label>{{ lang('ACP_DM_EDS_ALLOW_CAT_IMG') ~ lang('COLON') }}</label><br>{{ lang('ACP_DM_EDS_ALLOW_CAT_IMG_EXPLAIN') }}</dt>
 			<dd><input type="checkbox" class="js-switch" id="dm_eds_allow_cat_img" name="dm_eds_allow_cat_img" value="1"{% if DM_EDS_ALLOW_CAT_IMG %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('ACP_DM_EDS_ALLOW_BBCODES') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_DM_EDS_ALLOW_BBCODES_EXPLAIN') }}</dt>
+			<dt><label>{{ lang('ACP_DM_EDS_ALLOW_BBCODES') ~ lang('COLON') }}</label><br>{{ lang('ACP_DM_EDS_ALLOW_BBCODES_EXPLAIN') }}</dt>
 			<dd><input type="checkbox" class="js-switch" id="dm_eds_allow_bbcodes" name="dm_eds_allow_bbcodes" value="1"{% if DM_EDS_ALLOW_BBCODES %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('DM_EDS_ALLOW_SMILIES') }}{{ lang('COLON') }}</label><br />{{ lang('DM_EDS_ALLOW_SMILIES_EXPLAIN') }}</dt>
+			<dt><label>{{ lang('DM_EDS_ALLOW_SMILIES') ~ lang('COLON') }}</label><br>{{ lang('DM_EDS_ALLOW_SMILIES_EXPLAIN') }}</dt>
 			<dd><input type="checkbox" class="js-switch" id="dm_eds_allow_smilies" name="dm_eds_allow_smilies" value="1"{% if DM_EDS_ALLOW_SMILIES %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('ACP_DM_EDS_ALLOW_MAGIC_URL') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_DM_EDS_ALLOW_MAGIC_URL_EXPLAIN') }}</dt>
+			<dt><label>{{ lang('ACP_DM_EDS_ALLOW_MAGIC_URL') ~ lang('COLON') }}</label><br>{{ lang('ACP_DM_EDS_ALLOW_MAGIC_URL_EXPLAIN') }}</dt>
 			<dd><input type="checkbox" class="js-switch" id="dm_eds_allow_magic_url" name="dm_eds_allow_magic_url" value="1"{% if DM_EDS_ALLOW_MAGIC_URL %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('ACP_SHOW_DONATION') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_SHOW_DONATION_EXPLAIN') }}</dt>
+			<dt><label>{{ lang('ACP_SHOW_DONATION') ~ lang('COLON') }}</label><br>{{ lang('ACP_SHOW_DONATION_EXPLAIN') }}</dt>
 			<dd><input type="checkbox" class="js-switch" id="show_donation" name="show_donation" value="1"{% if SHOW_DONATION %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl class="show_donation_toggle"<!-- IF SHOW_DONATION --> style="display: none;"<!-- ENDIF -->>
-			<dt><label for="donation_url">{{ lang('ACP_DONATION_URL') }}{{ lang('COLON') }}</label><br><span>{{ lang('ACP_DONATION_URL_EXPLAIN') }}</span></dt>
+			<dt><label for="donation_url">{{ lang('ACP_DONATION_URL') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_DONATION_URL_EXPLAIN') }}</span></dt>
 			<dd><input type="url" id="donation_url" name="donation_url" size="60" maxlength="400" value="{{ DONATION_URL }}"></dd>
 		</dl>
 	</fieldset>
 	<fieldset>
 		<legend>{{ lang('ACP_ANNOUNCE_SETTINGS') }}</legend>
 		<dl>
-			<dt><label>{{ lang('ACP_ANNOUNCE_ENABLE') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_ANNOUNCE_ENABLE_EXPLAIN') }}</dt>
+			<dt><label>{{ lang('ACP_ANNOUNCE_ENABLE') ~ lang('COLON') }}</label><br>{{ lang('ACP_ANNOUNCE_ENABLE_EXPLAIN') }}</dt>
 			<dd><input type="checkbox" class="js-switch" id="announce_enable" name="announce_enable" value="1"{% if ANNOUNCE_ENABLE %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('ACP_ANNOUNCE_LOCK') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_ANNOUNCE_LOCK_EXPLAIN') }}</dt>
+			<dt><label>{{ lang('ACP_ANNOUNCE_LOCK') ~ lang('COLON') }}</label><br>{{ lang('ACP_ANNOUNCE_LOCK_EXPLAIN') }}</dt>
 			<dd><input type="checkbox" class="js-switch" id="announce_lock_enable" name="announce_lock_enable" value="1"{% if ANNOUNCE_LOCK %} checked="checked"{% endif %} /></dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('ACP_ANNOUNCE_ID') }}{{ lang('COLON') }}</label><br />{{ lang('ACP_ANNOUNCE_ID_EXPLAIN') }}</dt>
+			<dt><label>{{ lang('ACP_ANNOUNCE_ID') ~ lang('COLON') }}</label><br>{{ lang('ACP_ANNOUNCE_ID_EXPLAIN') }}</dt>
 			<dd><input type="text" id="announce_forum" name="announce_forum" value="{{ ANNOUNCE_FORUM }}" maxlength="8" size="10" /></dd>
 		</dl>
 	</fieldset>

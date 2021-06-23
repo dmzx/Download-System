@@ -1,12 +1,12 @@
 {% INCLUDE 'overall_header.html' %}
 
 {% if S_NO_FILES %}
-<br /><br />
+<br><br>
 <div class="hidden" id="alertnofile"></div>
 	&nbsp;<b>{{ lang('EDS_NO_FILES') }}</b>
-<br /><br />
+<br><br>
 {% else %}
-<br />
+<br>
 <div class="action-bar bar-top">
 	{% if loops.pagination|length or TOTAL_DOWNLOADS %}
 	<div class="pagination">
@@ -49,8 +49,8 @@
 							{% endif %}
 							<td class="eds-desc" style="text-align:center;">{{ catrow.DL_DESC }}
 							<hr />
-							<span class="small"><i>{{ lang('EDS_UPLOADED_ON') }}{{ lang('COLON') }} {{ catrow.DL_UPLOAD_TIME }}<br />
-							{{ lang('EDS_LAST_CHANGED_ON') }}{{ lang('COLON') }} {{ catrow.DL_LAST_CHANGED }}</i></span></td>
+							<span class="small"><i>{{ lang('EDS_UPLOADED_ON') ~ lang('COLON') }} {{ catrow.DL_UPLOAD_TIME }}<br>
+							{{ lang('EDS_LAST_CHANGED_ON') ~ lang('COLON') }} {{ catrow.DL_LAST_CHANGED }}</i></span></td>
 							<td class="eds-count" style="text-align:center;"><strong>{{ catrow.DL_CLICKS }}</strong></td>
 							<td class="eds-filesize" style="text-align:center;">{{ catrow.DL_FILESIZE }}</td>
 							<td class="eds-dl" style="text-align:center;" >{{ catrow.U_DOWNLOAD }}</td>
