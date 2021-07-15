@@ -713,7 +713,7 @@ class parsedown
 
 			$text = substr($Line['body'], $requiredIndent);
 
-			$Block['li']['handler']['argument'] [] = $text;
+			$Block['li']['handler']['argument'][] = $text;
 
 			return $Block;
 		}
@@ -722,7 +722,7 @@ class parsedown
 		{
 			$text = preg_replace('/^[ ]{0,'.$requiredIndent.'}+/', '', $Line['body']);
 
-			$Block['li']['handler']['argument'] [] = $text;
+			$Block['li']['handler']['argument'][] = $text;
 
 			return $Block;
 		}
@@ -736,7 +736,7 @@ class parsedown
 			{
 				if (end($li['handler']['argument']) !== '')
 				{
-					$li['handler']['argument'] [] = '';
+					$li['handler']['argument'][] = '';
 				}
 			}
 		}
@@ -775,14 +775,14 @@ class parsedown
 
 		if ($Line['text'][0] === '>' and preg_match('/^>[ ]?+(.*+)/', $Line['text'], $matches))
 		{
-			$Block['element']['handler']['argument'] [] = $matches[1];
+			$Block['element']['handler']['argument'][] = $matches[1];
 
 			return $Block;
 		}
 
 		if ( ! isset($Block['interrupted']))
 		{
-			$Block['element']['handler']['argument'] [] = $Line['text'];
+			$Block['element']['handler']['argument'][] = $Line['text'];
 
 			return $Block;
 		}
@@ -875,7 +875,7 @@ class parsedown
 	{
 		if (strpos($Line['text'], ']') !== false
 			and preg_match('/^\[(.+?)\]:[ ]*+<?(\S+?)>?(?:[ ]+["\'(](.+)["\')])?[ ]*+$/', $Line['text'], $matches)
-		) 
+		)
 		{
 			$id = strtolower($matches[1]);
 
@@ -909,7 +909,7 @@ class parsedown
 			and strpos($Line['text'], '|') === false
 			and strpos($Line['text'], ':') === false
 			or strpos($Block['element']['handler']['argument'], "\n") !== false
-		) 
+		)
 		{
 			return;
 		}
@@ -949,7 +949,7 @@ class parsedown
 				$alignment = $alignment === 'left' ? 'center' : 'right';
 			}
 
-			$alignments [] = $alignment;
+			$alignments[] = $alignment;
 		}
 
 		# ~
@@ -990,7 +990,7 @@ class parsedown
 				);
 			}
 
-			$HeaderElements [] = $HeaderElement;
+			$HeaderElements[] = $HeaderElement;
 		}
 
 		# ~
@@ -1004,16 +1004,16 @@ class parsedown
 			),
 		);
 
-		$Block['element']['elements'] [] = array(
+		$Block['element']['elements'][] = array(
 			'name' => 'thead',
 		);
 
-		$Block['element']['elements'] [] = array(
+		$Block['element']['elements'][] = array(
 			'name' => 'tbody',
 			'elements' => array(),
 		);
 
-		$Block['element']['elements'][0]['elements'] [] = array(
+		$Block['element']['elements'][0]['elements'][] = array(
 			'name' => 'tr',
 			'elements' => $HeaderElements,
 		);
@@ -1061,7 +1061,7 @@ class parsedown
 					);
 				}
 
-				$Elements [] = $Element;
+				$Elements[] = $Element;
 			}
 
 			$Element = array(
@@ -1069,7 +1069,7 @@ class parsedown
 				'elements' => $Elements,
 			);
 
-			$Block['element']['elements'][1]['elements'] [] = $Element;
+			$Block['element']['elements'][1]['elements'][] = $Element;
 
 			return $Block;
 		}
@@ -1500,7 +1500,7 @@ class parsedown
 	{
 		if (substr($Excerpt['text'], 1, 1) !== ' ' and strpos($Excerpt['text'], ';') !== false
 			and preg_match('/^&(#?+[0-9a-zA-Z]++);/', $Excerpt['text'], $matches)
-		) 
+		)
 		{
 			return array(
 				'element' => array('rawHtml' => '&' . $matches[1] . ';'),
@@ -1543,7 +1543,7 @@ class parsedown
 
 		if (strpos($Excerpt['context'], 'http') !== false
 			and preg_match('/\bhttps?+:[\/]{2}[^\s<]+\b\/*+/ui', $Excerpt['context'], $matches, PREG_OFFSET_CAPTURE)
-		) 
+		)
 		{
 			$url = $matches[0][0];
 
@@ -1813,7 +1813,7 @@ class parsedown
 		if ( ! in_array('', $lines)
 			and isset($Elements[0]) and isset($Elements[0]['name'])
 			and $Elements[0]['name'] === 'p'
-		) 
+		)
 		{
 			unset($Elements[0]['name']);
 		}
