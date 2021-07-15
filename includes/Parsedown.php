@@ -236,7 +236,7 @@ class parsedown
 			{
 				foreach ($this->BlockTypes[$marker] as $blockType)
 				{
-					$blockTypes [] = $blockType;
+					$blockTypes[]= $blockType;
 				}
 			}
 
