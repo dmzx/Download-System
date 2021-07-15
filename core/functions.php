@@ -9,8 +9,6 @@
 
 namespace dmzx\downloadsystem\core;
 
-use phpbb\exception\http_exception;
-
 class functions
 {
 	/** @var \phpbb\template\template */

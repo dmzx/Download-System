@@ -13,11 +13,11 @@
 #
 #
 
-class Parsedown
+class parsedown
 {
 	# ~
 
-	const version = '1.8.0-beta-7';
+	const VERSION = '1.8.0-beta-7';
 
 	# ~
 
@@ -236,7 +236,7 @@ class Parsedown
 			{
 				foreach ($this->BlockTypes[$marker] as $blockType)
 				{
-					$blockTypes []= $blockType;
+					$blockTypes [] = $blockType;
 				}
 			}
 
@@ -324,7 +324,7 @@ class Parsedown
 			{
 				$Component['element'] = array('rawHtml' => $Component['markup']);
 			}
-			elseif (isset($Component['hidden']))
+			else if (isset($Component['hidden']))
 			{
 				$Component['element'] = array();
 			}
@@ -514,8 +514,8 @@ class Parsedown
 		}
 
 		if (($len = strspn($Line['text'], $Block['char'])) >= $Block['openerLength']
-			and chop(substr($Line['text'], $len), ' ') === ''
-		) {
+			and chop(substr($Line['text'], $len), ' ') === '') 
+		{
 			$Block['element']['element']['text'] = substr($Block['element']['element']['text'], 1);
 
 			$Block['complete'] = true;
@@ -585,7 +585,7 @@ class Parsedown
 				$matches[1] = substr($matches[1], 0, -$contentIndent);
 				$matches[3] = str_repeat(' ', $contentIndent) . $matches[3];
 			}
-			elseif ($contentIndent === 0)
+			else if ($contentIndent === 0)
 			{
 				$matches[1] .= ' ';
 			}
@@ -617,7 +617,8 @@ class Parsedown
 						isset($CurrentBlock)
 						and $CurrentBlock['type'] === 'Paragraph'
 						and ! isset($CurrentBlock['interrupted'])
-					) {
+					) 
+					{
 						return;
 					}
 
@@ -634,7 +635,7 @@ class Parsedown
 				)
 			);
 
-			$Block['element']['elements'] []= & $Block['li'];
+			$Block['element']['elements'] [] = & $Block['li'];
 
 			return $Block;
 		}
@@ -659,10 +660,11 @@ class Parsedown
 					and preg_match('/^'.$Block['data']['markerTypeRegex'].'(?:[ ]++(.*)|$)/', $Line['text'], $matches)
 				)
 			)
-		) {
+		) 
+		{
 			if (isset($Block['interrupted']))
 			{
-				$Block['li']['handler']['argument'] []= '';
+				$Block['li']['handler']['argument'] [] = '';
 
 				$Block['loose'] = true;
 
@@ -684,11 +686,11 @@ class Parsedown
 				)
 			);
 
-			$Block['element']['elements'] []= & $Block['li'];
+			$Block['element']['elements'] [] = & $Block['li'];
 
 			return $Block;
 		}
-		elseif ($Line['indent'] < $requiredIndent and $this->blockList($Line))
+		else if ($Line['indent'] < $requiredIndent and $this->blockList($Line))
 		{
 			return null;
 		}
@@ -702,7 +704,7 @@ class Parsedown
 		{
 			if (isset($Block['interrupted']))
 			{
-				$Block['li']['handler']['argument'] []= '';
+				$Block['li']['handler']['argument'] [] = '';
 
 				$Block['loose'] = true;
 
@@ -711,7 +713,7 @@ class Parsedown
 
 			$text = substr($Line['body'], $requiredIndent);
 
-			$Block['li']['handler']['argument'] []= $text;
+			$Block['li']['handler']['argument'] [] = $text;
 
 			return $Block;
 		}
@@ -720,7 +722,7 @@ class Parsedown
 		{
 			$text = preg_replace('/^[ ]{0,'.$requiredIndent.'}+/', '', $Line['body']);
 
-			$Block['li']['handler']['argument'] []= $text;
+			$Block['li']['handler']['argument'] [] = $text;
 
 			return $Block;
 		}
@@ -734,7 +736,7 @@ class Parsedown
 			{
 				if (end($li['handler']['argument']) !== '')
 				{
-					$li['handler']['argument'] []= '';
+					$li['handler']['argument'] [] = '';
 				}
 			}
 		}
@@ -773,14 +775,14 @@ class Parsedown
 
 		if ($Line['text'][0] === '>' and preg_match('/^>[ ]?+(.*+)/', $Line['text'], $matches))
 		{
-			$Block['element']['handler']['argument'] []= $matches[1];
+			$Block['element']['handler']['argument'] [] = $matches[1];
 
 			return $Block;
 		}
 
 		if ( ! isset($Block['interrupted']))
 		{
-			$Block['element']['handler']['argument'] []= $Line['text'];
+			$Block['element']['handler']['argument'] [] = $Line['text'];
 
 			return $Block;
 		}
@@ -873,7 +875,8 @@ class Parsedown
 	{
 		if (strpos($Line['text'], ']') !== false
 			and preg_match('/^\[(.+?)\]:[ ]*+<?(\S+?)>?(?:[ ]+["\'(](.+)["\')])?[ ]*+$/', $Line['text'], $matches)
-		) {
+		) 
+		{
 			$id = strtolower($matches[1]);
 
 			$Data = array(
@@ -906,7 +909,8 @@ class Parsedown
 			and strpos($Line['text'], '|') === false
 			and strpos($Line['text'], ':') === false
 			or strpos($Block['element']['handler']['argument'], "\n") !== false
-		) {
+		) 
+		{
 			return;
 		}
 
@@ -945,7 +949,7 @@ class Parsedown
 				$alignment = $alignment === 'left' ? 'center' : 'right';
 			}
 
-			$alignments []= $alignment;
+			$alignments [] = $alignment;
 		}
 
 		# ~
@@ -986,7 +990,7 @@ class Parsedown
 				);
 			}
 
-			$HeaderElements []= $HeaderElement;
+			$HeaderElements [] = $HeaderElement;
 		}
 
 		# ~
@@ -1000,16 +1004,16 @@ class Parsedown
 			),
 		);
 
-		$Block['element']['elements'] []= array(
+		$Block['element']['elements'] [] = array(
 			'name' => 'thead',
 		);
 
-		$Block['element']['elements'] []= array(
+		$Block['element']['elements'] [] = array(
 			'name' => 'tbody',
 			'elements' => array(),
 		);
 
-		$Block['element']['elements'][0]['elements'] []= array(
+		$Block['element']['elements'][0]['elements'] [] = array(
 			'name' => 'tr',
 			'elements' => $HeaderElements,
 		);
@@ -1057,7 +1061,7 @@ class Parsedown
 					);
 				}
 
-				$Elements []= $Element;
+				$Elements [] = $Element;
 			}
 
 			$Element = array(
@@ -1065,7 +1069,7 @@ class Parsedown
 				'elements' => $Elements,
 			);
 
-			$Block['element']['elements'][1]['elements'] []= $Element;
+			$Block['element']['elements'][1]['elements'] [] = $Element;
 
 			return $Block;
 		}
@@ -1282,7 +1286,8 @@ class Parsedown
 
 		if (strpos($Excerpt['text'], '>') !== false
 			and preg_match("/^<((mailto:)?$commonMarkEmail)>/i", $Excerpt['text'], $matches)
-		){
+		)
+		{
 			$url = $matches[1];
 
 			if ( ! isset($matches[2]))
@@ -1316,7 +1321,7 @@ class Parsedown
 		{
 			$emphasis = 'strong';
 		}
-		elseif (preg_match($this->EmRegex[$marker], $Excerpt['text'], $matches))
+		else if (preg_match($this->EmRegex[$marker], $Excerpt['text'], $matches))
 		{
 			$emphasis = 'em';
 		}
@@ -1495,7 +1500,8 @@ class Parsedown
 	{
 		if (substr($Excerpt['text'], 1, 1) !== ' ' and strpos($Excerpt['text'], ';') !== false
 			and preg_match('/^&(#?+[0-9a-zA-Z]++);/', $Excerpt['text'], $matches)
-		) {
+		) 
+		{
 			return array(
 				'element' => array('rawHtml' => '&' . $matches[1] . ';'),
 				'extent' => strlen($matches[0]),
@@ -1537,7 +1543,8 @@ class Parsedown
 
 		if (strpos($Excerpt['context'], 'http') !== false
 			and preg_match('/\bhttps?+:[\/]{2}[^\s<]+\b\/*+/ui', $Excerpt['context'], $matches, PREG_OFFSET_CAPTURE)
-		) {
+		) 
+		{
 			$url = $matches[0][0];
 
 			$Inline = array(
@@ -1641,7 +1648,7 @@ class Parsedown
 		{
 			$Element['elements'] = $this->elementsApplyRecursive($closure, $Element['elements']);
 		}
-		elseif (isset($Element['element']))
+		else if (isset($Element['element']))
 		{
 			$Element['element'] = $this->elementApplyRecursive($closure, $Element['element']);
 		}
@@ -1655,7 +1662,7 @@ class Parsedown
 		{
 			$Element['elements'] = $this->elementsApplyRecursiveDepthFirst($closure, $Element['elements']);
 		}
-		elseif (isset($Element['element']))
+		else if (isset($Element['element']))
 		{
 			$Element['element'] = $this->elementsApplyRecursiveDepthFirst($closure, $Element['element']);
 		}
@@ -1725,7 +1732,7 @@ class Parsedown
 		}
 		// very strongly consider an alternative if you're writing an
 		// extension
-		elseif (isset($Element['rawHtml']))
+		else if (isset($Element['rawHtml']))
 		{
 			$text = $Element['rawHtml'];
 
@@ -1743,7 +1750,7 @@ class Parsedown
 			{
 				$markup .= $this->elements($Element['elements']);
 			}
-			elseif (isset($Element['element']))
+			else if (isset($Element['element']))
 			{
 				$markup .= $this->element($Element['element']);
 			}
@@ -1761,7 +1768,7 @@ class Parsedown
 
 			$markup .= $hasName ? '</' . $Element['name'] . '>' : '';
 		}
-		elseif ($hasName)
+		else if ($hasName)
 		{
 			$markup .= ' />';
 		}
@@ -1806,7 +1813,8 @@ class Parsedown
 		if ( ! in_array('', $lines)
 			and isset($Elements[0]) and isset($Elements[0]['name'])
 			and $Elements[0]['name'] === 'p'
-		) {
+		) 
+		{
 			unset($Elements[0]['name']);
 		}
 
@@ -1886,7 +1894,7 @@ class Parsedown
 					unset($Element['attributes'][$att]);
 				}
 				# dump onevent attribute
-				elseif (self::striAtStart($att, 'on'))
+				else if (self::striAtStart($att, 'on'))
 				{
 					unset($Element['attributes'][$att]);
 				}

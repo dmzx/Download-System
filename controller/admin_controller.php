@@ -262,9 +262,9 @@ class admin_controller
 			));
 		}
 
-		include($this->ext_path_web . 'includes/Parsedown.' . $this->php_ext);
+		include($this->ext_path_web . 'includes/parsedown.' . $this->php_ext);
 
-		$Parsedown = new \Parsedown();
+		$parsedown = new \parsedown();
 
 		$s_about = $this->u_action. '&amp;action=about';
 
@@ -298,7 +298,7 @@ class admin_controller
 						$change = substr($row, 2);
 
 						$this->template->assign_block_vars('history.changelog', array(
-							'CHANGE'	=> $Parsedown->line($change),
+							'CHANGE'	=> $parsedown->line($change),
 						));
 					}
 				}
