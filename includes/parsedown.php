@@ -13,6 +13,8 @@
 #
 #
 
+namespace dmzx\downloadsystem\includes;
+
 class parsedown
 {
 	# ~
