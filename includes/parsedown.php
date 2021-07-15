@@ -514,7 +514,7 @@ class parsedown
 		}
 
 		if (($len = strspn($Line['text'], $Block['char'])) >= $Block['openerLength']
-			and chop(substr($Line['text'], $len), ' ') === '') 
+			and chop(substr($Line['text'], $len), ' ') === '')
 		{
 			$Block['element']['element']['text'] = substr($Block['element']['element']['text'], 1);
 
@@ -617,7 +617,7 @@ class parsedown
 						isset($CurrentBlock)
 						and $CurrentBlock['type'] === 'Paragraph'
 						and ! isset($CurrentBlock['interrupted'])
-					) 
+					)
 					{
 						return;
 					}
@@ -635,7 +635,7 @@ class parsedown
 				)
 			);
 
-			$Block['element']['elements'] [] = & $Block['li'];
+			$Block['element']['elements'][]= & $Block['li'];
 
 			return $Block;
 		}
@@ -660,11 +660,11 @@ class parsedown
 					and preg_match('/^'.$Block['data']['markerTypeRegex'].'(?:[ ]++(.*)|$)/', $Line['text'], $matches)
 				)
 			)
-		) 
+		)
 		{
 			if (isset($Block['interrupted']))
 			{
-				$Block['li']['handler']['argument'] [] = '';
+				$Block['li']['handler']['argument'][]= '';
 
 				$Block['loose'] = true;
 
@@ -686,7 +686,7 @@ class parsedown
 				)
 			);
 
-			$Block['element']['elements'] [] = & $Block['li'];
+			$Block['element']['elements'][]= & $Block['li'];
 
 			return $Block;
 		}
@@ -704,7 +704,7 @@ class parsedown
 		{
 			if (isset($Block['interrupted']))
 			{
-				$Block['li']['handler']['argument'] [] = '';
+				$Block['li']['handler']['argument'][] = '';
 
 				$Block['loose'] = true;
 
