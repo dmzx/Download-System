@@ -1,6 +1,6 @@
 # Download System Extension
 
-[![Build Status](https://travis-ci.com/dmzx/Download-System.svg?branch=master)](https://travis-ci.com/dmzx/Download-System)
+[![Build Status](https://github.com/dmzx/Download-System/workflows/Tests/badge.svg)](https://github.com/phpbb-extensions/dmzx/Download-System)
 
 ## Install
 1. Download the latest release.
