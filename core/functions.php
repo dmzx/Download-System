@@ -88,7 +88,7 @@ class functions
 		template $template,
 		renderer_interface $renderer,
 		user $user,
-		db_interface  $db,
+		db_interface $db,
 		helper $helper,
 		request_interface $request,
 		config $config,

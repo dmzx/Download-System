@@ -115,7 +115,7 @@ class downloadupload
 		request_interface $request,
 		manager $ext_manager,
 		path_helper $path_helper,
-		$php_ext, 
+		$php_ext,
 		$root_path,
 		$dm_eds_table,
 		$dm_eds_cat_table,
