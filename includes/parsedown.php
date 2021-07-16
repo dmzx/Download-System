@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 #
 #
 # Parsedown
@@ -11,7 +12,6 @@
 # with this source code.
 #
 #
-// @codingStandardsIgnoreLine
 
 class parsedown
 {
