@@ -9,57 +9,74 @@
 
 namespace dmzx\downloadsystem\controller;
 
+use dmzx\downloadsystem\core\functions;
+use phpbb\filesystem\filesystem;
+use phpbb\textformatter\parser_interface;
+use phpbb\textformatter\renderer_interface;
+use phpbb\controller\helper;
+use phpbb\template\template;
+use phpbb\user;
+use phpbb\log\log_interface;
+use phpbb\cache\driver\driver_interface as cache_interface;
+use phpbb\db\driver\driver_interface as db_interface;
+use phpbb\request\request_interface;
+use phpbb\pagination;
+use phpbb\extension\manager;
+use phpbb\path_helper;
+use phpbb\config\config;
+use phpbb\files\factory;
+
 class admin_controller
 {
-	/** @var \dmzx\downloadsystem\core\functions */
+	/** @var functions */
 	protected $functions;
 
-	/** @var \phpbb\filesystem\filesystem */
+	/** @var filesystem */
 	protected $filesystem;
 
-	/** @var \phpbb\textformatter\s9e\parser */
+	/** @var parser_interface */
 	protected $parser;
 
-	/** @var \phpbb\textformatter\s9e\renderer */
+	/** @var renderer_interface */
 	protected $renderer;
 
-	/** @var \phpbb\controller\helper */
+	/** @var helper */
 	protected $helper;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\log\log */
+	/** @var log_interface */
 	protected $log;
 
-	/** @var \phpbb\cache\service */
+	/** @var cache_interface */
 	protected $cache;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var db_interface */
 	protected $db;
 
-	/** @var \phpbb\request\request */
+	/** @var request_interface */
 	protected $request;
 
-	/** @var \phpbb\pagination */
+	/** @var pagination */
 	protected $pagination;
 
-	/** @var ContainerBuilder */
-	protected $phpbb_container;
+	/** @var manager */
+	protected $ext_manager;
 
-	/** @var \phpbb\path_helper */
+	/** @var path_helper */
 	protected $path_helper;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
 	/** @var string */
 	protected $php_ext;
 
-	/** @var string phpBB root path */
+	/** @var string */
 	protected $root_path;
 
 	/**
@@ -73,56 +90,56 @@ class admin_controller
 
 	protected $dm_eds_config_table;
 
-	/** @var \phpbb\files\factory */
+	/** @var factory */
 	protected $files_factory;
 
 	/**
 	* Constructor
 	*
-	* @param \dmzx\downloadsystem\core\functions			$functions
-	* @param \phpbb\filesystem\filesystem					$filesystem
-	* @param \phpbb\textformatter\s9e\parser				$parser
-	* @param \phpbb\textformatter\s9e\renderer 				$renderer
-	* @param \phpbb\controller\helper						$helper
-	* @param \phpbb\template\template		 				$template
-	* @param \phpbb\user									$user
-	* @param \phpbb\log										$log
-	* @param \phpbb\cache\service							$cache
-	* @param \phpbb\db\driver\driver_interface				$db
-	* @param \phpbb\request\request		 					$request
-	* @param \phpbb\pagination								$pagination
-	* @param \phpbb\extension\manager						$ext_manager
-	* @param \phpbb\path_helper								$path_helper
-	* @param \phpbb\config\config							$config
-	* @param string 										$php_ext
-	* @param string 										$root_path
-	* @param string 										$dm_eds_table
-	* @param string 										$dm_eds_cat_table
-	* @param string 										$dm_eds_config_table
-	* @param \phpbb\files\factory							$files_factory
+	* @param functions					$functions
+	* @param filesystem					$filesystem
+	* @param parser_interface			$parser
+	* @param renderer_interface 		$renderer
+	* @param helper						$helper
+	* @param template		 			$template
+	* @param user						user
+	* @param log_interface				$log
+	* @param cache_interface 			$cache
+	* @param db_interface				$db
+	* @param request_interface		 	$request
+	* @param pagination					$pagination
+	* @param manager					$ext_manager
+	* @param path_helper				$path_helper
+	* @param config						$config
+	* @param string 					$php_ext
+	* @param string 					$root_path
+	* @param string 					$dm_eds_table
+	* @param string 					$dm_eds_cat_table
+	* @param string 					$dm_eds_config_table
+	* @param factory					$files_factory
 	*
 	*/
 	public function __construct(
-		\dmzx\downloadsystem\core\functions $functions,
-		\phpbb\filesystem\filesystem $filesystem,
-		\phpbb\textformatter\s9e\parser $parser,
-		\phpbb\textformatter\s9e\renderer $renderer,
-		\phpbb\controller\helper $helper,
-		\phpbb\template\template $template,
-		\phpbb\user $user,
-		\phpbb\log\log $log,
-		\phpbb\cache\service $cache,
-		\phpbb\db\driver\driver_interface $db,
-		\phpbb\request\request $request,
-		\phpbb\pagination $pagination,
-		\phpbb\extension\manager $ext_manager,
-		\phpbb\path_helper $path_helper,
-		\phpbb\config\config $config,
+		functions $functions,
+		filesystem $filesystem,
+		parser_interface $parser,
+		renderer_interface $renderer,
+		helper $helper,
+		template $template,
+		user $user,
+		log_interface $log,
+		cache_interface $cache,
+		db_interface $db,
+		request_interface $request,
+		pagination $pagination,
+		manager $ext_manager,
+		path_helper $path_helper,
+		config $config,
 		$php_ext, $root_path,
 		$dm_eds_table,
 		$dm_eds_cat_table,
 		$dm_eds_config_table,
-		\phpbb\files\factory $files_factory = null
+		factory $files_factory = null
 	)
 	{
 		$this->functions 			= $functions;
@@ -290,7 +307,7 @@ class admin_controller
 
 						$this->template->assign_block_vars('history', array(
 							'CHANGES_SINCE'	=> $key,
-							'U_CHANGES'	=> strtolower(str_replace(array(' ', '.'), array('-', ''), $key)),
+							'U_CHANGES'		=> strtolower(str_replace(array(' ', '.'), array('-', ''), $key)),
 						));
 					}
 					else if ($row[0] === '-')

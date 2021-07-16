@@ -10,37 +10,47 @@
 namespace dmzx\downloadsystem\controller;
 
 use phpbb\exception\http_exception;
+use dmzx\downloadsystem\core\functions;
+use phpbb\textformatter\parser_interface;
+use phpbb\textformatter\renderer_interface;
+use phpbb\template\template;
+use phpbb\user;
+use phpbb\auth\auth;
+use phpbb\db\driver\driver_interface as db_interface;
+use phpbb\request\request_interface;
+use phpbb\controller\helper;
+use phpbb\pagination;
 
 class downloadsystemcat
 {
-	/** @var \dmzx\downloadsystem\core\functions */
+	/** @var functions */
 	protected $functions;
 
-	/** @var \phpbb\textformatter\s9e\parser */
+	/** @var parser_interface */
 	protected $parser;
 
-	/** @var \phpbb\textformatter\s9e\renderer */
+	/** @var renderer_interface */
 	protected $renderer;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\auth\auth */
+	/** @var auth */
 	protected $auth;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var db_interface */
 	protected $db;
 
-	/** @var \phpbb\request\request */
+	/** @var request_interface */
 	protected $request;
 
-	/** @var \phpbb\controller\helper */
+	/** @var helper */
 	protected $helper;
 
-	/** @var \phpbb\pagination */
+	/** @var pagination */
 	protected $pagination;
 
 	/** @var string */
@@ -61,33 +71,33 @@ class downloadsystemcat
 	/**
 	* Constructor
 	*
-	* @param \dmzx\downloadsystem\core\functions		$functions
-	* @param \phpbb\textformatter\s9e\parser				$parser
-	* @param \phpbb\textformatter\s9e\renderer 			$renderer
-	* @param \phpbb\template\template		 			$template
-	* @param \phpbb\user								$user
-	* @param \phpbb\auth\auth							$auth
-	* @param \phpbb\db\driver\driver_interface			$db
-	* @param \phpbb\request\request		 				$request
-	* @param \phpbb\controller\helper		 			$helper
-	* @param \phpbb\pagination							$pagination
-	* @param string										$php_ext
-	* @param string										$root_path
-	* @param string										$dm_eds_table
-	* @param string										$dm_eds_cat_table
+	* @param functions					$functions
+	* @param parser_interface			$parser
+	* @param renderer_interface			$renderer
+	* @param template		 			$template
+	* @param user						$user
+	* @param auth						$auth
+	* @param db_interface				$db
+	* @param request_interface	 		$request
+	* @param helper		 				$helper
+	* @param pagination					$pagination
+	* @param string						$php_ext
+	* @param string						$root_path
+	* @param string						$dm_eds_table
+	* @param string						$dm_eds_cat_table
 	*
 	*/
 	public function __construct(
-		\dmzx\downloadsystem\core\functions $functions,
-		\phpbb\textformatter\s9e\parser $parser,
-		\phpbb\textformatter\s9e\renderer $renderer,
-		\phpbb\template\template $template,
-		\phpbb\user $user,
-		\phpbb\auth\auth $auth,
-		\phpbb\db\driver\driver_interface $db,
-		\phpbb\request\request $request,
-		\phpbb\controller\helper $helper,
-		\phpbb\pagination $pagination,
+		functions $functions,
+		parser_interface $parser,
+		renderer_interface $renderer,
+		template $template,
+		user $user,
+		auth $auth,
+		db_interface $db,
+		request_interface $request,
+		helper $helper,
+		pagination $pagination,
 		$php_ext,
 		$root_path,
 		$dm_eds_table,

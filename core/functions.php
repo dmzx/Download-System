@@ -9,33 +9,43 @@
 
 namespace dmzx\downloadsystem\core;
 
+use phpbb\template\template;
+use phpbb\textformatter\renderer_interface;
+use phpbb\user;
+use phpbb\db\driver\driver_interface as db_interface;
+use phpbb\controller\helper;
+use phpbb\request\request_interface;
+use phpbb\config\config;
+use phpbb\pagination;
+use phpbb\extension\manager;
+
 class functions
 {
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\textformatter\s9e\renderer */
+	/** @var renderer_interface */
 	protected $renderer;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var db_interface */
 	protected $db;
 
-	/** @var \phpbb\controller\helper */
+	/** @var helper */
 	protected $helper;
 
-	/** @var \phpbb\request\request */
+	/** @var request_interface */
 	protected $request;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\pagination */
+	/** @var pagination */
 	protected $pagination;
 
-	/** @var \phpbb\extension\manager */
+	/** @var manager */
 	protected $extension_manager;
 
 	/** @var string */
@@ -58,32 +68,32 @@ class functions
 	/**
 	* Constructor
 	*
-	* @param \phpbb\template\template		 	$template
-	* @param \phpbb\textformatter\s9e\renderer	$renderer
-	* @param \phpbb\user						$user
-	* @param \phpbb\db\driver\driver_interface	$db
-	* @param \phpbb\controller\helper		 	$helper
-	* @param \phpbb\request\request		 		$request
-	* @param \phpbb\config\config				$config
-	* @param \phpbb\pagination					$pagination
-	* @param \phpbb\extension\manager 			$extension_manager
-	* @param									$php_ext
-	* @param									$root_path
-	* @param									$dm_eds_table
-	* @param									$dm_eds_cat_table
-	* @param									$dm_eds_config_table
+	* @param template		 			$template
+	* @param renderer_interface			$renderer
+	* @param user						$user
+	* @param db_interface 				$db
+	* @param helper		 				$helper
+	* @param request_interface		 	$request
+	* @param config						$config
+	* @param pagination					$pagination
+	* @param manager 					$extension_manager
+	* @param							$php_ext
+	* @param							$root_path
+	* @param							$dm_eds_table
+	* @param							$dm_eds_cat_table
+	* @param							$dm_eds_config_table
 	*
 	*/
 	public function __construct(
-		\phpbb\template\template $template,
-		\phpbb\textformatter\s9e\renderer $renderer,
-		\phpbb\user $user,
-		\phpbb\db\driver\driver_interface $db,
-		\phpbb\controller\helper $helper,
-		\phpbb\request\request $request,
-		\phpbb\config\config $config,
-		\phpbb\pagination $pagination,
-		\phpbb\extension\manager $extension_manager,
+		template $template,
+		renderer_interface $renderer,
+		user $user,
+		db_interface  $db,
+		helper $helper,
+		request_interface $request,
+		config $config,
+		pagination $pagination,
+		manager $extension_manager,
 		$php_ext, $root_path,
 		$dm_eds_table,
 		$dm_eds_cat_table,

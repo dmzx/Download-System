@@ -78,7 +78,7 @@ services:
             - '@template'
             - '@user'
             - '@log'
-            - '@cache'
+            - '@cache.driver'
             - '@dbal.conn'
             - '@request'
             - '@pagination'

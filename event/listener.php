@@ -10,22 +10,27 @@
 namespace dmzx\downloadsystem\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use phpbb\user;
+use phpbb\template\template;
+use phpbb\controller\helper;
+use phpbb\config\config;
+use phpbb\auth\auth;
 
 class listener implements EventSubscriberInterface
 {
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\controller\helper */
+	/** @var helper */
 	protected $helper;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\auth\auth */
+	/** @var auth */
 	protected $auth;
 
 	/** @var string */
@@ -34,20 +39,20 @@ class listener implements EventSubscriberInterface
 	/**
 	* Constructor
 	*
-	* @param \phpbb\user						$user
-	* @param \phpbb\template\template			$template
-	* @param \phpbb\controller\helper			$helper
-	* @param \phpbb\config\config				$config
-	* @param \phpbb\auth\auth					$auth
-	* @param string								$php_ext
+	* @param user				$user
+	* @param template			$template
+	* @param helper				$helper
+	* @param config				$config
+	* @param auth				$auth
+	* @param string				$php_ext
 	*
 	*/
 	public function __construct(
-		\phpbb\user $user,
-		\phpbb\template\template $template,
-		\phpbb\controller\helper $helper,
-		\phpbb\config\config $config,
-		\phpbb\auth\auth $auth,
+		user $user,
+		template $template,
+		helper $helper,
+		config $config,
+		auth $auth,
 		$php_ext
 	)
 	{
