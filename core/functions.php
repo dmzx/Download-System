@@ -77,11 +77,11 @@ class functions
 	* @param config						$config
 	* @param pagination					$pagination
 	* @param manager 					$extension_manager
-	* @param							$php_ext
-	* @param							$root_path
-	* @param							$dm_eds_table
-	* @param							$dm_eds_cat_table
-	* @param							$dm_eds_config_table
+	* @param string						$php_ext
+	* @param string						$root_path
+	* @param string						$dm_eds_table
+	* @param string						$dm_eds_cat_table
+	* @param string						$dm_eds_config_table
 	*
 	*/
 	public function __construct(

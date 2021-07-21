@@ -49,7 +49,7 @@ class downloadsystemdownload
 	*
 	*/
 	public function __construct(
-		db_interfaceauth $auth,
+		auth $auth,
 		db_interface $db,
 		request_interface $request,
 		$root_path,
