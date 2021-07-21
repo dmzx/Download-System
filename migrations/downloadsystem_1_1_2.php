@@ -15,7 +15,7 @@ class downloadsystem_1_1_2 extends \phpbb\db\migration\migration
 	{
 		return [
 			'\dmzx\downloadsystem\migrations\downloadsystem_1_1_1',
-        ];
+		];
 	}
 
 	public function update_data()
@@ -23,7 +23,7 @@ class downloadsystem_1_1_2 extends \phpbb\db\migration\migration
 		return [
 			// Update config
 			['config.update', ['download_system_version', '1.1.2']],
-        ];
+		];
 	}
 
 	public function update_schema()
@@ -33,8 +33,8 @@ class downloadsystem_1_1_2 extends \phpbb\db\migration\migration
 				$this->table_prefix . 'dm_eds_config' => [
 					'show_donation'		=> ['TINT:1', 0],
 					'donation_url'		=> ['VCHAR:255', ''],
-                ],
-            ],
-        ];
+				],
+			],
+		];
 	}
 }

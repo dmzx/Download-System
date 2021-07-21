@@ -15,7 +15,7 @@ class downloadsystem_1_0_9 extends \phpbb\db\migration\migration
 	{
 		return [
 			'\dmzx\downloadsystem\migrations\downloadsystem_1_0_8',
-        ];
+		];
 	}
 
 	public function update_data()
@@ -23,7 +23,7 @@ class downloadsystem_1_0_9 extends \phpbb\db\migration\migration
 		return [
 			['config.update', ['download_system_version', '1.0.9']],
 			['custom', [[$this, 'dm_eds_image_dir']]],
-        ];
+		];
 	}
 
 	public function update_schema()
@@ -39,28 +39,28 @@ class downloadsystem_1_0_9 extends \phpbb\db\migration\migration
 					'dm_eds_allow_magic_url'	=> ['BOOL', 1],
 					'dm_eds_allow_dl_img'		=> ['BOOL', 1],
 					'dm_eds_allow_cat_img'		=> ['BOOL', 1],
-                ],
+				],
 				$this->table_prefix . 'dm_eds_cat' => [
 					'category_image'			=> ['VCHAR:255', ''],
 					'enable_bbcode'				=> ['BOOL', 1],
 					'enable_smilies'			=> ['BOOL', 1],
 					'enable_magic_url'			=> ['BOOL', 1],
-                ],
+				],
 				$this->table_prefix . 'dm_eds' => [
 					'download_image'			=> ['VCHAR:255', ''],
 					'enable_bbcode_file'		=> ['BOOL', 1],
 					'enable_smilies_file'		=> ['BOOL', 1],
 					'enable_magic_url_file'		=> ['BOOL', 1],
-                ],
-            ],
+				],
+			],
 			'drop_columns' => [
 				$this->table_prefix . 'dm_eds' => [
 					'bbcode_uid',
 					'bbcode_bitfield',
 					'bbcode_options',
-                ],
-            ],
-        ];
+				],
+			],
+		];
 	}
 
 	public function dm_eds_image_dir()

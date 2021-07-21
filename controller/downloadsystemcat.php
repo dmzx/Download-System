@@ -188,7 +188,7 @@ class downloadsystemcat
 				'S_NO_FILES'	=> true,
 				'MAIN_LINK'		=> $this->helper->route('dmzx_downloadsystem_controller'),
 				'U_BACK'		=> append_sid("{$this->root_path}index.$this->php_ext"),
-            ]);
+			]);
 		}
 		else
 		{
@@ -233,11 +233,11 @@ class downloadsystemcat
 					'DL_FILESIZE'		=> $filesize,
 					'U_DOWNLOAD'		=> $download,
 					'DL_IMAGE'			=> generate_board_url() . '/' . $eds_values['dm_eds_image_dir'] . '/' . $dl_image,
-                ]);
+				]);
 
 				$this->template->assign_vars([
 					'DL_IMAGE_ALERT'			=> generate_board_url() . '/' . $eds_values['dm_eds_image_dir'] . '/' . $dl_image,
-                ]);
+				]);
 			}
 
 			$this->db->sql_freeresult($result);
@@ -258,7 +258,7 @@ class downloadsystemcat
 				'S_DM_EDS_ALLOW_DL_IMG'			=> $eds_values['dm_eds_allow_dl_img'],
 				'EDS_DOWNLOAD_SHOW_DONATION'	=> $eds_values['show_donation'],
 				'EDS_DOWNLOAD_DONATION_URL'		=> $eds_values['donation_url'],
-            ]);
+			]);
 		}
 
 		// Send all data to the template file

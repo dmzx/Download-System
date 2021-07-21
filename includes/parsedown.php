@@ -117,7 +117,7 @@ class parsedown
 		'ssh:',
 		'news:',
 		'steam:',
-    ];
+	];
 
 	#
 	# Lines
@@ -147,13 +147,13 @@ class parsedown
 		'`' => ['FencedCode'],
 		'|' => ['Table'],
 		'~' => ['FencedCode'],
-    ];
+	];
 
 	# ~
 
 	protected $unmarkedBlockTypes = [
 		'Code',
-    ];
+	];
 
 	#
 	# Blocks
@@ -363,9 +363,9 @@ class parsedown
 					'element' => [
 						'name' => 'code',
 						'text' => $text,
-                    ],
-                ],
-            ];
+					],
+				],
+			];
 
 			return $Block;
 		}
@@ -413,8 +413,8 @@ class parsedown
 				'element' => [
 					'rawHtml' => $Line['body'],
 					'autobreak' => true,
-                ],
-            ];
+				],
+			];
 
 			if (strpos($Line['text'], '-->') !== false)
 			{
@@ -466,7 +466,7 @@ class parsedown
 		$Element = [
 			'name' => 'code',
 			'text' => '',
-        ];
+		];
 
 		if ($infostring !== '')
 		{
@@ -493,8 +493,8 @@ class parsedown
 			'element' => [
 				'name' => 'pre',
 				'element' => $Element,
-            ],
-        ];
+			],
+		];
 
 		return $Block;
 	}
@@ -561,9 +561,9 @@ class parsedown
 					'function' => 'lineElements',
 					'argument' => $text,
 					'destination' => 'elements',
-                ]
-            ],
-        ];
+				]
+			],
+		];
 
 		return $Block;
 	}
@@ -599,12 +599,12 @@ class parsedown
 					'type' => $name,
 					'marker' => $matches[1],
 					'markerType' => ($name === 'ul' ? $markerWithoutWhitespace : substr($markerWithoutWhitespace, -1)),
-                ],
+				],
 				'element' => [
 					'name' => $name,
 					'elements' => [],
-                ],
-            ];
+				],
+			];
 			$Block['data']['markerTypeRegex'] = preg_quote($Block['data']['markerType'], '/');
 
 			if ($name === 'ol')
@@ -632,8 +632,8 @@ class parsedown
 					'function' => 'li',
 					'argument' => !empty($matches[3]) ? [$matches[3]] : [],
 					'destination' => 'elements'
-                ]
-            ];
+				]
+			];
 
 			$Block['element']['elements'][]= & $Block['li'];
 
@@ -683,8 +683,8 @@ class parsedown
 					'function' => 'li',
 					'argument' => [$text],
 					'destination' => 'elements'
-                ]
-            ];
+				]
+			];
 
 			$Block['element']['elements'][]= & $Block['li'];
 
@@ -758,9 +758,9 @@ class parsedown
 						'function' => 'linesElements',
 						'argument' => (array) $matches[1],
 						'destination' => 'elements',
-                    ]
-                ],
-            ];
+					]
+				],
+			];
 
 			return $Block;
 		}
@@ -800,8 +800,8 @@ class parsedown
 			$Block = [
 				'element' => [
 					'name' => 'hr',
-                ],
-            ];
+				],
+			];
 
 			return $Block;
 		}
@@ -849,8 +849,8 @@ class parsedown
 				'element' => [
 					'rawHtml' => $Line['text'],
 					'autobreak' => true,
-                ],
-            ];
+				],
+			];
 
 			return $Block;
 		}
@@ -882,13 +882,13 @@ class parsedown
 			$Data = [
 				'url' => $matches[2],
 				'title' => isset($matches[3]) ? $matches[3] : null,
-            ];
+			];
 
 			$this->DefinitionData['Reference'][$id] = $Data;
 
 			$Block = [
 				'element' => [],
-            ];
+			];
 
 			return $Block;
 		}
@@ -978,8 +978,8 @@ class parsedown
 					'function' => 'lineElements',
 					'argument' => $headerCell,
 					'destination' => 'elements',
-                ]
-            ];
+				]
+			];
 
 			if (isset($alignments[$index]))
 			{
@@ -987,7 +987,7 @@ class parsedown
 
 				$HeaderElement['attributes'] = [
 					'style' => "text-align: $alignment;",
-                ];
+				];
 			}
 
 			$HeaderElements[] = $HeaderElement;
@@ -1001,22 +1001,22 @@ class parsedown
 			'element' => [
 				'name' => 'table',
 				'elements' => [],
-            ],
-        ];
+			],
+		];
 
 		$Block['element']['elements'][] = [
 			'name' => 'thead',
-        ];
+		];
 
 		$Block['element']['elements'][] = [
 			'name' => 'tbody',
 			'elements' => [],
-        ];
+		];
 
 		$Block['element']['elements'][0]['elements'][] = [
 			'name' => 'tr',
 			'elements' => $HeaderElements,
-        ];
+		];
 
 		return $Block;
 	}
@@ -1051,14 +1051,14 @@ class parsedown
 						'function' => 'lineElements',
 						'argument' => $cell,
 						'destination' => 'elements',
-                    ]
-                ];
+					]
+				];
 
 				if (isset($Block['alignments'][$index]))
 				{
 					$Element['attributes'] = [
 						'style' => 'text-align: ' . $Block['alignments'][$index] . ';',
-                    ];
+					];
 				}
 
 				$Elements[] = $Element;
@@ -1067,7 +1067,7 @@ class parsedown
 			$Element = [
 				'name' => 'tr',
 				'elements' => $Elements,
-            ];
+			];
 
 			$Block['element']['elements'][1]['elements'][] = $Element;
 
@@ -1089,9 +1089,9 @@ class parsedown
 					'function' => 'lineElements',
 					'argument' => $Line['text'],
 					'destination' => 'elements',
-                ],
-            ],
-        ];
+				],
+			],
+		];
 	}
 
 	protected function paragraphContinue($Line, array $Block)
@@ -1121,7 +1121,7 @@ class parsedown
 		'`' => ['Code'],
 		'~' => ['Strikethrough'],
 		'\\' => ['EscapeSequence'],
-    ];
+	];
 
 	# ~
 
@@ -1244,14 +1244,14 @@ class parsedown
 		$Inline = [
 			'extent' => strlen($text),
 			'element' => [],
-        ];
+		];
 
 		$Inline['element']['elements'] = self::pregReplaceElements(
 			$this->breaksEnabled ? '/[ ]*+\n/' : '/(?:[ ]*+\\\\|[ ]{2,}+)\n/',
 			[
 				['name' => 'br'],
 				['text' => "\n"],
-            ],
+			],
 			$text
 		);
 
@@ -1272,8 +1272,8 @@ class parsedown
 				'element' => [
 					'name' => 'code',
 					'text' => $text,
-                ],
-            ];
+				],
+			];
 		}
 	}
 
@@ -1302,9 +1302,9 @@ class parsedown
 					'text' => $matches[1],
 					'attributes' => [
 						'href' => $url,
-                    ],
-                ],
-            ];
+					],
+				],
+			];
 		}
 	}
 
@@ -1338,9 +1338,9 @@ class parsedown
 					'function' => 'lineElements',
 					'argument' => $matches[1],
 					'destination' => 'elements',
-                ]
-            ],
-        ];
+				]
+			],
+		];
 	}
 
 	protected function inlineEscapeSequence($Excerpt)
@@ -1350,7 +1350,7 @@ class parsedown
 			return [
 				'element' => ['rawHtml' => $Excerpt['text'][1]],
 				'extent' => 2,
-            ];
+			];
 		}
 	}
 
@@ -1377,10 +1377,10 @@ class parsedown
 				'attributes' => [
 					'src' => $Link['element']['attributes']['href'],
 					'alt' => $Link['element']['handler']['argument'],
-                ],
+				],
 				'autobreak' => true,
-            ],
-        ];
+			],
+		];
 
 		$Inline['element']['attributes'] += $Link['element']['attributes'];
 
@@ -1397,13 +1397,13 @@ class parsedown
 				'function' => 'lineElements',
 				'argument' => null,
 				'destination' => 'elements',
-            ],
+			],
 			'nonNestables' => ['Url', 'Link'],
 			'attributes' => [
 				'href' => null,
 				'title' => null,
-            ],
-        ];
+			],
+		];
 
 		$extent = 0;
 
@@ -1461,7 +1461,7 @@ class parsedown
 		return [
 			'extent' => $extent,
 			'element' => $Element,
-        ];
+		];
 	}
 
 	protected function inlineMarkup($Excerpt)
@@ -1476,7 +1476,7 @@ class parsedown
 			return [
 				'element' => ['rawHtml' => $matches[0]],
 				'extent' => strlen($matches[0]),
-            ];
+			];
 		}
 
 		if ($Excerpt['text'][1] === '!' and preg_match('/^<!---?[^>-](?:-?+[^-])*-->/s', $Excerpt['text'], $matches))
@@ -1484,7 +1484,7 @@ class parsedown
 			return [
 				'element' => ['rawHtml' => $matches[0]],
 				'extent' => strlen($matches[0]),
-            ];
+			];
 		}
 
 		if ($Excerpt['text'][1] !== ' ' and preg_match('/^<\w[\w-]*+(?:[ ]*+'.$this->regexHtmlAttribute.')*+[ ]*+\/?>/s', $Excerpt['text'], $matches))
@@ -1492,7 +1492,7 @@ class parsedown
 			return [
 				'element' => ['rawHtml' => $matches[0]],
 				'extent' => strlen($matches[0]),
-            ];
+			];
 		}
 	}
 
@@ -1505,7 +1505,7 @@ class parsedown
 			return [
 				'element' => ['rawHtml' => '&' . $matches[1] . ';'],
 				'extent' => strlen($matches[0]),
-            ];
+			];
 		}
 
 		return;
@@ -1528,9 +1528,9 @@ class parsedown
 						'function' => 'lineElements',
 						'argument' => $matches[1],
 						'destination' => 'elements',
-                    ]
-                ],
-            ];
+					]
+				],
+			];
 		}
 	}
 
@@ -1555,9 +1555,9 @@ class parsedown
 					'text' => $url,
 					'attributes' => [
 						'href' => $url,
-                    ],
-                ],
-            ];
+					],
+				],
+			];
 
 			return $Inline;
 		}
@@ -1576,9 +1576,9 @@ class parsedown
 					'text' => $url,
 					'attributes' => [
 						'href' => $url,
-                    ],
-                ],
-            ];
+					],
+				],
+			];
 		}
 	}
 
@@ -1871,7 +1871,7 @@ class parsedown
 		static $safeUrlNameToAtt	= [
 			'a'	=> 'href',
 			'img' => 'src',
-        ];
+		];
 
 		if ( ! isset($Element['name']))
 		{
@@ -1969,23 +1969,23 @@ class parsedown
 
 	protected $specialCharacters = [
 		'\\', '`', '*', '_', '{', '}', '[', ']', '(', ')', '>', '#', '+', '-', '.', '!', '|', '~'
-    ];
+	];
 
 	protected $StrongRegex = [
 		'*' => '/^[*]{2}((?:\\\\\*|[^*]|[*][^*]*+[*])+?)[*]{2}(?![*])/s',
 		'_' => '/^__((?:\\\\_|[^_]|_[^_]*+_)+?)__(?!_)/us',
-    ];
+	];
 
 	protected $EmRegex = [
 		'*' => '/^[*]((?:\\\\\*|[^*]|[*][*][^*]+?[*][*])+?)[*](?![*])/s',
 		'_' => '/^_((?:\\\\_|[^_]|__[^_]*__)+?)_(?!_)\b/us',
-    ];
+	];
 
 	protected $regexHtmlAttribute = '[a-zA-Z_:][\w:.-]*+(?:\s*+=\s*+(?:[^"\'=<>`\s]+|"[^"]*+"|\'[^\']*+\'))?+';
 
 	protected $voidElements = [
 		'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source',
-    ];
+	];
 
 	protected $textLevelElements = [
 		'a', 'br', 'bdo', 'abbr', 'blink', 'nextid', 'acronym', 'basefont',
@@ -1997,5 +1997,5 @@ class parsedown
 					'sup', 'ruby',
 					'var', 'span',
 					'wbr', 'time',
-    ];
+	];
 }

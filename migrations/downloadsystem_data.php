@@ -25,6 +25,6 @@ class downloadsystem_data extends \phpbb\db\migration\migration
 		 ['permission.permission_set', ['ADMINISTRATORS', 'a_dm_eds', 'group']],
 		 ['permission.permission_set', ['ADMINISTRATORS', 'u_dm_eds_use', 'group']],
 		 ['permission.permission_set', ['ADMINISTRATORS', 'u_dm_eds_download', 'group']],
-        ];
+		];
 	}
 }

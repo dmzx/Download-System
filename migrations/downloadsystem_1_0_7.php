@@ -15,7 +15,7 @@ class downloadsystem_1_0_7 extends \phpbb\db\migration\migration
 	{
 		return [
 			'\dmzx\downloadsystem\migrations\downloadsystem_1_0_6',
-        ];
+		];
 	}
 
 	public function update_data()
@@ -23,7 +23,7 @@ class downloadsystem_1_0_7 extends \phpbb\db\migration\migration
 		return [
 			// Update config
 			['config.update', ['download_system_version', '1.0.7']],
-        ];
+		];
 	}
 
 	public function update_schema()
@@ -32,8 +32,8 @@ class downloadsystem_1_0_7 extends \phpbb\db\migration\migration
 			'add_columns'	=> [
 				$this->table_prefix . 'dm_eds_cat'		=> [
 					'cat_name_show'		=> ['TINT:1', 0],
-                ],
-            ],
-        ];
+				],
+			],
+		];
 	}
 }

@@ -18,8 +18,8 @@ class downloadsystem_module extends \phpbb\db\migration\migration
 			['module.add', [
 			'acp', 'ACP_DM_EDS', [
 					'module_basename'	=> '\dmzx\downloadsystem\acp\downloadsystem_module', 'modes' => ['config', 'categories', 'downloads'],
-                ],
-            ]],
-        ];
+				],
+			]],
+		];
 	}
 }

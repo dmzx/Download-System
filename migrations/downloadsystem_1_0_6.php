@@ -15,7 +15,7 @@ class downloadsystem_1_0_6 extends \phpbb\db\migration\migration
 	{
 		return [
 			'\dmzx\downloadsystem\migrations\downloadsystem_1_0_5',
-        ];
+		];
 	}
 
 	public function update_data()
@@ -27,6 +27,6 @@ class downloadsystem_1_0_6 extends \phpbb\db\migration\migration
 			 ['permission.add', ['u_dm_eds_upload', true]],
 			 // Set permission
 			 ['permission.permission_set', ['ADMINISTRATORS', 'u_dm_eds_upload', 'group']],
-        ];
+		];
 	}
 }

@@ -20,7 +20,7 @@ class downloadsystem_info
 				'config'		=> ['title' => 'ACP_MANAGE_CONFIG', 'auth' => 'ext_dmzx/downloadsystem && acl_a_dm_eds', 'cat' => ['ACP_DM_EDS']],
 				'downloads'		=> ['title' => 'ACP_MANAGE_DOWNLOADS', 'auth' => 'ext_dmzx/downloadsystem && acl_a_dm_eds', 'cat' => ['ACP_DM_EDS']],
 				'categories'	=> ['title' => 'ACP_MANAGE_CATEGORIES', 'auth' => 'ext_dmzx/downloadsystem && acl_a_dm_eds', 'cat' => ['ACP_DM_EDS']],
-            ],
-        ];
+			],
+		];
 	}
 }

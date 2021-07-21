@@ -32,9 +32,9 @@ class downloadsystem_schema extends \phpbb\db\migration\migration
 						'cost_per_dl'		=> ['DECIMAL:10', 0.00],
 						'filesize'			=> ['INT:11', 0],
 						'points_user_id'	=> ['INT:8', 0],
-                    ],
+					],
 					'PRIMARY_KEY'	=> 'download_id',
-                ],
+				],
 				$this->table_prefix . 'dm_eds_cat'	=> [
 					'COLUMNS'	=> [
 						'cat_id'			=> ['UINT:8', null, 'auto_increment'],
@@ -48,9 +48,9 @@ class downloadsystem_schema extends \phpbb\db\migration\migration
 						'cat_desc_uid'		=> ['VCHAR:8', ''],
 						'cat_desc_bitfield'	=> ['VCHAR:8', 0],
 						'cat_desc_options'	=> ['UINT:8', 0],
-                    ],
+					],
 					'PRIMARY_KEY'	=> 'cat_id',
-                ],
+				],
 				$this->table_prefix . 'dm_eds_config'	=> [
 					'COLUMNS'	=> [
 						'pagination_acp'	=> ['TINT:3', 0],
@@ -58,10 +58,10 @@ class downloadsystem_schema extends \phpbb\db\migration\migration
 						'costs_per_dl'		=> ['DECIMAL:10', 0.00],
 						'announce_enable'	=> ['TINT:1', 0],
 						'announce_forum'	=> ['INT:10', 0],
-                    ],
-                ],
-            ],
-        ];
+					],
+				],
+			],
+		];
 	}
 
 	public function revert_schema()
@@ -71,7 +71,7 @@ class downloadsystem_schema extends \phpbb\db\migration\migration
 				$this->table_prefix . 'dm_eds',
 				$this->table_prefix . 'dm_eds_cat',
 				$this->table_prefix . 'dm_eds_config',
-            ],
-        ];
+			],
+		];
 	}
 }

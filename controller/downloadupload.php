@@ -256,7 +256,7 @@ class downloadupload
 					'enable_smilies_file'	=> $enable_smilies_file,
 					'enable_magic_url_file'	=> $enable_magic_url_file,
 					'download_image' 		=> 'default_dl.png',
-                ];
+				];
 
 				!$sql_ary['enable_bbcode_file'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
 				!$sql_ary['enable_smilies_file'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
@@ -350,7 +350,7 @@ class downloadupload
 			$cats[$row2['cat_id']] = [
 				'cat_title'	=> $row2['cat_name'],
 				'cat_id'	=> $row2['cat_id'],
-            ];
+			];
 		}
 		$this->db->sql_freeresult($result);
 
@@ -385,13 +385,13 @@ class downloadupload
 			'SMILIES_STATUS'			=> !empty($eds_values['dm_eds_allow_smilies']) ? $this->user->lang('SMILIES_ARE_ON') : $this->user->lang('SMILIES_ARE_OFF'),
 			'URL_STATUS'				=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
 			'S_DL_CATEGORY_ADD'			=> true,
-        ]);
+		]);
 
 		// Build navigation link
 		$this->template->assign_block_vars('navlinks', [
 			'FORUM_NAME'	=> $this->user->lang('EDS_UPLOAD_SECTION'),
 			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller_upload'),
-        ]);
+		]);
 
 		$this->functions->assign_authors();
 		$this->template->assign_var('DOWNLOADSYSTEM_FOOTER_VIEW', true);

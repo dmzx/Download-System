@@ -15,7 +15,7 @@ class downloadsystem_1_0_2 extends \phpbb\db\migration\migration
 	{
 		return [
 			'\dmzx\downloadsystem\migrations\downloadsystem_schema',
-        ];
+		];
 	}
 
 	public function update_data()
@@ -23,6 +23,6 @@ class downloadsystem_1_0_2 extends \phpbb\db\migration\migration
 		return [
 			// Update config
 			['config.add', ['download_system_version', '1.0.2']],
-        ];
+		];
 	}
 }

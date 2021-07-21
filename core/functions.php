@@ -308,12 +308,12 @@ class functions
 		$this->template->assign_block_vars('navlinks', [
 			'FORUM_NAME'	=> $this->user->lang('EDS_DOWNLOADS'),
 			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller'),
-        ]);
+		]);
 
 		$this->template->assign_block_vars('navlinks', [
 			'FORUM_NAME'	=> $cat_data['cat_name'],
 			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller_cat', ['id' => $parent_cat_id]),
-        ]);
+		]);
 
 		if (!empty($cat_parents))
 		{
@@ -323,7 +323,7 @@ class functions
 				$this->template->assign_block_vars('navlinks', [
 					'FORUM_NAME'	=> $parent_name,
 					'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller_cat', ['id' => $parent_cat_id]),
-                ]);
+				]);
 			}
 		}
 		return;
@@ -379,7 +379,7 @@ class functions
 				'S_NO_CAT'		=> true,
 				'MAIN_LINK'		=> $this->helper->route('dmzx_downloadsystem_controller'),
 				'U_BACK'		=> append_sid("{$this->root_path}index.$this->php_ext"),
-            ]);
+			]);
 		}
 		else
 		{
@@ -484,7 +484,7 @@ class functions
 					'CAT_FOLDER_IMG_SRC'	=> $folder_image,
 					'SUBCATS'				=> ($subcats) ? $l_subcats . ': <span style="font-weight: bold;">' . $subcats . '</span>' : '',
 					'IMAGE'					=> generate_board_url() . '/' . $eds_values['dm_eds_image_cat_dir'] . '/' . $category_image,
-                ]);
+				]);
 			}
 
 			$this->db->sql_freeresult($result);
@@ -500,7 +500,7 @@ class functions
 				'EDS_SUB_CAT_SHOW'				=> ($total_sub_cat == 0) ? false : true,
 				'EDS_SUB_CATEGORIES'			=> ($total_sub_cat == 1) ? sprintf($this->user->lang['EDS_SUB_CATEGORY'], $total_sub_cat) : sprintf($this->user->lang['EDS_SUB_CATEGORIES'], $total_sub_cat),
 				'S_DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
-            ]);
+			]);
 		}
 	}
 
@@ -524,7 +524,7 @@ class functions
 			'DOWNLOADSYSTEM_DISPLAY_NAME'		=> $meta['extra']['display-name'],
 			'DOWNLOADSYSTEM_AUTHOR_NAMES'		=> implode(' &amp; ', $author_names),
 			'DOWNLOADSYSTEM_AUTHOR_HOMEPAGES'	=> implode(' &amp; ', $author_homepages),
-        ]);
+		]);
 
 		return;
 	}
@@ -609,7 +609,7 @@ class functions
 			'force_approved_state'	=> true,
 			'force_visibility' 		=> true,
 			'attr_id'				=> 0,
-        ];
+		];
 		$poll = [];
 
 		submit_post('post', $subject, '', POST_NORMAL, $poll, $data);

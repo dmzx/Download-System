@@ -204,7 +204,7 @@ class admin_controller
 				'dm_eds_allow_cat_img'		=> $this->request->variable('dm_eds_allow_cat_img', 0),
 				'show_donation'				=> $this->request->variable('show_donation', 0),
 				'donation_url'				=> $this->request->variable('donation_url', '', true),
-            ];
+			];
 
 			// Check if pagination_acp is at least 5
 			$check_acp = $this->request->variable('pagination_acp', 0);
@@ -276,7 +276,7 @@ class admin_controller
 				'U_BACK'					=> $this->u_action,
 				'U_ACTION'					=> $form_action,
 				'U_ABOUT'					=> $this->u_action. '&amp;action=about',
-            ]);
+			]);
 		}
 
 		include($this->ext_path_web . 'includes/parsedown.' . $this->php_ext);
@@ -308,7 +308,7 @@ class admin_controller
 						$this->template->assign_block_vars('history', [
 							'CHANGES_SINCE'	=> $key,
 							'U_CHANGES'		=> strtolower(str_replace([' ', '.'], ['-', ''], $key)),
-                        ]);
+						]);
 					}
 					else if ($row[0] === '-')
 					{
@@ -316,7 +316,7 @@ class admin_controller
 
 						$this->template->assign_block_vars('history.changelog', [
 							'CHANGE'	=> $parsedown->line($change),
-                        ]);
+						]);
 					}
 				}
 			}
@@ -363,7 +363,7 @@ class admin_controller
 			$cats[$row2['cat_id']] = [
 				'cat_title'	=> $row2['cat_name'],
 				'cat_id'	=> $row2['cat_id'],
-            ];
+			];
 		}
 		$this->db->sql_freeresult($result);
 
@@ -412,7 +412,7 @@ class admin_controller
 			'URL_STATUS'			=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
 			'S_DL_CATEGORY_ADD'		=> true,
 			'S_DM_EDS_ALLOW_DL_IMG'	=> $eds_values['dm_eds_allow_dl_img'],
-        ]);
+		]);
 	}
 
 	public function copy_new()
@@ -477,7 +477,7 @@ class admin_controller
 			$cats[$row2['cat_id']] = [
 				'cat_title'	=> $row2['cat_name'],
 				'cat_id'	=> $row2['cat_id'],
-            ];
+			];
 		}
 		$this->db->sql_freeresult($result);
 
@@ -528,7 +528,7 @@ class admin_controller
 			'URL_STATUS'				=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
 			'S_DL_CATEGORY_ADD'			=> true,
 			'DOWNLOAD_IMAGE'			=> !empty($download_image) ? $this->root_path . $upload_dl_dir . '/' . $download_image : '',
-        ]);
+		]);
 	}
 
 	public function edit()
@@ -573,7 +573,7 @@ class admin_controller
 			$cats[$row2['cat_id']] = [
 				'cat_title'	=> $row2['cat_name'],
 				'cat_id'	=> $row2['cat_id'],
-            ];
+			];
 		}
 		$this->db->sql_freeresult($result);
 
@@ -622,7 +622,7 @@ class admin_controller
 			'SMILIES_STATUS'			=> !empty($eds_values['dm_eds_allow_smilies']) ? $this->user->lang('SMILIES_ARE_ON') : $this->user->lang('SMILIES_ARE_OFF'),
 			'URL_STATUS'				=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
 			'DOWNLOAD_IMAGE'			=> !empty($row['download_image']) ? $this->root_path . $upload_dl_dir . '/' . $row['download_image'] : '',
-        ]);
+		]);
 	}
 
 	public function add_new()
@@ -740,7 +740,7 @@ class admin_controller
 				'enable_bbcode_file'		=> $enable_bbcode_file,
 				'enable_smilies_file'		=> $enable_smilies_file,
 				'enable_magic_url_file'		=> $enable_magic_url_file,
-            ];
+			];
 
 			# Get an instance of the files upload class
 			$upload = $this->files_factory->get('upload')
@@ -808,7 +808,7 @@ class admin_controller
 				'enable_bbcode_file'		=> $enable_bbcode_file,
 				'enable_smilies_file'		=> $enable_smilies_file,
 				'enable_magic_url_file'		=> $enable_magic_url_file,
-            ];
+			];
 		}
 
 		!$sql_ary['enable_bbcode_file'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
@@ -956,7 +956,7 @@ class admin_controller
 				'enable_bbcode_file'	=> $enable_bbcode_file,
 				'enable_smilies_file'	=> $enable_smilies_file,
 				'enable_magic_url_file'	=> $enable_magic_url_file,
-            ];
+			];
 
 			# Get an instance of the files upload class
 			$upload = $this->files_factory->get('upload')
@@ -1118,7 +1118,7 @@ class admin_controller
 				'enable_bbcode_file'	=> $enable_bbcode_file,
 				'enable_smilies_file'	=> $enable_smilies_file,
 				'enable_magic_url_file'	=> $enable_magic_url_file,
-            ];
+			];
 
 			!$sql_ary['enable_bbcode_file'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
 			!$sql_ary['enable_smilies_file'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
@@ -1185,8 +1185,8 @@ class admin_controller
 					'MESSAGE_TEXT'	=> $this->user->lang('ACP_REALLY_DELETE'),
 					'REFRESH_DATA'	=> [
 						'time'	=> 3
-                    ]
-                ]);
+					]
+				]);
 			}
 		}
 		else
@@ -1194,7 +1194,7 @@ class admin_controller
 			confirm_box(false, $this->user->lang['ACP_REALLY_DELETE'], build_hidden_fields([
 				'download_id'	=> $id,
 				'action'	=> 'delete',
-                ])
+				])
 			);
 		}
 		redirect($this->u_action);
@@ -1215,7 +1215,7 @@ class admin_controller
 
 		$this->template->assign_vars([
 			'BASE'	=> $this->u_action,
-        ]);
+		]);
 
 		$sort_days	= $this->request->variable('st', 0);
 		$sort_key	= $this->request->variable('sk', 'download_title');
@@ -1261,7 +1261,7 @@ class admin_controller
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' .$row['download_id'],
 				'U_DEL'			=> $this->u_action . '&amp;action=delete&amp;id=' .$row['download_id'],
 				'DL_IMAGE'		=> generate_board_url() . '/' . $eds_values['dm_eds_image_dir'] . '/' . $row['download_image'],
-            ]);
+			]);
 		}
 		$this->db->sql_freeresult($result);
 
@@ -1279,7 +1279,7 @@ class admin_controller
 			'L_MODE_TITLE'			=> $lang_mode,
 			'U_EDIT_ACTION'			=> $this->u_action,
 			'S_DM_EDS_ALLOW_DL_IMG'	=> $eds_values['dm_eds_allow_dl_img'],
-        ]);
+		]);
 	}
 
 	/**
@@ -1296,7 +1296,7 @@ class admin_controller
 		$this->template->assign_vars([
 			'S_MODE_MANAGE'	=> true,
 			'S_ACTION'		=> $this->u_action . '&amp;action=create&amp;parent_id=' . $parent_id,
-        ]);
+		]);
 
 		$dm_eds = [];
 		$sql = 'SELECT *
@@ -1339,7 +1339,7 @@ class admin_controller
 				'U_EDIT'				=> $this->u_action . '&amp;action=edit&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 				'U_DELETE'				=> $this->u_action . '&amp;action=delete&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 				'IMAGE'					=> generate_board_url() . '/' . $eds_values['dm_eds_image_cat_dir'] . '/' . $dm_eds[$i]['category_image'],
-            ]);
+			]);
 		}
 
 		$this->template->assign_vars([
@@ -1347,7 +1347,7 @@ class admin_controller
 			'S_DM_EDS'						=> $parent_id,
 			'U_EDIT'						=> ($parent_id) ? $this->u_action . '&amp;action=edit&amp;cat_id=' . $parent_id : '',
 			'U_DELETE'						=> ($parent_id) ? $this->u_action . '&amp;action=delete&amp;cat_id=' . $parent_id : '',
-        ]);
+		]);
 	}
 
 	/**
@@ -1374,7 +1374,7 @@ class admin_controller
 				'enable_bbcode'		=> !$this->request->variable('disable_bbcode', false),
 				'enable_smilies'	=> !$this->request->variable('disable_smilies', false),
 				'enable_magic_url'	=> !$this->request->variable('disable_magic_url', false)
-            ];
+			];
 
 			!$dm_eds_data['enable_bbcode'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
 			!$dm_eds_data['enable_smilies'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
@@ -1527,7 +1527,7 @@ class admin_controller
 			'CAT_NAME_NO_SHOW'				=> $this->user->lang['ACP_SUB_NO_CAT'],
 			'S_DL_CATEGORY_ADD'				=> true,
 			'S_DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
-        ]);
+		]);
 	}
 
 	/**
@@ -1560,7 +1560,7 @@ class admin_controller
 				'enable_bbcode'				=> !$this->request->variable('disable_bbcode', false),
 				'enable_smilies'			=> !$this->request->variable('disable_smilies', false),
 				'enable_magic_url'			=> !$this->request->variable('disable_magic_url', false)
-            ];
+			];
 
 			!$dm_eds_data['enable_bbcode'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
 			!$dm_eds_data['enable_smilies'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
@@ -1740,7 +1740,7 @@ class admin_controller
 			'CAT_NAME_SHOW'					=> $dm_eds_data['cat_name_show'],
 			'CAT_NAME_NO_SHOW'				=> $this->user->lang['ACP_SUB_NO_CAT'],
 			'S_DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
-        ]);
+		]);
 	}
 
 	/**
@@ -1874,8 +1874,8 @@ class admin_controller
 					'MESSAGE_TEXT'	=> $this->user->lang('ACP_DEL_CAT', $catname),
 					'REFRESH_DATA'	=> [
 						'time'	=> 3
-                    ]
-                ]);
+					]
+				]);
 			}
 		}
 		else
@@ -1883,7 +1883,7 @@ class admin_controller
 			confirm_box(false, $this->user->lang('ACP_DEL_CAT', $catname), build_hidden_fields([
 				'cat_id'	=> $cat_id,
 				'action'	=> 'delete',
-                ])
+				])
 			);
 		}
 		redirect($this->u_action);
