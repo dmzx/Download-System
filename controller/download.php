@@ -78,10 +78,10 @@ class download
 		$this->functions->generate_cat_list($cat_id);
 
 		// Build navigation link
-		$this->template->assign_block_vars('navlinks', array(
+		$this->template->assign_block_vars('navlinks', [
 			'FORUM_NAME'	=> $this->user->lang('EDS_DOWNLOADS'),
 			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller'),
-		));
+        ]);
 
 		$this->functions->assign_authors();
 		$this->template->assign_var('DOWNLOADSYSTEM_FOOTER_VIEW', true);

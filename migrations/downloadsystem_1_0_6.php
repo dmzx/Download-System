@@ -13,20 +13,20 @@ class downloadsystem_1_0_6 extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return array(
+		return [
 			'\dmzx\downloadsystem\migrations\downloadsystem_1_0_5',
-		);
+        ];
 	}
 
 	public function update_data()
 	{
-		return array(
+		return [
 			// Update config
-			array('config.update', array('download_system_version', '1.0.6')),
+			['config.update', ['download_system_version', '1.0.6']],
 			// Add permission
-			 array('permission.add', array('u_dm_eds_upload', true)),
+			 ['permission.add', ['u_dm_eds_upload', true]],
 			 // Set permission
-			 array('permission.permission_set', array('ADMINISTRATORS', 'u_dm_eds_upload', 'group')),
-		);
+			 ['permission.permission_set', ['ADMINISTRATORS', 'u_dm_eds_upload', 'group']],
+        ];
 	}
 }

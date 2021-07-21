@@ -132,7 +132,7 @@ class functions
 	public function make_cat_select($select_id = false, $ignore_id = false, $dm_video = false, $ignore_acl = false, $ignore_nonpost = false, $ignore_emptycat = true, $only_acl_post = false, $return_array = false)
 	{
 		// No permissions yet
-		$acl = ($ignore_acl) ? '' : (($only_acl_post) ? 'f_post' : array('f_list', 'a_forum', 'a_forumadd', 'a_forumdel'));
+		$acl = ($ignore_acl) ? '' : (($only_acl_post) ? 'f_post' : ['f_list', 'a_forum', 'a_forumadd', 'a_forumdel']);
 
 		// This query is the same as the jumpbox query
 		$sql = 'SELECT cat_id, cat_name, parent_id, left_id, right_id
@@ -141,9 +141,9 @@ class functions
 		$result = $this->db->sql_query($sql, 600);
 
 		$right = 0;
-		$padding_store = array('0' => '');
+		$padding_store = ['0' => ''];
 		$padding = '';
-		$forum_list = ($return_array) ? array() : '';
+		$forum_list = ($return_array) ? [] : '';
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -168,7 +168,7 @@ class functions
 			if ($return_array)
 			{
 				$selected = (is_array($select_id)) ? ((in_array($row['cat_id'], $select_id)) ? true : false) : (($row['cat_id'] == $select_id) ? true : false);
-				$forum_list[$row['cat_id']] = array_merge(array('padding' => $padding, 'selected' => ($selected && !$disabled), 'disabled' => $disabled), $row);
+				$forum_list[$row['cat_id']] = array_merge(['padding' => $padding, 'selected' => ($selected && !$disabled), 'disabled' => $disabled], $row);
 			}
 			else
 			{
@@ -222,7 +222,7 @@ class functions
 			break;
 		}
 
-		$rows = array();
+		$rows = [];
 
 		$sql = 'SELECT a2.*
 			FROM ' . $this->dm_eds_cat_table . ' a1
@@ -250,7 +250,7 @@ class functions
 	*/
 	public function get_cat_parents(&$cat_data)
 	{
-		$cat_parents = array();
+		$cat_parents = [];
 		if ($cat_data['parent_id'] > 0)
 		{
 			if ($cat_data['cat_parents'] == '')
@@ -264,7 +264,7 @@ class functions
 				while ($row = $this->db->sql_fetchrow($result))
 				{
 					$row['cat_type'] = 1;
-					$cat_parents[$row['cat_id']] = array($row['cat_name'], (int) $row['cat_type']);
+					$cat_parents[$row['cat_id']] = [$row['cat_name'], (int) $row['cat_type']];
 				}
 				$this->db->sql_freeresult($result);
 				$cat_data['cat_parents'] = serialize($cat_parents);
@@ -305,25 +305,25 @@ class functions
 		$cat_parents = $this->get_cat_parents($cat_data);
 
 		// Build navigation link
-		$this->template->assign_block_vars('navlinks', array(
+		$this->template->assign_block_vars('navlinks', [
 			'FORUM_NAME'	=> $this->user->lang('EDS_DOWNLOADS'),
 			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller'),
-		));
+        ]);
 
-		$this->template->assign_block_vars('navlinks', array(
+		$this->template->assign_block_vars('navlinks', [
 			'FORUM_NAME'	=> $cat_data['cat_name'],
-			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller_cat', array('id' => $parent_cat_id)),
-		));
+			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller_cat', ['id' => $parent_cat_id]),
+        ]);
 
 		if (!empty($cat_parents))
 		{
 			foreach ($cat_parents as $parent_cat_id => $parent_data)
 			{
 				list ($parent_name, $parent_type) = array_values($parent_data);
-				$this->template->assign_block_vars('navlinks', array(
+				$this->template->assign_block_vars('navlinks', [
 					'FORUM_NAME'	=> $parent_name,
-					'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller_cat', array('id' => $parent_cat_id)),
-				));
+					'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller_cat', ['id' => $parent_cat_id]),
+                ]);
 			}
 		}
 		return;
@@ -374,12 +374,12 @@ class functions
 			$cat_name = @$row['cat_name'];
 			$this->db->sql_freeresult($result);
 
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 				'CAT_NAME'		=> $cat_name,
 				'S_NO_CAT'		=> true,
 				'MAIN_LINK'		=> $this->helper->route('dmzx_downloadsystem_controller'),
 				'U_BACK'		=> append_sid("{$this->root_path}index.$this->php_ext"),
-			));
+            ]);
 		}
 		else
 		{
@@ -420,7 +420,7 @@ class functions
 
 						$subcats .= ($subcats) ? ', ' : '';
 						$subcats .= '<a class="subforum ' . (((isset($read_info[$row2['cat_id']]) ? $read_info[$row2['cat_id']] : 0) && ($this->user->data['user_id'] != ANONYMOUS)) ? 'unread' : 'read') . '" href="';
-						$subcats .= $this->helper->route('dmzx_downloadsystem_controller_cat', array('id' =>	$row2['cat_id']));
+						$subcats .= $this->helper->route('dmzx_downloadsystem_controller_cat', ['id' =>	$row2['cat_id']]);
 						$subcats .= '">' . censor_text($row2['cat_name']) . '</a> <span class="small"><em>(' . $number_downloads_files . ')</em></span>';
 					}
 					$this->db->sql_freeresult($result2);
@@ -475,16 +475,16 @@ class functions
 				$category_image	= $row['category_image'];
 
 				// Send the results to the template
-				$this->template->assign_block_vars('catrow', array(
+				$this->template->assign_block_vars('catrow', [
 					'LAST_DOWNLOAD'			=> $last_download,
 					'NUMBER_DOWNLOADS'		=> $row['number_downloads'],
 					'CAT_NAME'				=> censor_text($row['cat_name']),
-					'U_EDS_CAT'				=> $this->helper->route('dmzx_downloadsystem_controller_cat', array('id' =>	$row['cat_id'])),
+					'U_EDS_CAT'				=> $this->helper->route('dmzx_downloadsystem_controller_cat', ['id' =>	$row['cat_id']]),
 					'CAT_DESC'				=> $this->renderer->render(html_entity_decode($row['cat_desc'])),
 					'CAT_FOLDER_IMG_SRC'	=> $folder_image,
 					'SUBCATS'				=> ($subcats) ? $l_subcats . ': <span style="font-weight: bold;">' . $subcats . '</span>' : '',
 					'IMAGE'					=> generate_board_url() . '/' . $eds_values['dm_eds_image_cat_dir'] . '/' . $category_image,
-				));
+                ]);
 			}
 
 			$this->db->sql_freeresult($result);
@@ -494,13 +494,13 @@ class functions
 			//Start pagination
 			$this->pagination->generate_template_pagination($pagination_url, 'pagination', 'start', $total_cat, $dls, $start);
 
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 				'LAST_POST_IMG'					=> $this->user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 				'EDS_CATEGORIES'				=> ($total_cat == 1) ? sprintf($this->user->lang['EDS_CAT'], $total_cat) : sprintf($this->user->lang['EDS_CATS'], $total_cat),
 				'EDS_SUB_CAT_SHOW'				=> ($total_sub_cat == 0) ? false : true,
 				'EDS_SUB_CATEGORIES'			=> ($total_sub_cat == 1) ? sprintf($this->user->lang['EDS_SUB_CATEGORY'], $total_sub_cat) : sprintf($this->user->lang['EDS_SUB_CATEGORIES'], $total_sub_cat),
 				'S_DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
-			));
+            ]);
 		}
 	}
 
@@ -511,8 +511,8 @@ class functions
 	{
 		$md_manager = $this->extension_manager->create_extension_metadata_manager('dmzx/downloadsystem', $this->template);
 		$meta = $md_manager->get_metadata();
-		$author_names = array();
-		$author_homepages = array();
+		$author_names = [];
+		$author_homepages = [];
 
 		foreach (array_slice($meta['authors'], 0, 1) as $author)
 		{
@@ -520,11 +520,11 @@ class functions
 			$author_homepages[] = sprintf('<a href="%1$s" title="%2$s">%2$s</a>', $author['homepage'], $author['name']);
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'DOWNLOADSYSTEM_DISPLAY_NAME'		=> $meta['extra']['display-name'],
 			'DOWNLOADSYSTEM_AUTHOR_NAMES'		=> implode(' &amp; ', $author_names),
 			'DOWNLOADSYSTEM_AUTHOR_HOMEPAGES'	=> implode(' &amp; ', $author_homepages),
-		));
+        ]);
 
 		return;
 	}
@@ -583,7 +583,7 @@ class functions
 		$forum_name = $this->db->sql_fetchfield('forum_name');
 		$this->db->sql_freeresult($result);
 
-		$data = array(
+		$data = [
 			'forum_id'				=> $forum_id,
 			'icon_id'				=> false,
 			'poster_id' 			=> $this->user->data['user_id'],
@@ -609,8 +609,8 @@ class functions
 			'force_approved_state'	=> true,
 			'force_visibility' 		=> true,
 			'attr_id'				=> 0,
-		);
-		$poll = array();
+        ];
+		$poll = [];
 
 		submit_post('post', $subject, '', POST_NORMAL, $poll, $data);
 	}
@@ -623,7 +623,7 @@ class functions
 		// Here you can add additional extensions
 		// Always use lower and upper case extensions
 
-		$allowed_extensions = array();
+		$allowed_extensions = [];
 
 		// Archive extenstions
 		$allowed_extensions[] = 'zip';
@@ -708,7 +708,7 @@ class functions
 		// Here you can add additional extensions
 		// Always use lower and upper case extensions
 
-		$allowed_image_extensions = array();
+		$allowed_image_extensions = [];
 
 		// Picture files
 		$allowed_image_extensions[] = 'png';

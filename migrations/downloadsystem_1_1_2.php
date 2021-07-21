@@ -13,28 +13,28 @@ class downloadsystem_1_1_2 extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return array(
+		return [
 			'\dmzx\downloadsystem\migrations\downloadsystem_1_1_1',
-		);
+        ];
 	}
 
 	public function update_data()
 	{
-		return array(
+		return [
 			// Update config
-			array('config.update', array('download_system_version', '1.1.2')),
-		);
+			['config.update', ['download_system_version', '1.1.2']],
+        ];
 	}
 
 	public function update_schema()
 	{
-		return array(
-			'add_columns'	=> array(
-				$this->table_prefix . 'dm_eds_config' => array(
-					'show_donation'		=> array('TINT:1', 0),
-					'donation_url'		=> array('VCHAR:255', ''),
-				),
-			),
-		);
+		return [
+			'add_columns'	=> [
+				$this->table_prefix . 'dm_eds_config' => [
+					'show_donation'		=> ['TINT:1', 0],
+					'donation_url'		=> ['VCHAR:255', ''],
+                ],
+            ],
+        ];
 	}
 }

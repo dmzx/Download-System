@@ -241,7 +241,7 @@ class downloadupload
 
 				// End the upload
 				$filesize = @filesize($this->root_path . $upload_dir . '/' . $upload_file->get('uploadname'));
-				$sql_ary = array(
+				$sql_ary = [
 					'download_title'		=> $title,
 					'download_desc'	 		=> $desc,
 					'download_filename'		=> $upload_file->get('uploadname'),
@@ -256,7 +256,7 @@ class downloadupload
 					'enable_smilies_file'	=> $enable_smilies_file,
 					'enable_magic_url_file'	=> $enable_magic_url_file,
 					'download_image' 		=> 'default_dl.png',
-				);
+                ];
 
 				!$sql_ary['enable_bbcode_file'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
 				!$sql_ary['enable_smilies_file'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
@@ -343,14 +343,14 @@ class downloadupload
 			' . $sql_show_cat . '
 			ORDER BY LOWER(cat_name)';
 		$result = $this->db->sql_query($sql);
-		$cats = array();
+		$cats = [];
 
 		while ($row2 = $this->db->sql_fetchrow($result))
 		{
-			$cats[$row2['cat_id']] = array(
+			$cats[$row2['cat_id']] = [
 				'cat_title'	=> $row2['cat_name'],
 				'cat_id'	=> $row2['cat_id'],
-			);
+            ];
 		}
 		$this->db->sql_freeresult($result);
 
@@ -369,7 +369,7 @@ class downloadupload
 
 		$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off') ? '' : ' enctype="multipart/form-data"';
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'ID'						=> $id,
 			'TITLE'						=> $title,
 			'DESC'						=> $desc,
@@ -385,13 +385,13 @@ class downloadupload
 			'SMILIES_STATUS'			=> !empty($eds_values['dm_eds_allow_smilies']) ? $this->user->lang('SMILIES_ARE_ON') : $this->user->lang('SMILIES_ARE_OFF'),
 			'URL_STATUS'				=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
 			'S_DL_CATEGORY_ADD'			=> true,
-		));
+        ]);
 
 		// Build navigation link
-		$this->template->assign_block_vars('navlinks', array(
+		$this->template->assign_block_vars('navlinks', [
 			'FORUM_NAME'	=> $this->user->lang('EDS_UPLOAD_SECTION'),
 			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller_upload'),
-		));
+        ]);
 
 		$this->functions->assign_authors();
 		$this->template->assign_var('DOWNLOADSYSTEM_FOOTER_VIEW', true);
@@ -408,7 +408,7 @@ class downloadupload
 	*/
 	private function log_message($log_message, $title, $user_message)
 	{
-		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_message, time(), array($title));
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_message, time(), [$title]);
 
 		meta_refresh(3, $this->helper->route('dmzx_downloadsystem_controller_upload'));
 

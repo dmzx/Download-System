@@ -66,12 +66,12 @@ class listener implements EventSubscriberInterface
 
 	static public function getSubscribedEvents()
 	{
-		return array(
+		return [
 			'core.viewonline_overwrite_location'		=> 'add_page_viewonline',
 			'core.user_setup'							=> 'load_language_on_setup',
 			'core.page_header'							=> 'page_header',
 			'core.permissions'							=> 'permissions',
-		);
+        ];
 	}
 
 	public function add_page_viewonline($event)
@@ -79,59 +79,59 @@ class listener implements EventSubscriberInterface
 		if (strrpos($event['row']['session_page'], 'app.' . $this->php_ext . '/downloadsystem') === 0 || strrpos($event['row']['session_page'], 'app.' . $this->php_ext . 'downloadsystemcat') === 0)
 		{
 			$event['location'] = $this->user->lang('EDS_DOWNLOADS');
-			$event['location_url'] = $this->helper->route('dmzx_downloadsystem_controller', array('name' => 'index'));
+			$event['location_url'] = $this->helper->route('dmzx_downloadsystem_controller', ['name' => 'index']);
 		}
 
 		if (strrpos($event['row']['session_page'], 'app.' . $this->php_ext . '/downloadsystemupload') === 0)
 		{
 			$event['location'] = $this->user->lang('EDS_UPLOAD_SECTION');
-			$event['location_url'] = $this->helper->route('dmzx_downloadsystem_controller_upload', array('name' => 'index'));
+			$event['location_url'] = $this->helper->route('dmzx_downloadsystem_controller_upload', ['name' => 'index']);
 		}
 	}
 
 	public function load_language_on_setup($event)
 	{
 		$lang_set_ext = $event['lang_set_ext'];
-		$lang_set_ext[] = array(
+		$lang_set_ext[] = [
 			'ext_name' => 'dmzx/downloadsystem',
 			'lang_set' => 'common',
-		);
+        ];
 		$event['lang_set_ext'] = $lang_set_ext;
 	}
 
 	public function page_header($event)
 	{
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'U_DM_EDS'						=> $this->helper->route('dmzx_downloadsystem_controller'),
 			'U_DM_EDS_UPLOAD'				=> $this->helper->route('dmzx_downloadsystem_controller_upload'),
 			'DM_EDS_USE_UPLOAD'				=> $this->auth->acl_get('u_dm_eds_upload'),
 			'S_EDS_EXIST'					=> true,
 			'DOWNLOADSYSTEM_VERSION'		=> $this->config['download_system_version'],
-		));
+        ]);
 	}
 
 	public function permissions($event)
 	{
-		$event['permissions'] = array_merge($event['permissions'], array(
-			'u_dm_eds_use'	=> array(
+		$event['permissions'] = array_merge($event['permissions'], [
+			'u_dm_eds_use'	=> [
 				'lang'		=> 'ACL_U_DM_EDS_USE',
 				'cat'		=> 'Download System'
-			),
-			'u_dm_eds_download'	=> array(
+            ],
+			'u_dm_eds_download'	=> [
 				'lang'		=> 'ACL_U_DM_EDS_DOWNLOAD',
 				'cat'		=> 'Download System'
-			),
-			'u_dm_eds_upload'	=> array(
+            ],
+			'u_dm_eds_upload'	=> [
 				'lang'		=> 'ACL_U_DM_EDS_UPLOAD',
 				'cat'		=> 'Download System'
-			),
-			'a_dm_eds'		=> array(
+            ],
+			'a_dm_eds'		=> [
 				'lang'		=> 'ACL_U_DM_EDS_USE',
 				'cat'		=> 'Download System'
-			),
-		));
-		$event['categories'] = array_merge($event['categories'], array(
+            ],
+        ]);
+		$event['categories'] = array_merge($event['categories'], [
 			'Download System'	=> 'ACL_U_DM',
-		));
+        ]);
 	}
 }

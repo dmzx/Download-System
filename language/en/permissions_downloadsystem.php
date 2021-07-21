@@ -14,7 +14,7 @@ if (!defined('IN_PHPBB'))
 
 if (empty($lang) || !is_array($lang))
 {
-	$lang = array();
+	$lang = [];
 }
 
 // DEVELOPERS PLEASE NOTE
@@ -32,9 +32,9 @@ if (empty($lang) || !is_array($lang))
 // Some characters for use
 // ’ » “ ” …
 
-$lang = array_merge($lang, array(
+$lang = array_merge($lang, [
 	'ACL_U_DM_EDS_DOWNLOAD'				=> 'Can download files in Download System',
 	'ACL_U_DM_EDS_UPLOAD'				=> 'Can upload files in Download System',
 	'ACL_U_DM_EDS_USE'					=> 'Can use the Download System',
 	'ACL_U_DM'							=> 'Download System',
-));
+]);

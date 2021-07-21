@@ -1,5 +1,8 @@
 # Downloadsystem Changelog
 
+## Changes in 1.2.0
+- Short syntax code.
+
 ## Changes in 1.1.9
 - Fix code.
 

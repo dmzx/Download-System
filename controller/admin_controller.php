@@ -187,7 +187,7 @@ class admin_controller
 		if ($set_pagination)
 		{
 			// Values for eds_config
-			$sql_ary = array (
+			$sql_ary = [
 				'pagination_acp'			=> $this->request->variable('pagination_acp', 0),
 				'pagination_user'			=> $this->request->variable('pagination_user', 0),
 				'announce_enable'			=> $this->request->variable('announce_enable', 0),
@@ -204,7 +204,7 @@ class admin_controller
 				'dm_eds_allow_cat_img'		=> $this->request->variable('dm_eds_allow_cat_img', 0),
 				'show_donation'				=> $this->request->variable('show_donation', 0),
 				'donation_url'				=> $this->request->variable('donation_url', '', true),
-			);
+            ];
 
 			// Check if pagination_acp is at least 5
 			$check_acp = $this->request->variable('pagination_acp', 0);
@@ -255,7 +255,7 @@ class admin_controller
 		}
 		else
 		{
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 				'PAGINATION_ACP'			=> $eds_values['pagination_acp'],
 				'PAGINATION_USER'			=> $eds_values['pagination_user'],
 				'ANNOUNCE_ENABLE'			=> $eds_values['announce_enable'],
@@ -276,7 +276,7 @@ class admin_controller
 				'U_BACK'					=> $this->u_action,
 				'U_ACTION'					=> $form_action,
 				'U_ABOUT'					=> $this->u_action. '&amp;action=about',
-			));
+            ]);
 		}
 
 		include($this->ext_path_web . 'includes/parsedown.' . $this->php_ext);
@@ -305,18 +305,18 @@ class admin_controller
 					{
 						$key = substr($row, 3);
 
-						$this->template->assign_block_vars('history', array(
+						$this->template->assign_block_vars('history', [
 							'CHANGES_SINCE'	=> $key,
-							'U_CHANGES'		=> strtolower(str_replace(array(' ', '.'), array('-', ''), $key)),
-						));
+							'U_CHANGES'		=> strtolower(str_replace([' ', '.'], ['-', ''], $key)),
+                        ]);
 					}
 					else if ($row[0] === '-')
 					{
 						$change = substr($row, 2);
 
-						$this->template->assign_block_vars('history.changelog', array(
+						$this->template->assign_block_vars('history.changelog', [
 							'CHANGE'	=> $parsedown->line($change),
-						));
+                        ]);
 					}
 				}
 			}
@@ -357,13 +357,13 @@ class admin_controller
 			FROM ' . $this->dm_eds_cat_table . '
 			ORDER BY LOWER(cat_name)';
 		$result = $this->db->sql_query($sql);
-		$cats = array();
+		$cats = [];
 		while ($row2 = $this->db->sql_fetchrow($result))
 		{
-			$cats[$row2['cat_id']] = array(
+			$cats[$row2['cat_id']] = [
 				'cat_title'	=> $row2['cat_name'],
 				'cat_id'	=> $row2['cat_id'],
-			);
+            ];
 		}
 		$this->db->sql_freeresult($result);
 
@@ -392,7 +392,7 @@ class admin_controller
 			$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'ID'					=> $id,
 			'TITLE'					=> $title,
 			'DESC'					=> $desc,
@@ -412,7 +412,7 @@ class admin_controller
 			'URL_STATUS'			=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
 			'S_DL_CATEGORY_ADD'		=> true,
 			'S_DM_EDS_ALLOW_DL_IMG'	=> $eds_values['dm_eds_allow_dl_img'],
-		));
+        ]);
 	}
 
 	public function copy_new()
@@ -470,14 +470,14 @@ class admin_controller
 			ORDER BY LOWER(cat_name)';
 		$result = $this->db->sql_query($sql);
 
-		$cats = array();
+		$cats = [];
 
 		while ($row2 = $this->db->sql_fetchrow($result))
 		{
-			$cats[$row2['cat_id']] = array(
+			$cats[$row2['cat_id']] = [
 				'cat_title'	=> $row2['cat_name'],
 				'cat_id'	=> $row2['cat_id'],
-			);
+            ];
 		}
 		$this->db->sql_freeresult($result);
 
@@ -508,7 +508,7 @@ class admin_controller
 
 		$upload_dl_dir = $eds_values['dm_eds_image_dir'];
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'ID'						=> $id,
 			'TITLE'						=> $copy_title,
 			'DESC'						=> $copy_desc,
@@ -528,7 +528,7 @@ class admin_controller
 			'URL_STATUS'				=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
 			'S_DL_CATEGORY_ADD'			=> true,
 			'DOWNLOAD_IMAGE'			=> !empty($download_image) ? $this->root_path . $upload_dl_dir . '/' . $download_image : '',
-		));
+        ]);
 	}
 
 	public function edit()
@@ -566,14 +566,14 @@ class admin_controller
 			ORDER BY LOWER(cat_name)';
 		$result = $this->db->sql_query($sql);
 
-		$cats = array();
+		$cats = [];
 
 		while ($row2 = $this->db->sql_fetchrow($result))
 		{
-			$cats[$row2['cat_id']] = array(
+			$cats[$row2['cat_id']] = [
 				'cat_title'	=> $row2['cat_name'],
 				'cat_id'	=> $row2['cat_id'],
-			);
+            ];
 		}
 		$this->db->sql_freeresult($result);
 
@@ -604,7 +604,7 @@ class admin_controller
 
 		$upload_dl_dir = $eds_values['dm_eds_image_dir'];
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'ID'						=> $download_id,
 			'TITLE'						=> $row['download_title'],
 			'DESC'						=> $row['download_desc'],
@@ -622,7 +622,7 @@ class admin_controller
 			'SMILIES_STATUS'			=> !empty($eds_values['dm_eds_allow_smilies']) ? $this->user->lang('SMILIES_ARE_ON') : $this->user->lang('SMILIES_ARE_OFF'),
 			'URL_STATUS'				=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
 			'DOWNLOAD_IMAGE'			=> !empty($row['download_image']) ? $this->root_path . $upload_dl_dir . '/' . $row['download_image'] : '',
-		));
+        ]);
 	}
 
 	public function add_new()
@@ -726,7 +726,7 @@ class admin_controller
 			// End the upload
 
 			$filesize = @filesize($this->root_path . $upload_dir . '/' . $upload_file->get('uploadname'));
-			$sql_ary = array(
+			$sql_ary = [
 				'download_title'			=> $title,
 				'download_desc'	 			=> $desc,
 				'download_filename'			=> $upload_file->get('uploadname'),
@@ -740,7 +740,7 @@ class admin_controller
 				'enable_bbcode_file'		=> $enable_bbcode_file,
 				'enable_smilies_file'		=> $enable_smilies_file,
 				'enable_magic_url_file'		=> $enable_magic_url_file,
-			);
+            ];
 
 			# Get an instance of the files upload class
 			$upload = $this->files_factory->get('upload')
@@ -794,7 +794,7 @@ class admin_controller
 			}
 
 			$filesize = @filesize($this->root_path . $upload_dir . '/' . $ftp_upload);
-			$sql_ary = array(
+			$sql_ary = [
 				'download_title'			=> $title,
 				'download_desc'	 			=> $desc,
 				'download_filename'			=> $ftp_upload,
@@ -808,7 +808,7 @@ class admin_controller
 				'enable_bbcode_file'		=> $enable_bbcode_file,
 				'enable_smilies_file'		=> $enable_smilies_file,
 				'enable_magic_url_file'		=> $enable_magic_url_file,
-			);
+            ];
 		}
 
 		!$sql_ary['enable_bbcode_file'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
@@ -943,7 +943,7 @@ class admin_controller
 				$filesize = @filesize($this->root_path . $upload_dir . '/' . $new_filename);
 			}
 
-			$sql_ary = array(
+			$sql_ary = [
 				'download_title'		=> $title,
 				'download_version'		=> $dl_version,
 				'download_desc'			=> $desc,
@@ -956,7 +956,7 @@ class admin_controller
 				'enable_bbcode_file'	=> $enable_bbcode_file,
 				'enable_smilies_file'	=> $enable_smilies_file,
 				'enable_magic_url_file'	=> $enable_magic_url_file,
-			);
+            ];
 
 			# Get an instance of the files upload class
 			$upload = $this->files_factory->get('upload')
@@ -1104,7 +1104,7 @@ class admin_controller
 			}
 
 			$filesize = @filesize($this->root_path . $upload_dir . '/' . $ftp_upload);
-			$sql_ary = array(
+			$sql_ary = [
 				'download_title'		=> $title,
 				'download_desc'	 		=> $desc,
 				'download_filename'		=> $ftp_upload,
@@ -1118,7 +1118,7 @@ class admin_controller
 				'enable_bbcode_file'	=> $enable_bbcode_file,
 				'enable_smilies_file'	=> $enable_smilies_file,
 				'enable_magic_url_file'	=> $enable_magic_url_file,
-			);
+            ];
 
 			!$sql_ary['enable_bbcode_file'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
 			!$sql_ary['enable_smilies_file'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
@@ -1180,21 +1180,21 @@ class admin_controller
 
 			if ($this->request->is_ajax())
 			{
-				$json_response->send(array(
+				$json_response->send([
 					'MESSAGE_TITLE'	=> $this->user->lang('INFORMATION'),
 					'MESSAGE_TEXT'	=> $this->user->lang('ACP_REALLY_DELETE'),
-					'REFRESH_DATA'	=> array(
+					'REFRESH_DATA'	=> [
 						'time'	=> 3
-					)
-				));
+                    ]
+                ]);
 			}
 		}
 		else
 		{
-			confirm_box(false, $this->user->lang['ACP_REALLY_DELETE'], build_hidden_fields(array(
+			confirm_box(false, $this->user->lang['ACP_REALLY_DELETE'], build_hidden_fields([
 				'download_id'	=> $id,
 				'action'	=> 'delete',
-				))
+                ])
 			);
 		}
 		redirect($this->u_action);
@@ -1213,17 +1213,17 @@ class admin_controller
 		$start	= $this->request->variable('start', 0);
 		$number	= $eds_values['pagination_acp'];
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'BASE'	=> $this->u_action,
-		));
+        ]);
 
 		$sort_days	= $this->request->variable('st', 0);
 		$sort_key	= $this->request->variable('sk', 'download_title');
 		$sort_dir	= $this->request->variable('sd', 'ASC');
-		$limit_days = array(0 => $this->user->lang['ACP_ALL_DOWNLOADS'], 1 => $this->user->lang['1_DAY'], 7 => $this->user->lang['7_DAYS'], 14 => $this->user->lang['2_WEEKS'], 30 => $this->user->lang['1_MONTH'], 90 => $this->user->lang['3_MONTHS'], 180 => $this->user->lang['6_MONTHS'], 365 => $this->user->lang['1_YEAR']);
+		$limit_days = [0 => $this->user->lang['ACP_ALL_DOWNLOADS'], 1 => $this->user->lang['1_DAY'], 7 => $this->user->lang['7_DAYS'], 14 => $this->user->lang['2_WEEKS'], 30 => $this->user->lang['1_MONTH'], 90 => $this->user->lang['3_MONTHS'], 180 => $this->user->lang['6_MONTHS'], 365 => $this->user->lang['1_YEAR']];
 
-		$sort_by_text = array('t' => $this->user->lang['ACP_SORT_TITLE'], 'c' => $this->user->lang['ACP_SORT_CAT']);
-		$sort_by_sql = array('t' => 'download_title', 'c' => 'cat_name');
+		$sort_by_text = ['t' => $this->user->lang['ACP_SORT_TITLE'], 'c' => $this->user->lang['ACP_SORT_CAT']];
+		$sort_by_sql = ['t' => 'download_title', 'c' => 'cat_name'];
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 		gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -1247,7 +1247,7 @@ class admin_controller
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$this->template->assign_block_vars('downloads', array(
+			$this->template->assign_block_vars('downloads', [
 				'ICON_COPY'		=> '<img src="' . $this->root_path . 'adm/images/file_new.gif" alt="' . $this->user->lang['ACP_COPY_NEW'] . '" title="' . $this->user->lang['ACP_COPY_NEW'] . '" />',
 				'TITLE'			=> $row['download_title'],
 				'FILENAME'		=> $row['download_filename'],
@@ -1261,7 +1261,7 @@ class admin_controller
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' .$row['download_id'],
 				'U_DEL'			=> $this->u_action . '&amp;action=delete&amp;id=' .$row['download_id'],
 				'DL_IMAGE'		=> generate_board_url() . '/' . $eds_values['dm_eds_image_dir'] . '/' . $row['download_image'],
-			));
+            ]);
 		}
 		$this->db->sql_freeresult($result);
 
@@ -1270,7 +1270,7 @@ class admin_controller
 		//Start pagination
 		$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_downloads, $number, $start);
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'S_DOWNLOAD_ACTION'		=> $this->u_action,
 			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
@@ -1279,7 +1279,7 @@ class admin_controller
 			'L_MODE_TITLE'			=> $lang_mode,
 			'U_EDIT_ACTION'			=> $this->u_action,
 			'S_DM_EDS_ALLOW_DL_IMG'	=> $eds_values['dm_eds_allow_dl_img'],
-		));
+        ]);
 	}
 
 	/**
@@ -1287,18 +1287,18 @@ class admin_controller
 	*/
 	public function manage_cats()
 	{
-		$catrow = array();
+		$catrow = [];
 		$parent_id = $this->request->variable('parent_id', 0);
 
 		// Read out config values
 		$eds_values = $this->functions->config_values();
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'S_MODE_MANAGE'	=> true,
 			'S_ACTION'		=> $this->u_action . '&amp;action=create&amp;parent_id=' . $parent_id,
-		));
+        ]);
 
-		$dm_eds = array();
+		$dm_eds = [];
 		$sql = 'SELECT *
 			FROM ' . $this->dm_eds_cat_table . '
 			ORDER BY left_id ASC';
@@ -1324,7 +1324,7 @@ class admin_controller
 				}
 			}
 
-			$this->template->assign_block_vars('catrow', array(
+			$this->template->assign_block_vars('catrow', [
 				'FOLDER_FA_ICON'		=> $folder_fa_icon,
 				'U_CAT'					=> $this->u_action . '&amp;parent_id=' . $dm_eds[$i]['cat_id'],
 				'CAT_NAME'				=> $dm_eds[$i]['cat_name'],
@@ -1339,15 +1339,15 @@ class admin_controller
 				'U_EDIT'				=> $this->u_action . '&amp;action=edit&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 				'U_DELETE'				=> $this->u_action . '&amp;action=delete&amp;cat_id=' . $dm_eds[$i]['cat_id'],
 				'IMAGE'					=> generate_board_url() . '/' . $eds_values['dm_eds_image_cat_dir'] . '/' . $dm_eds[$i]['category_image'],
-			));
+            ]);
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'S_DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
 			'S_DM_EDS'						=> $parent_id,
 			'U_EDIT'						=> ($parent_id) ? $this->u_action . '&amp;action=edit&amp;cat_id=' . $parent_id : '',
 			'U_DELETE'						=> ($parent_id) ? $this->u_action . '&amp;action=delete&amp;cat_id=' . $parent_id : '',
-		));
+        ]);
 	}
 
 	/**
@@ -1362,8 +1362,8 @@ class admin_controller
 
 		if ($this->request->is_set('submit'))
 		{
-			$dm_eds_data = array();
-			$dm_eds_data = array(
+			$dm_eds_data = [];
+			$dm_eds_data = [
 				'cat_name'			=> $this->request->variable('cat_name', '', true),
 				'cat_sub_dir'		=> $this->request->variable('cat_sub_dir', ''),
 				'parent_id'			=> $this->request->variable('parent_id', 0),
@@ -1374,7 +1374,7 @@ class admin_controller
 				'enable_bbcode'		=> !$this->request->variable('disable_bbcode', false),
 				'enable_smilies'	=> !$this->request->variable('disable_smilies', false),
 				'enable_magic_url'	=> !$this->request->variable('disable_magic_url', false)
-			);
+            ];
 
 			!$dm_eds_data['enable_bbcode'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
 			!$dm_eds_data['enable_smilies'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
@@ -1496,7 +1496,7 @@ class admin_controller
 			$this->cache->destroy('sql', $this->dm_eds_cat_table);
 
 			// Log message
-			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CATEGORY_ADD', time(), array($cat_sub_dir_name));
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CATEGORY_ADD', time(), [$cat_sub_dir_name]);
 
 			// Check if created foldername already exists
 			if (is_dir($this->root_path . 'ext/dmzx/downloadsystem/files/' . $cat_sub_dir_name))
@@ -1513,7 +1513,7 @@ class admin_controller
 		}
 
 		$parent_options = $this->functions->make_cat_select($this->request->variable('parent_id', 0), false, false, false, false);
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'S_MODE_CREATE'					=> true,
 			'S_ACTION'						=> $this->u_action . '&amp;parent_id=' . $this->request->variable('parent_id', 0),
 			'S_BBCODE_ENABLED'				=> !empty($dm_eds_data['enable_bbcode']) ? $dm_eds_data['enable_bbcode'] : 0,
@@ -1527,7 +1527,7 @@ class admin_controller
 			'CAT_NAME_NO_SHOW'				=> $this->user->lang['ACP_SUB_NO_CAT'],
 			'S_DL_CATEGORY_ADD'				=> true,
 			'S_DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
-		));
+        ]);
 	}
 
 	/**
@@ -1549,8 +1549,8 @@ class admin_controller
 
 		if ($this->request->is_set('submit'))
 		{
-			$dm_eds_data = array();
-			$dm_eds_data = array(
+			$dm_eds_data = [];
+			$dm_eds_data = [
 				'cat_name'					=> $this->request->variable('cat_name', '', true),
 				'parent_id'					=> $this->request->variable('parent_id', 0),
 				'cat_parents'				=> '',
@@ -1560,7 +1560,7 @@ class admin_controller
 				'enable_bbcode'				=> !$this->request->variable('disable_bbcode', false),
 				'enable_smilies'			=> !$this->request->variable('disable_smilies', false),
 				'enable_magic_url'			=> !$this->request->variable('disable_magic_url', false)
-			);
+            ];
 
 			!$dm_eds_data['enable_bbcode'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
 			!$dm_eds_data['enable_smilies'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
@@ -1721,7 +1721,7 @@ class admin_controller
 
 		$upload_dir = $eds_values['dm_eds_image_cat_dir'];
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'S_MODE_EDIT'					=> true,
 			'S_ACTION'						=> $this->u_action . '&amp;action=edit&amp;cat_id=' . $cat_id,
 			'S_PARENT_OPTIONS'				=> $parents_list,
@@ -1740,7 +1740,7 @@ class admin_controller
 			'CAT_NAME_SHOW'					=> $dm_eds_data['cat_name_show'],
 			'CAT_NAME_NO_SHOW'				=> $this->user->lang['ACP_SUB_NO_CAT'],
 			'S_DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
-		));
+        ]);
 	}
 
 	/**
@@ -1869,21 +1869,21 @@ class admin_controller
 
 			if ($this->request->is_ajax())
 			{
-				$json_response->send(array(
+				$json_response->send([
 					'MESSAGE_TITLE'	=> $this->user->lang('INFORMATION'),
 					'MESSAGE_TEXT'	=> $this->user->lang('ACP_DEL_CAT', $catname),
-					'REFRESH_DATA'	=> array(
+					'REFRESH_DATA'	=> [
 						'time'	=> 3
-					)
-				));
+                    ]
+                ]);
 			}
 		}
 		else
 		{
-			confirm_box(false, $this->user->lang('ACP_DEL_CAT', $catname), build_hidden_fields(array(
+			confirm_box(false, $this->user->lang('ACP_DEL_CAT', $catname), build_hidden_fields([
 				'cat_id'	=> $cat_id,
 				'action'	=> 'delete',
-				))
+                ])
 			);
 		}
 		redirect($this->u_action);
@@ -1921,7 +1921,7 @@ class admin_controller
 
 		if ($this->request->is_ajax())
 		{
-			$json_response->send(array('success' => ($moving !== false)));
+			$json_response->send(['success' => ($moving !== false)]);
 		}
 
 		$sql = 'SELECT cat_id, left_id, right_id, cat_name
@@ -1930,7 +1930,7 @@ class admin_controller
 				AND " . (($move == 'move_up') ? "right_id < {$moving['right_id']} ORDER BY right_id DESC" : "left_id > {$moving['left_id']} ORDER BY left_id ASC");
 		$result = $this->db->sql_query_limit($sql, 1);
 
-		$target = array();
+		$target = [];
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -2021,7 +2021,7 @@ class admin_controller
 	*/
 	private function log_message($log_message, $title, $user_message)
 	{
-		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_message, time(), array($title));
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_message, time(), [$title]);
 
 		trigger_error($this->user->lang[$user_message] . adm_back_link($this->u_action));
 	}

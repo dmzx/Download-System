@@ -183,12 +183,12 @@ class downloadsystemcat
 		// Check if there are downloads
 		if ($total_downloads == 0)
 		{
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 				'CAT_NAME'		=> $cat_name,
 				'S_NO_FILES'	=> true,
 				'MAIN_LINK'		=> $this->helper->route('dmzx_downloadsystem_controller'),
 				'U_BACK'		=> append_sid("{$this->root_path}index.$this->php_ext"),
-			));
+            ]);
 		}
 		else
 		{
@@ -218,12 +218,12 @@ class downloadsystemcat
 				}
 				else
 				{
-					$download = '<a href="' . $this->helper->route('dmzx_downloadsystem_controller_download', array('id' =>	$dl_id)) . '" title="' . $this->user->lang['EDS_REGULAR_DOWNLOAD'] . '" alt=""><span class="fa-stack fa-2x"><i class="fa fa-download fa-stack-1x" id="' . $dl_id . '" data-ajax="access"></i><span class="eds-ext">' . $dl_filename . '</span></span></a>';
+					$download = '<a href="' . $this->helper->route('dmzx_downloadsystem_controller_download', ['id' =>	$dl_id]) . '" title="' . $this->user->lang['EDS_REGULAR_DOWNLOAD'] . '" alt=""><span class="fa-stack fa-2x"><i class="fa fa-download fa-stack-1x" id="' . $dl_id . '" data-ajax="access"></i><span class="eds-ext">' . $dl_filename . '</span></span></a>';
 				}
 
 				$dl_image = $row['download_image'];
 
-				$this->template->assign_block_vars('catrow', array(
+				$this->template->assign_block_vars('catrow', [
 					'DL_TITLE'			=> $dl_title,
 					'DL_VERSION'		=> $dl_version,
 					'DL_CLICKS'			=> $dl_clicks,
@@ -233,22 +233,22 @@ class downloadsystemcat
 					'DL_FILESIZE'		=> $filesize,
 					'U_DOWNLOAD'		=> $download,
 					'DL_IMAGE'			=> generate_board_url() . '/' . $eds_values['dm_eds_image_dir'] . '/' . $dl_image,
-				));
+                ]);
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'DL_IMAGE_ALERT'			=> generate_board_url() . '/' . $eds_values['dm_eds_image_dir'] . '/' . $dl_image,
-				));
+                ]);
 			}
 
 			$this->db->sql_freeresult($result);
 
-			$pagination_url = $this->helper->route('dmzx_downloadsystem_controller_cat', array('id' =>	$cat_id));
+			$pagination_url = $this->helper->route('dmzx_downloadsystem_controller_cat', ['id' =>	$cat_id]);
 			//Start pagination
 			$this->pagination->generate_template_pagination($pagination_url, 'pagination', 'start', $total_downloads, $number, $start);
 
 			$this->functions->assign_authors();
 
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 				'CAT_NAME' 						=> $cat_name,
 				'EDS_DOWNLOAD_FILE_LINK'		=> $this->helper->route('dmzx_downloadsystem_controller_download'),
 				'MAIN_LINK'						=> $this->helper->route('dmzx_downloadsystem_controller'),
@@ -258,7 +258,7 @@ class downloadsystemcat
 				'S_DM_EDS_ALLOW_DL_IMG'			=> $eds_values['dm_eds_allow_dl_img'],
 				'EDS_DOWNLOAD_SHOW_DONATION'	=> $eds_values['show_donation'],
 				'EDS_DOWNLOAD_DONATION_URL'		=> $eds_values['donation_url'],
-			));
+            ]);
 		}
 
 		// Send all data to the template file
