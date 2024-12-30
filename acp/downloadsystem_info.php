@@ -13,14 +13,14 @@ class downloadsystem_info
 {
 	function module()
 	{
-		return array(
+		return [
 			'filename'		=> 'acp_dm_eds',
 			'title'			=> 'ACP_DM_EDS',
-			'modes'			=> array(
-				'config'		=> array('title' => 'ACP_MANAGE_CONFIG', 'auth' => 'ext_dmzx/downloadsystem && acl_a_dm_eds', 'cat' => array('ACP_DM_EDS')),
-				'downloads'		=> array('title' => 'ACP_MANAGE_DOWNLOADS', 'auth' => 'ext_dmzx/downloadsystem && acl_a_dm_eds', 'cat' => array('ACP_DM_EDS')),
-				'categories'	=> array('title' => 'ACP_MANAGE_CATEGORIES', 'auth' => 'ext_dmzx/downloadsystem && acl_a_dm_eds', 'cat' => array('ACP_DM_EDS')),
-			),
-		);
+			'modes'			=> [
+				'config'		=> ['title' => 'ACP_MANAGE_CONFIG', 'auth' => 'ext_dmzx/downloadsystem && acl_a_dm_eds', 'cat' => ['ACP_DM_EDS']],
+				'downloads'		=> ['title' => 'ACP_MANAGE_DOWNLOADS', 'auth' => 'ext_dmzx/downloadsystem && acl_a_dm_eds', 'cat' => ['ACP_DM_EDS']],
+				'categories'	=> ['title' => 'ACP_MANAGE_CATEGORIES', 'auth' => 'ext_dmzx/downloadsystem && acl_a_dm_eds', 'cat' => ['ACP_DM_EDS']],
+			],
+		];
 	}
 }

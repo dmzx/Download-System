@@ -42,7 +42,7 @@
 			{% endif %}
 				<tr class="{% if catrow.S_ROW_COUNT is even %}bg1{% else %}bg2{% endif %}">
 					<td class="folder">
-						<span class="fa-stack fa-2x"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-download fa-stack-1x"></i></span>
+						<a href="{{ catrow.U_EDS_CAT }}" data-ajax="forumtitlex" class="forumtitlex"><span class="fa-stack fa-2x"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-download fa-stack-1x"></i></span></a>
 					</td>
 					{% if S_DM_EDS_ALLOW_CAT_IMG %}
 					<td class="folder">

@@ -1,5 +1,17 @@
 # Downloadsystem Changelog
 
+## Changes in 1.2.1
+- Code update.
+
+## Changes in 1.2.0
+- Short syntax code.
+
+## Changes in 1.1.9
+- Fix code.
+
+## Changes in 1.1.8
+- Code update.
+
 ## Changes in 1.1.7
 - Fixed errors on upload page and ACP.
 - Code update.

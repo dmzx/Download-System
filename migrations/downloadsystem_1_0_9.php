@@ -13,54 +13,54 @@ class downloadsystem_1_0_9 extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return array(
+		return [
 			'\dmzx\downloadsystem\migrations\downloadsystem_1_0_8',
-		);
+		];
 	}
 
 	public function update_data()
 	{
-		return array(
-			array('config.update', array('download_system_version', '1.0.9')),
-			array('custom', array(array($this, 'dm_eds_image_dir'))),
-		);
+		return [
+			['config.update', ['download_system_version', '1.0.9']],
+			['custom', [[$this, 'dm_eds_image_dir']]],
+		];
 	}
 
 	public function update_schema()
 	{
-		return array(
-			'add_columns'	=> array(
-				$this->table_prefix . 'dm_eds_config' => array(
-					'dm_eds_image_dir'			=> array('VCHAR', 'images/downloadsystem'),
-					'dm_eds_image_cat_dir'		=> array('VCHAR', 'images/downloadsystem/categories'),
-					'dm_eds_image_size'			=> array('VCHAR', '15'),
-					'dm_eds_allow_bbcodes'		=> array('BOOL', 1),
-					'dm_eds_allow_smilies'		=> array('BOOL', 1),
-					'dm_eds_allow_magic_url'	=> array('BOOL', 1),
-					'dm_eds_allow_dl_img'		=> array('BOOL', 1),
-					'dm_eds_allow_cat_img'		=> array('BOOL', 1),
-				),
-				$this->table_prefix . 'dm_eds_cat' => array(
-					'category_image'			=> array('VCHAR:255', ''),
-					'enable_bbcode'				=> array('BOOL', 1),
-					'enable_smilies'			=> array('BOOL', 1),
-					'enable_magic_url'			=> array('BOOL', 1),
-				),
-				$this->table_prefix . 'dm_eds' => array(
-					'download_image'			=> array('VCHAR:255', ''),
-					'enable_bbcode_file'		=> array('BOOL', 1),
-					'enable_smilies_file'		=> array('BOOL', 1),
-					'enable_magic_url_file'		=> array('BOOL', 1),
-				),
-			),
-			'drop_columns' => array(
-				$this->table_prefix . 'dm_eds' => array(
+		return [
+			'add_columns'	=> [
+				$this->table_prefix . 'dm_eds_config' => [
+					'dm_eds_image_dir'			=> ['VCHAR', 'images/downloadsystem'],
+					'dm_eds_image_cat_dir'		=> ['VCHAR', 'images/downloadsystem/categories'],
+					'dm_eds_image_size'			=> ['VCHAR', '15'],
+					'dm_eds_allow_bbcodes'		=> ['BOOL', 1],
+					'dm_eds_allow_smilies'		=> ['BOOL', 1],
+					'dm_eds_allow_magic_url'	=> ['BOOL', 1],
+					'dm_eds_allow_dl_img'		=> ['BOOL', 1],
+					'dm_eds_allow_cat_img'		=> ['BOOL', 1],
+				],
+				$this->table_prefix . 'dm_eds_cat' => [
+					'category_image'			=> ['VCHAR:255', ''],
+					'enable_bbcode'				=> ['BOOL', 1],
+					'enable_smilies'			=> ['BOOL', 1],
+					'enable_magic_url'			=> ['BOOL', 1],
+				],
+				$this->table_prefix . 'dm_eds' => [
+					'download_image'			=> ['VCHAR:255', ''],
+					'enable_bbcode_file'		=> ['BOOL', 1],
+					'enable_smilies_file'		=> ['BOOL', 1],
+					'enable_magic_url_file'		=> ['BOOL', 1],
+				],
+			],
+			'drop_columns' => [
+				$this->table_prefix . 'dm_eds' => [
 					'bbcode_uid',
 					'bbcode_bitfield',
 					'bbcode_options',
-				),
-			),
-		);
+				],
+			],
+		];
 	}
 
 	public function dm_eds_image_dir()

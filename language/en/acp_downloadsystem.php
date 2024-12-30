@@ -14,7 +14,7 @@ if (!defined('IN_PHPBB'))
 
 if (empty($lang) || !is_array($lang))
 {
-	$lang = array();
+	$lang = [];
 }
 
 // DEVELOPERS PLEASE NOTE
@@ -33,7 +33,7 @@ if (empty($lang) || !is_array($lang))
 // ’ » “ ” …
 //
 
-$lang = array_merge($lang, array(
+$lang = array_merge($lang, [
 	'ACP_ADD'							=> 'Add',
 	'ACP_ALL_DOWNLOADS'					=> 'All downloads',
 	'ACP_ANNOUNCE_ENABLE'				=> 'Announce new downloads',
@@ -223,4 +223,4 @@ Have fun!',
 	'ACP_SHOW_DONATION_EXPLAIN' 			=> 'Will display donation button when downloading a file.',
 	'ACP_DONATION_URL'						=> 'URL to donation page',
 	'ACP_DONATION_URL_EXPLAIN' 				=> 'Set URL to donation page. Will open in new tab and download will start automatically.',
-));
+]);

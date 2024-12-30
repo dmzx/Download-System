@@ -10,37 +10,47 @@
 namespace dmzx\downloadsystem\controller;
 
 use phpbb\exception\http_exception;
+use dmzx\downloadsystem\core\functions;
+use phpbb\textformatter\parser_interface;
+use phpbb\textformatter\renderer_interface;
+use phpbb\template\template;
+use phpbb\user;
+use phpbb\auth\auth;
+use phpbb\db\driver\driver_interface as db_interface;
+use phpbb\request\request_interface;
+use phpbb\controller\helper;
+use phpbb\pagination;
 
 class downloadsystemcat
 {
-	/** @var \dmzx\downloadsystem\core\functions */
+	/** @var functions */
 	protected $functions;
 
-	/** @var \phpbb\textformatter\s9e\parser */
+	/** @var parser_interface */
 	protected $parser;
 
-	/** @var \phpbb\textformatter\s9e\renderer */
+	/** @var renderer_interface */
 	protected $renderer;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\auth\auth */
+	/** @var auth */
 	protected $auth;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var db_interface */
 	protected $db;
 
-	/** @var \phpbb\request\request */
+	/** @var request_interface */
 	protected $request;
 
-	/** @var \phpbb\controller\helper */
+	/** @var helper */
 	protected $helper;
 
-	/** @var \phpbb\pagination */
+	/** @var pagination */
 	protected $pagination;
 
 	/** @var string */
@@ -61,33 +71,33 @@ class downloadsystemcat
 	/**
 	* Constructor
 	*
-	* @param \dmzx\downloadsystem\core\functions		$functions
-	* @param \phpbb\textformatter\s9e\parser				$parser
-	* @param \phpbb\textformatter\s9e\renderer 			$renderer
-	* @param \phpbb\template\template		 			$template
-	* @param \phpbb\user								$user
-	* @param \phpbb\auth\auth							$auth
-	* @param \phpbb\db\driver\driver_interface			$db
-	* @param \phpbb\request\request		 				$request
-	* @param \phpbb\controller\helper		 			$helper
-	* @param \phpbb\pagination							$pagination
-	* @param string										$php_ext
-	* @param string										$root_path
-	* @param string										$dm_eds_table
-	* @param string										$dm_eds_cat_table
+	* @param functions					$functions
+	* @param parser_interface			$parser
+	* @param renderer_interface			$renderer
+	* @param template		 			$template
+	* @param user						$user
+	* @param auth						$auth
+	* @param db_interface				$db
+	* @param request_interface	 		$request
+	* @param helper		 				$helper
+	* @param pagination					$pagination
+	* @param string						$php_ext
+	* @param string						$root_path
+	* @param string						$dm_eds_table
+	* @param string						$dm_eds_cat_table
 	*
 	*/
 	public function __construct(
-		\dmzx\downloadsystem\core\functions $functions,
-		\phpbb\textformatter\s9e\parser $parser,
-		\phpbb\textformatter\s9e\renderer $renderer,
-		\phpbb\template\template $template,
-		\phpbb\user $user,
-		\phpbb\auth\auth $auth,
-		\phpbb\db\driver\driver_interface $db,
-		\phpbb\request\request $request,
-		\phpbb\controller\helper $helper,
-		\phpbb\pagination $pagination,
+		functions $functions,
+		parser_interface $parser,
+		renderer_interface $renderer,
+		template $template,
+		user $user,
+		auth $auth,
+		db_interface $db,
+		request_interface $request,
+		helper $helper,
+		pagination $pagination,
 		$php_ext,
 		$root_path,
 		$dm_eds_table,
@@ -173,12 +183,12 @@ class downloadsystemcat
 		// Check if there are downloads
 		if ($total_downloads == 0)
 		{
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 				'CAT_NAME'		=> $cat_name,
 				'S_NO_FILES'	=> true,
 				'MAIN_LINK'		=> $this->helper->route('dmzx_downloadsystem_controller'),
 				'U_BACK'		=> append_sid("{$this->root_path}index.$this->php_ext"),
-			));
+			]);
 		}
 		else
 		{
@@ -208,12 +218,12 @@ class downloadsystemcat
 				}
 				else
 				{
-					$download = '<a href="' . $this->helper->route('dmzx_downloadsystem_controller_download', array('id' =>	$dl_id)) . '" title="' . $this->user->lang['EDS_REGULAR_DOWNLOAD'] . '" alt=""><span class="fa-stack fa-2x"><i class="fa fa-download fa-stack-1x" id="' . $dl_id . '" data-ajax="access"></i><span class="eds-ext">' . $dl_filename . '</span></span></a>';
+					$download = '<a href="' . $this->helper->route('dmzx_downloadsystem_controller_download', ['id' =>	$dl_id]) . '" title="' . $this->user->lang['EDS_REGULAR_DOWNLOAD'] . '" alt=""><span class="fa-stack fa-2x"><i class="fa fa-download fa-stack-1x" id="' . $dl_id . '" data-ajax="access"></i><span class="eds-ext">' . $dl_filename . '</span></span></a>';
 				}
 
 				$dl_image = $row['download_image'];
 
-				$this->template->assign_block_vars('catrow', array(
+				$this->template->assign_block_vars('catrow', [
 					'DL_TITLE'			=> $dl_title,
 					'DL_VERSION'		=> $dl_version,
 					'DL_CLICKS'			=> $dl_clicks,
@@ -223,22 +233,22 @@ class downloadsystemcat
 					'DL_FILESIZE'		=> $filesize,
 					'U_DOWNLOAD'		=> $download,
 					'DL_IMAGE'			=> generate_board_url() . '/' . $eds_values['dm_eds_image_dir'] . '/' . $dl_image,
-				));
+				]);
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'DL_IMAGE_ALERT'			=> generate_board_url() . '/' . $eds_values['dm_eds_image_dir'] . '/' . $dl_image,
-				));
+				]);
 			}
 
 			$this->db->sql_freeresult($result);
 
-			$pagination_url = $this->helper->route('dmzx_downloadsystem_controller_cat', array('id' =>	$cat_id));
+			$pagination_url = $this->helper->route('dmzx_downloadsystem_controller_cat', ['id' =>	$cat_id]);
 			//Start pagination
 			$this->pagination->generate_template_pagination($pagination_url, 'pagination', 'start', $total_downloads, $number, $start);
 
 			$this->functions->assign_authors();
 
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 				'CAT_NAME' 						=> $cat_name,
 				'EDS_DOWNLOAD_FILE_LINK'		=> $this->helper->route('dmzx_downloadsystem_controller_download'),
 				'MAIN_LINK'						=> $this->helper->route('dmzx_downloadsystem_controller'),
@@ -248,7 +258,7 @@ class downloadsystemcat
 				'S_DM_EDS_ALLOW_DL_IMG'			=> $eds_values['dm_eds_allow_dl_img'],
 				'EDS_DOWNLOAD_SHOW_DONATION'	=> $eds_values['show_donation'],
 				'EDS_DOWNLOAD_DONATION_URL'		=> $eds_values['donation_url'],
-			));
+			]);
 		}
 
 		// Send all data to the template file

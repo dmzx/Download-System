@@ -10,16 +10,19 @@
 namespace dmzx\downloadsystem\controller;
 
 use phpbb\exception\http_exception;
+use phpbb\auth\auth;
+use phpbb\db\driver\driver_interface as db_interface;
+use phpbb\request\request_interface;
 
 class downloadsystemdownload
 {
-	/** @var \phpbb\auth\auth */
+	/** @var auth */
 	protected $auth;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var db_interface */
 	protected $db;
 
-	/** @var \phpbb\request\request */
+	/** @var request_interface */
 	protected $request;
 
 	/** @var string */
@@ -37,18 +40,18 @@ class downloadsystemdownload
 	/**
 	* Constructor
 	*
-	* @param \phpbb\auth\auth					$auth
-	* @param \phpbb\db\driver\driver_interface	$db
-	* @param \phpbb\request\request		 		$request
-	* @param string								$root_path
-	* @param string								$dm_eds_table
-	* @param string								$dm_eds_cat_table
+	* @param auth					$auth
+	* @param db_interface			$db
+	* @param request_interface		$request
+	* @param string					$root_path
+	* @param string					$dm_eds_table
+	* @param string					$dm_eds_cat_table
 	*
 	*/
 	public function __construct(
-		\phpbb\auth\auth $auth,
-		\phpbb\db\driver\driver_interface $db,
-		\phpbb\request\request $request,
+		auth $auth,
+		db_interface $db,
+		request_interface $request,
 		$root_path,
 		$dm_eds_table,
 		$dm_eds_cat_table

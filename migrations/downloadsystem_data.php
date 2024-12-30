@@ -13,18 +13,18 @@ class downloadsystem_data extends \phpbb\db\migration\migration
 {
 	public function update_data()
 	{
-		return array(
+		return [
 		 // Add permissions
-		 array('permission.add', array('u_dm_eds_use', true)),
-		 array('permission.add', array('u_dm_eds_download', true)),
-		 array('permission.add', array('a_dm_eds', true)),
+		 ['permission.add', ['u_dm_eds_use', true]],
+		 ['permission.add', ['u_dm_eds_download', true]],
+		 ['permission.add', ['a_dm_eds', true]],
 
 		 // Set permissions
-		 array('permission.permission_set', array('REGISTERED', 'u_dm_eds_use', 'group')),
-		 array('permission.permission_set', array('REGISTERED', 'u_dm_eds_download', 'group')),
-		 array('permission.permission_set', array('ADMINISTRATORS', 'a_dm_eds', 'group')),
-		 array('permission.permission_set', array('ADMINISTRATORS', 'u_dm_eds_use', 'group')),
-		 array('permission.permission_set', array('ADMINISTRATORS', 'u_dm_eds_download', 'group')),
-		);
+		 ['permission.permission_set', ['REGISTERED', 'u_dm_eds_use', 'group']],
+		 ['permission.permission_set', ['REGISTERED', 'u_dm_eds_download', 'group']],
+		 ['permission.permission_set', ['ADMINISTRATORS', 'a_dm_eds', 'group']],
+		 ['permission.permission_set', ['ADMINISTRATORS', 'u_dm_eds_use', 'group']],
+		 ['permission.permission_set', ['ADMINISTRATORS', 'u_dm_eds_download', 'group']],
+		];
 	}
 }

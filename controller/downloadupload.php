@@ -10,49 +10,62 @@
 namespace dmzx\downloadsystem\controller;
 
 use phpbb\exception\http_exception;
+use dmzx\downloadsystem\core\functions;
+use phpbb\textformatter\parser_interface;
+use phpbb\textformatter\renderer_interface;
+use phpbb\template\template;
+use phpbb\user;
+use phpbb\auth\auth;
+use phpbb\log\log_interface;
+use phpbb\db\driver\driver_interface as db_interface;
+use phpbb\controller\helper;
+use phpbb\request\request_interface;
+use phpbb\extension\manager;
+use phpbb\path_helper;
+use phpbb\files\factory;
 
 class downloadupload
 {
-	/** @var \dmzx\downloadsystem\core\functions */
+	/** @var functions */
 	protected $functions;
 
-	/** @var \phpbb\textformatter\s9e\parser */
+	/** @var parser_interface */
 	protected $parser;
 
-	/** @var \phpbb\textformatter\s9e\renderer */
+	/** @var renderer_interface */
 	protected $renderer;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\auth\auth */
+	/** @var auth */
 	protected $auth;
 
-	/** @var \phpbb\log\log */
+	/** @var log_interface */
 	protected $log;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var db_interface */
 	protected $db;
 
-	/** @var \phpbb\controller\helper */
+	/** @var helper */
 	protected $helper;
 
-	/** @var \phpbb\request\request */
+	/** @var request_interface */
 	protected $request;
 
-	/** @var \phpbb\extension\manager "Extension Manager" */
+	/** @var manager */
 	protected $ext_manager;
 
-	/** @var \phpbb\path_helper */
+	/** @var path_helper */
 	protected $path_helper;
 
 	/** @var string */
 	protected $php_ext;
 
-	/** @var string phpBB root path */
+	/** @var string */
 	protected $root_path;
 
 	/**
@@ -64,48 +77,49 @@ class downloadupload
 
 	protected $dm_eds_cat_table;
 
-	/** @var \phpbb\files\factory */
+	/** @var factory */
 	protected $files_factory;
 
 	/**
 	* Constructor
 	*
-	* @param \dmzx\downloadsystem\core\functions						$functions
-	* @param \phpbb\textformatter\s9e\parser								$parser
-	* @param \phpbb\textformatter\s9e\renderer 							$renderer
-	* @param \phpbb\template\template		 							$template
-	* @param \phpbb\user												$user
-	* @param \phpbb\auth\auth											$auth
-	* @param \phpbb\log													$log
-	* @param \phpbb\db\driver\driver_interface							$db
-	* @param \phpbb\controller\helper		 							$helper
-	* @param \phpbb\request\request		 								$request
-	* @param \phpbb\extension\manager									$ext_manager
-	* @param \phpbb\path_helper											$path_helper
-	* @param string 													$php_ext
-	* @param string 													$root_path
-	* @param string 													$dm_eds_table
-	* @param string 													$dm_eds_cat_table
-	* @param \phpbb\files\factory										$files_factory
+	* @param functions						$functions
+	* @param parser_interface				$parser
+	* @param renderer_interface 			$renderer
+	* @param template		 				$template
+	* @param user							$user
+	* @param auth							$auth
+	* @param log_interface 					$log
+	* @param db_interface					$db
+	* @param helper		 					$helper
+	* @param request_interface		 		$request
+	* @param manager						$ext_manager
+	* @param path_helper					$path_helper
+	* @param string 						$php_ext
+	* @param string 						$root_path
+	* @param string 						$dm_eds_table
+	* @param string 						$dm_eds_cat_table
+	* @param factory						$files_factory
 	*
 	*/
 	public function __construct(
-		\dmzx\downloadsystem\core\functions $functions,
-		\phpbb\textformatter\s9e\parser $parser,
-		\phpbb\textformatter\s9e\renderer $renderer,
-		\phpbb\template\template $template,
-		\phpbb\user $user,
-		\phpbb\auth\auth $auth,
-		\phpbb\log\log $log,
-		\phpbb\db\driver\driver_interface $db,
-		\phpbb\controller\helper $helper,
-		\phpbb\request\request $request,
-		\phpbb\extension\manager $ext_manager,
-		\phpbb\path_helper $path_helper,
-		$php_ext, $root_path,
+		functions $functions,
+		parser_interface $parser,
+		renderer_interface $renderer,
+		template $template,
+		user $user,
+		auth $auth,
+		log_interface $log,
+		db_interface $db,
+		helper $helper,
+		request_interface $request,
+		manager $ext_manager,
+		path_helper $path_helper,
+		$php_ext,
+		$root_path,
 		$dm_eds_table,
 		$dm_eds_cat_table,
-		\phpbb\files\factory $files_factory = null
+		factory $files_factory = null
 	)
 	{
 		$this->functions 			= $functions;
@@ -227,7 +241,7 @@ class downloadupload
 
 				// End the upload
 				$filesize = @filesize($this->root_path . $upload_dir . '/' . $upload_file->get('uploadname'));
-				$sql_ary = array(
+				$sql_ary = [
 					'download_title'		=> $title,
 					'download_desc'	 		=> $desc,
 					'download_filename'		=> $upload_file->get('uploadname'),
@@ -242,7 +256,7 @@ class downloadupload
 					'enable_smilies_file'	=> $enable_smilies_file,
 					'enable_magic_url_file'	=> $enable_magic_url_file,
 					'download_image' 		=> 'default_dl.png',
-				);
+				];
 
 				!$sql_ary['enable_bbcode_file'] || !$eds_values['dm_eds_allow_bbcodes'] ? $this->parser->disable_bbcodes() : $this->parser->enable_bbcodes();
 				!$sql_ary['enable_smilies_file'] || !$eds_values['dm_eds_allow_smilies'] ? $this->parser->disable_smilies() : $this->parser->enable_smilies();
@@ -329,14 +343,14 @@ class downloadupload
 			' . $sql_show_cat . '
 			ORDER BY LOWER(cat_name)';
 		$result = $this->db->sql_query($sql);
-		$cats = array();
+		$cats = [];
 
 		while ($row2 = $this->db->sql_fetchrow($result))
 		{
-			$cats[$row2['cat_id']] = array(
+			$cats[$row2['cat_id']] = [
 				'cat_title'	=> $row2['cat_name'],
 				'cat_id'	=> $row2['cat_id'],
-			);
+			];
 		}
 		$this->db->sql_freeresult($result);
 
@@ -355,7 +369,7 @@ class downloadupload
 
 		$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off') ? '' : ' enctype="multipart/form-data"';
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'ID'						=> $id,
 			'TITLE'						=> $title,
 			'DESC'						=> $desc,
@@ -371,13 +385,13 @@ class downloadupload
 			'SMILIES_STATUS'			=> !empty($eds_values['dm_eds_allow_smilies']) ? $this->user->lang('SMILIES_ARE_ON') : $this->user->lang('SMILIES_ARE_OFF'),
 			'URL_STATUS'				=> !empty($eds_values['dm_eds_allow_magic_url']) ? $this->user->lang('URL_IS_ON') : $this->user->lang('URL_IS_OFF'),
 			'S_DL_CATEGORY_ADD'			=> true,
-		));
+		]);
 
 		// Build navigation link
-		$this->template->assign_block_vars('navlinks', array(
+		$this->template->assign_block_vars('navlinks', [
 			'FORUM_NAME'	=> $this->user->lang('EDS_UPLOAD_SECTION'),
 			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller_upload'),
-		));
+		]);
 
 		$this->functions->assign_authors();
 		$this->template->assign_var('DOWNLOADSYSTEM_FOOTER_VIEW', true);
@@ -394,7 +408,7 @@ class downloadupload
 	*/
 	private function log_message($log_message, $title, $user_message)
 	{
-		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_message, time(), array($title));
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_message, time(), [$title]);
 
 		meta_refresh(3, $this->helper->route('dmzx_downloadsystem_controller_upload'));
 

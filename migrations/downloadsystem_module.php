@@ -13,13 +13,13 @@ class downloadsystem_module extends \phpbb\db\migration\migration
 {
 	public function update_data()
 	{
-		return array(
-			array('module.add', array('acp', 'ACP_CAT_DOT_MODS', 'ACP_DM_EDS')),
-			array('module.add', array(
-			'acp', 'ACP_DM_EDS', array(
-					'module_basename'	=> '\dmzx\downloadsystem\acp\downloadsystem_module', 'modes' => array('config', 'categories', 'downloads'),
-				),
-			)),
-		);
+		return [
+			['module.add', ['acp', 'ACP_CAT_DOT_MODS', 'ACP_DM_EDS']],
+			['module.add', [
+			'acp', 'ACP_DM_EDS', [
+					'module_basename'	=> '\dmzx\downloadsystem\acp\downloadsystem_module', 'modes' => ['config', 'categories', 'downloads'],
+				],
+			]],
+		];
 	}
 }

@@ -14,7 +14,7 @@ if (!defined('IN_PHPBB'))
 
 if (empty($lang) || !is_array($lang))
 {
-	$lang = array();
+	$lang = [];
 }
 
 // DEVELOPERS PLEASE NOTE
@@ -33,7 +33,7 @@ if (empty($lang) || !is_array($lang))
 // ’ » “ ” …
 //
 
-$lang = array_merge($lang, array(
+$lang = array_merge($lang, [
 	'EDS_BACK_INDEX'					=> 'Back to index',
 	'EDS_BACK_LINK'						=> 'Click %shere%s to return to the download index',
 	'EDS_CATS_NAME'						=> 'Categories',
@@ -133,4 +133,4 @@ we have a new download!
 
 Have fun!',
 	'EDS_NEW_ADDED'							=> 'Your entry was successfully added to the database',
-));
+]);

@@ -14,7 +14,7 @@ if (!defined('IN_PHPBB'))
 
 if (empty($lang) || !is_array($lang))
 {
-	$lang = array();
+	$lang = [];
 }
 
 // DEVELOPERS PLEASE NOTE
@@ -33,7 +33,7 @@ if (empty($lang) || !is_array($lang))
 // ’ » “ ” …
 //
 
-$lang = array_merge($lang, array(
+$lang = array_merge($lang, [
 	'ACP_DM_EDS'						=> 'Download System',
 	'ACP_MANAGE_CATEGORIES'				=> 'Manage Categories',
 	'ACP_MANAGE_CONFIG'					=> 'Configuration',
@@ -45,4 +45,4 @@ $lang = array_merge($lang, array(
 	'LOG_CATEGORY_UPDATED'				=> '<strong>Updated download category</strong><br>» %1$s',
 	'LOG_CATEGORY_DELETED'				=> '<strong>Deleted download category</strong><br>» %1$s',
 	'LOG_CONFIG_UPDATED'				=> '<strong>Updated download configuration</strong>',
-));
+]);

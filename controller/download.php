@@ -10,45 +10,51 @@
 namespace dmzx\downloadsystem\controller;
 
 use phpbb\exception\http_exception;
+use dmzx\downloadsystem\core\functions;
+use phpbb\template\template;
+use phpbb\user;
+use phpbb\auth\auth;
+use phpbb\request\request_interface;
+use phpbb\controller\helper;
 
 class download
 {
-	/** @var \dmzx\downloadsystem\core\functions */
+	/** @var functions */
 	protected $functions;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\auth\auth */
+	/** @var auth */
 	protected $auth;
 
-	/** @var \phpbb\request\request */
+	/** @var request_interface */
 	protected $request;
 
-	/** @var \phpbb\controller\helper */
+	/** @var helper */
 	protected $helper;
 
 	/**
 	* Constructor
 	*
-	* @param \dmzx\downloadsystem\core\functions		$functions
-	* @param \phpbb\template\template		 			$template
-	* @param \phpbb\user								$user
-	* @param \phpbb\auth\auth							$auth
-	* @param \phpbb\request\request		 				$request
-	* @param \phpbb\controller\helper					$helper
+	* @param functions				$functions
+	* @param template		 		$template
+	* @param user					$user
+	* @param auth					$auth
+	* @param request_interface	 	$request
+	* @param helper					$helper
 	*
 	*/
 	public function __construct(
-		\dmzx\downloadsystem\core\functions $functions,
-		\phpbb\template\template $template,
-		\phpbb\user $user,
-		\phpbb\auth\auth $auth,
-		\phpbb\request\request $request,
-		\phpbb\controller\helper $helper
+		functions $functions,
+		template $template,
+		user $user,
+		auth $auth,
+		request_interface $request,
+		helper $helper
 	)
 	{
 		$this->functions 		= $functions;
@@ -72,10 +78,10 @@ class download
 		$this->functions->generate_cat_list($cat_id);
 
 		// Build navigation link
-		$this->template->assign_block_vars('navlinks', array(
+		$this->template->assign_block_vars('navlinks', [
 			'FORUM_NAME'	=> $this->user->lang('EDS_DOWNLOADS'),
 			'U_VIEW_FORUM'	=> $this->helper->route('dmzx_downloadsystem_controller'),
-		));
+		]);
 
 		$this->functions->assign_authors();
 		$this->template->assign_var('DOWNLOADSYSTEM_FOOTER_VIEW', true);
