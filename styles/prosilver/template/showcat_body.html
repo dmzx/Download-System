@@ -19,49 +19,40 @@
 	</div>
 	{% endif %}
 </div>
-{% for catrow in loops.catrow %}
-	{% if catrow.S_FIRST_ROW %}
-		<div class="forabg forumbg-table">
-			<div class="inner">
-				<table class="table1">
-					<thead>
-						<tr>
-							<th class="eds-title" style="text-align:left;">{{ lang('EDS_FILE_TITLE') }}</th>
-							<th class="eds-version">{{ lang('EDS_FILE_VERSION') }}</th>
-							{% if S_DM_EDS_ALLOW_DL_IMG %}
-							<th class="eds-image" style="text-align:center;">{{ lang('EDS_DL_IMAGE') }}</th>
-							{% endif %}
-							<th class="eds-desc">{{ lang('EDS_FILE_DESC') }}</th>
-							<th class="eds-count">{{ lang('EDS_FILE_CLICKS') }}</th>
-							<th class="eds-filesize">{{ lang('EDS_FILESIZE') }}</th>
-							<th class="eds-dl">{{ lang('EDS_DOWNLOAD') }}</th>
-						</tr>
-					</thead>
-					<tbody>
-						{% endif %}
-						<tr class="{% if catrow.S_ROW_COUNT is even %} bg1{% else %}bg2{% endif %}">
-							<td class="eds-title">&nbsp;<b>{{ catrow.DL_TITLE }}</b></td>
-							<td class="eds-version" style="text-align:center;">{{ catrow.DL_VERSION }}</td>
-							{% if S_DM_EDS_ALLOW_DL_IMG %}
-							<td class="eds-image" style="text-align:center;">
-								<img src="{{ catrow.DL_IMAGE }}" width="45" height="45" alt="{{ catrow.DL_IMAGE }}" title="{{ catrow.DL_TITLE }}" />
-							</td>
-							{% endif %}
-							<td class="eds-desc" style="text-align:center;">{{ catrow.DL_DESC }}
-							<hr />
-							<span class="small"><i>{{ lang('EDS_UPLOADED_ON') ~ lang('COLON') }} {{ catrow.DL_UPLOAD_TIME }}<br>
-							{{ lang('EDS_LAST_CHANGED_ON') ~ lang('COLON') }} {{ catrow.DL_LAST_CHANGED }}</i></span></td>
-							<td class="eds-count" style="text-align:center;"><strong>{{ catrow.DL_CLICKS }}</strong></td>
-							<td class="eds-filesize" style="text-align:center;">{{ catrow.DL_FILESIZE }}</td>
-							<td class="eds-dl" style="text-align:center;" >{{ catrow.U_DOWNLOAD }}</td>
-						</tr>
-						{% if catrow.S_LAST_ROW %}
-					</tbody>
-				</table>
-			</div>
-		</div>
-	{% endif %}
-{% endfor %}
+
+<div class="file-list">
+	<div class="file-list-header">
+		<span class="file-title">{{ lang('EDS_FILE_TITLE') }}</span>
+		<span class="file-version">{{ lang('EDS_FILE_VERSION') }}</span>
+		{% if S_DM_EDS_ALLOW_DL_IMG %}
+		<span class="file-image">{{ lang('EDS_DL_IMAGE') }}</span>
+		{% endif %}
+		<span class="file-desc">{{ lang('EDS_FILE_DESC') }}</span>
+		<span class="file-count">{{ lang('EDS_FILE_CLICKS') }}</span>
+		<span class="file-size">{{ lang('EDS_FILESIZE') }}</span>
+		<span class="file-dl">{{ lang('EDS_DOWNLOAD') }}</span>
+	</div>
+
+	{% for catrow in loops.catrow %}
+	<div class="file-list-item {% if catrow.S_ROW_COUNT is even %}row1{% else %}row2{% endif %}">
+		<span class="file-title"><b>{{ catrow.DL_TITLE }}</b></span>
+		<span class="file-version">{{ catrow.DL_VERSION }}</span>
+		{% if S_DM_EDS_ALLOW_DL_IMG %}
+		<span class="file-image">
+			<img src="{{ catrow.DL_IMAGE }}" width="45" height="45" alt="{{ catrow.DL_IMAGE }}" title="{{ catrow.DL_TITLE }}" />
+		</span>
+		{% endif %}
+		<span class="file-desc">{{ catrow.DL_DESC }}
+			<hr />
+			<span class="small"><i>{{ lang('EDS_UPLOADED_ON') ~ lang('COLON') }} {{ catrow.DL_UPLOAD_TIME }}<br>
+			{{ lang('EDS_LAST_CHANGED_ON') ~ lang('COLON') }} {{ catrow.DL_LAST_CHANGED }}</i></span>
+		</span>
+		<span class="file-count"><strong>{{ catrow.DL_CLICKS }}</strong></span>
+		<span class="file-size">{{ catrow.DL_FILESIZE }}</span>
+		<span class="file-dl">{{ catrow.U_DOWNLOAD }}</span>
+	</div>
+	{% endfor %}
+</div>
 
 <div class="action-bar bar-bottom">
 	{% if loops.pagination|length or TOTAL_DOWNLOADS %}

@@ -1,5 +1,10 @@
 # Downloadsystem Changelog
 
+## Changes in 1.2.2
+- Add search in ACP.
+- Changed table to div in ACP.
+- Changed table to div on download page.
+
 ## Changes in 1.2.1
 - Code update.
 

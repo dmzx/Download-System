@@ -722,4 +722,24 @@ class functions
 
 		return $allowed_image_extensions;
 	}
+
+	public function generate_search_file_sql($search_query)
+	{
+		 if ($search_query)
+		{
+			$escaped_query = $this->db->sql_escape(strtolower($search_query));
+			return "WHERE LOWER(d.download_title) LIKE '%" . $escaped_query . "%' OR LOWER(c.cat_name) LIKE '%" . $escaped_query . "%' OR LOWER(d.download_desc) LIKE '%" . $escaped_query . "%'";
+		}
+		return '';
+	}
+
+	public function generate_search_cat_sql($search_query)
+	{
+		if ($search_query)
+		{
+			$escaped_query = $this->db->sql_escape(strtolower($search_query));
+			return "WHERE LOWER(cat_name) LIKE '%" . $escaped_query . "%' OR LOWER(cat_desc) LIKE '%" . $escaped_query . "%'";
+		}
+		return '';
+	}
 }

@@ -64,7 +64,7 @@ $lang = array_merge($lang, [
 	'EDS_FREE'							=> 'Free',
 	'EDS_INDEX'							=> 'Index',
 	'EDS_LAST_CHANGED_ON'				=> 'Last changed on',
-	'EDS_LAST_DOWNLOAD'					=> '&nbsp;<strong>%1$s</strong><br><br>&nbsp;Downloaded: %2$s<br>&nbsp;Last changed on: %3$s',
+	'EDS_LAST_DOWNLOAD' 				=> '&nbsp;<strong>%1$s</strong><br><br>&nbsp;<span class="downloads-class">Downloaded: %2$s</span><br>&nbsp;Last changed on: %3$s',
 	'EDS_LAST_FILE'						=> 'Newest file',
 	'EDS_LEGEND'						=> 'Legend',
 	'EDS_LEGEND_ERROR'					=> 'You need more %1$s',

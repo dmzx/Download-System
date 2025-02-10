@@ -1,5 +1,6 @@
 {% INCLUDE 'overall_header.html' %}
 
+{% INCLUDECSS 'assets/css/acp_downloadsystem.css' %}
 {% INCLUDECSS '@dmzx_downloadsystem/assets/css/switchery.css' %}
 {% INCLUDEJS '@dmzx_downloadsystem/assets/js/switchery.js' %}
 
@@ -8,68 +9,54 @@
 <p>{{ lang('ACP_CAT_SELECT') }}</p>
 
 <form id="dm_eds" method="post" action="{{ S_ACTION }}">
-	<fieldset class="quick">
+	<fieldset class="tabulated">
 		<input type="hidden" name="action" value="create" />
 		<input class="button2" name="addforum" type="submit" value="{{ lang('ACP_CAT_NEW') }}" />
 	</fieldset>
 	{{ S_FORM_TOKEN }}
 </form>
 
-{% if loops.catrow|length %}
-<table class="table1 forums">
-	<colgroup><col class="row1" />{% if S_DM_EDS_ALLOW_CAT_IMG %}<col class="row1" />{% endif %}<col class="row1" /><col class="row1" /><col class="row1" /><col class="row2" /></colgroup>
-	<thead>
-		<tr>
-			<th>{{ lang('ACP_DM_CATEGORIES') }}</th>
-			{% if S_DM_EDS_ALLOW_CAT_IMG %}
-			<th>{{ lang('ACP_DM_CATEGORIES_IMAGE') }}</th>
-			{% endif %}
-			<th>{{ lang('ACP_DM_CATEGORIES_NAME') }}</th>
-			<th>{{ lang('ACP_DM_CATEGORIES_DESC') }}</th>
-			<th>{{ lang('ACP_DM_CATEGORIES_SHOW_INDEX') }}</th>
-			<th>{{ lang('ACTION') }}</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for catrow in loops.catrow %}
-		<tr>
-			<td class="folder">
-				{{ catrow.FOLDER_FA_ICON }}
-			</td>
-			{% if S_DM_EDS_ALLOW_CAT_IMG %}
-			<td class="folder">
-				<img src="{{ catrow.IMAGE }}" width="65" height="65" alt="{{ catrow.CAT_NAME }}" title="{{ catrow.CAT_NAME }}" />
-			</td>
-			{% endif %}
-			<td class="forum-desc">
-				<strong>{{ catrow.CAT_NAME }}{% if not catrow.CAT_SUBS_SHOW %}- {{ lang('ACP_SUB_DL_CAT') }}&nbsp;{{ catrow.CAT_MAIN_NAME}}{% endif %}</strong>
-			</td>
-			<td class="forum-desc">
-				{% if catrow.CAT_DESC %}<br><span>{{ catrow.CAT_DESC }}</span>{% endif %}
-			</td>
-			<td style="width: 10%; text-align: center;"><strong>{{ lang('ACP_NEW_CAT_NAME_SHOW') }}</strong>
-			{% if catrow.CAT_NAME_SHOW %}<br /><span>{{ catrow.CAT_NAME_SHOW }}</span>{% endif %}</td>
-			<td class="actions">
-				<span class="up-disabled" style="display:none;">{{ ICON_MOVE_UP_DISABLED }}</span>
-				<span class="up"><a href="{{ catrow.U_MOVE_UP }}">{{ ICON_MOVE_UP }}</a></span>
-				<span class="down-disabled" style="display:none;">{{ ICON_MOVE_DOWN_DISABLED }}</span>
-				<span class="down"><a href="{{ catrow.U_MOVE_DOWN }}">{{ ICON_MOVE_DOWN }}</a></span>
-				<a href="{{ catrow.U_EDIT }}">{{ ICON_EDIT }}</a>
-				<a href="{{ catrow.U_DELETE }}" data-ajax="row_delete">{{ ICON_DELETE }}</a>
-			</td>
-		</tr>
+<form id="dm_search" method="post" action="{{ U_ACTION_SEARCH }}">
+	<fieldset class="tabulated">
+		<input type="text" name="q" value="{{ SEARCH_QUERY }}" placeholder="{{ lang('SEARCH') }}" />
+		<input class="button2" type="submit" value="{{ lang('SEARCH') }}" />
+		<input class="button2" type="button" value="{{ lang('RESET') }}" onclick="window.location='{{ U_ACTION }}';" />
+	</fieldset>
+</form>
+
+<div class="eds-acp-list">
+	<div class="eds-acp-list-header">
+		<span class="eds-acp-cat">{{ lang('ACP_DM_CATEGORIES') }}</span>
+		{% if S_DM_EDS_ALLOW_CAT_IMG %}
+		<span class="eds-acp-image">{{ lang('ACP_DM_CATEGORIES_IMAGE') }}</span>
+		{% endif %}
+		<span class="eds-acp-name">{{ lang('ACP_DM_CATEGORIES_NAME') }}</span>
+		<span class="eds-acp-desc">{{ lang('ACP_DM_CATEGORIES_DESC') }}</span>
+		<span class="eds-acp-show">{{ lang('ACP_DM_CATEGORIES_SHOW_INDEX') }}</span>
+		<span class="eds-acp-actions">{{ lang('ACTION') }}</span>
+	</div>
+	{% for catrow in loops.catrow %}
+	<div class="eds-acp-list-item {% if catrow.S_ROW_COUNT is even %}row1{% else %}row2{% endif %}">
+		<span class="eds-acp-cat">{{ catrow.FOLDER_FA_ICON }}</span>
+		{% if S_DM_EDS_ALLOW_CAT_IMG %}
+		<span class="eds-acp-image"><img src="{{ catrow.IMAGE }}" width="65" height="65" alt="{{ catrow.CAT_NAME }}" title="{{ catrow.CAT_NAME }}" /></span>
+		{% endif %}
+		<span class="eds-acp-name"><strong>{{ catrow.CAT_NAME }}{% if not catrow.CAT_SUBS_SHOW %}- {{ lang('ACP_SUB_DL_CAT') }}&nbsp;{{ catrow.CAT_MAIN_NAME}}{% endif %}</strong></span>
+		<span class="eds-acp-desc">{% if catrow.CAT_DESC %}<br><span>{{ catrow.CAT_DESC }}</span>{% endif %}</span>
+		<span class="eds-acp-show">{% if catrow.CAT_NAME_SHOW %}<br><span>{{ catrow.CAT_NAME_SHOW }}</span>{% endif %}</span>
+		<span class="eds-acp-actions">
+			<span class="up-disabled" style="display:none;">{{ ICON_MOVE_UP_DISABLED }}</span>
+			<span class="up"><a href="{{ catrow.U_MOVE_UP }}">{{ ICON_MOVE_UP }}</a></span>
+			<span class="down-disabled" style="display:none;">{{ ICON_MOVE_DOWN_DISABLED }}</span>
+			<span class="down"><a href="{{ catrow.U_MOVE_DOWN }}">{{ ICON_MOVE_DOWN }}</a></span>
+			<a href="{{ catrow.U_EDIT }}">{{ ICON_EDIT }}</a>
+			<a href="{{ catrow.U_DELETE }}" data-ajax="row_delete">{{ ICON_DELETE }}</a>
+		</span>
+	</div>
+	{% else %}
+	<div class="eds-acp-no-categories">{{ lang('ACP_CAT_NO_CATEGORIES') }}</div>
 	{% endfor %}
-	</tbody>
-</table>
-{% endif %}
-
-<form id="dm_eds" method="post" action="{{ S_ACTION }}">
-	<fieldset class="quick">
-		<input type="hidden" name="action" value="create" />
-		<input class="button2" name="addforum" type="submit" value="{{ lang('ACP_CAT_NEW') }}" />
-	</fieldset>
-	{{ S_FORM_TOKEN }}
-</form>
+</div>
 {% endif %}
 
 {% if S_MODE_CREATE %}

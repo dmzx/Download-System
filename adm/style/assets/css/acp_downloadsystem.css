@@ -1,95 +1,180 @@
 .eds-title {
-	width: 25%;
-	overflow: hidden;
-	text-align: left;
-	line-height: 2.2em;
+    width: 25%;
+    overflow: hidden;
+    text-align: left;
+    line-height: 2.2em;
 }
 
 .eds-version {
-	width: 5%;
-	overflow: hidden;
-	text-align: center;
-	line-height: 2.2em;
+    width: 5%;
+    overflow: hidden;
+    text-align: center;
+    line-height: 2.2em;
 }
 
 .eds-desc {
-	width: 35%;
-	overflow: hidden;
-	margin-left: 2px;
-	margin-right: 2px;
-	text-align: left;
-	line-height: 1.2em;
+    width: 35%;
+    overflow: hidden;
+    margin-left: 2px;
+    margin-right: 2px;
+    text-align: left;
+    line-height: 1.2em;
 }
 
 .eds-cat {
-	width: 20%;
-	overflow: hidden;
-	margin-left: 2px;
-	margin-right: 2px;
-	text-align: left;
-	line-height: 1.2em;
+    width: 20%;
+    overflow: hidden;
+    margin-left: 2px;
+    margin-right: 2px;
+    text-align: left;
+    line-height: 1.2em;
 }
 
 .eds-desc-small {
-	width: 30%;
-	margin-left: 2px;
-	margin-right: 2px;
-	text-align: left;
-	line-height: 1.2em;
+    width: 30%;
+    margin-left: 2px;
+    margin-right: 2px;
+    text-align: left;
+    line-height: 1.2em;
 }
 
 .eds-count {
-	width: 5%;
-	overflow: hidden;
-	text-align: center;
+    width: 5%;
+    overflow: hidden;
+    text-align: center;
 }
 
 .eds-image {
-	width: 10%;
-	overflow: hidden;
-	text-align: center;
+    width: 10%;
+    overflow: hidden;
+    text-align: center;
 }
 
 .eds-cost {
-	width: 8%;
-	min-width: 100px;
-	overflow: hidden;
-	text-align: center;
+    width: 8%;
+    min-width: 100px;
+    overflow: hidden;
+    text-align: center;
 }
 
 .eds-filesize {
-	width: 8%;
-	min-width: 60px;
-	overflow: hidden;
-	text-align: center;
-	line-height: 1.2em;
+    width: 8%;
+    min-width: 60px;
+    overflow: hidden;
+    text-align: center;
+    line-height: 1.2em;
 }
 
 .eds-dl {
-	width: 68px;
-	min-width: 60px;
-	text-align: center;
+    width: 68px;
+    min-width: 60px;
+    text-align: center;
 }
 
-.eds-ext{
-	display: block;
+.eds-ext {
+    display: block;
     font-size: 10px;
     margin-top: 15px;
     text-align: center;
 }
 
 .eds-lastpost {
-	width: 30%;
-	min-width: 60px;
-	text-align: left;
+    width: 30%;
+    min-width: 60px;
+    text-align: left;
 }
 
 .eds-legend {
-	text-align: center;
-	vertical-align: middle;
-	line-height: 1.2em;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 1.2em;
 }
 
 .forumtitlex {
     padding-top: 12px;
+}
+
+.eds-acp-list {
+    margin-top: 20px;
+}
+
+.eds-acp-list-header, .eds-acp-list-item {
+    display: flex;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    flex-wrap: wrap;
+}
+
+.eds-acp-list-header {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.eds-acp-list-item {
+    align-items: center;
+}
+
+.eds-acp-title, .eds-acp-count, .eds-acp-image, .eds-acp-version, .eds-acp-cat, .eds-acp-desc, .eds-acp-actions,
+.eds-acp-cat, .eds-acp-name, .eds-acp-show, .eds-acp-actions {
+    flex: 1;
+    text-align: left;
+}
+
+.eds-acp-title, .eds-acp-name {
+    flex: 2;
+}
+
+.eds-acp-image {
+    flex: 1;
+}
+
+.eds-acp-actions {
+    text-align: right;
+    display: flex;
+    gap: 10px;
+}
+
+.eds-acp-actions, .eds-acp-image, .eds-acp-title, .eds-acp-desc, .eds-acp-count, .eds-acp-cat, .eds-acp-version,
+.eds-acp-name, .eds-acp-show {
+    align-items: flex-end;
+    display: flex;
+}
+
+.eds-acp-no-downloads, .eds-acp-no-categories {
+    padding: 20px;
+    text-align: center;
+    color: #888;
+}
+
+.pagination {
+    margin-top: 20px;
+}
+
+button.button2 {
+    margin-left: 5px;
+}
+
+.eds-acp-list-item.row1 {
+    background-color: #f9f9f9;
+}
+
+.eds-acp-list-item.row2 {
+    background-color: #fff;
+}
+
+@media (max-width: 767px) {
+    .eds-title, .eds-desc, .eds-cat, .eds-dl,
+    .eds-ext, .eds-lastpost, .eds-legend, .eds-acp-title,
+    .eds-acp-cat, .eds-acp-actions, .eds-acp-cat, .eds-acp-name, .eds-acp-actions {
+        width: 100%;
+        text-align: left;
+    }
+
+    .eds-acp-version, .eds-acp-image, .eds-acp-count, .eds-acp-cost, .eds-acp-filesize, .eds-acp-desc, .eds-acp-show {
+        display: none;
+    }
+
+    .eds-acp-actions {
+        justify-content: center;
+    }
 }

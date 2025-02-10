@@ -1,92 +1,165 @@
-td.eds-title {
-	width: 25%;
-	overflow: hidden;
-	text-align: left;
-	line-height: 2.2em;
-	font-size: 1.1em;
+.file-list {
+    margin-top: 20px;
 }
 
-td.eds-version {
-	width: 5%;
-	min-width: 60px;
-	overflow: hidden;
-	text-align: center;
-	line-height: 2.2em;
-	font-size: 1.1em;
+.file-list-header, .file-list-item {
+    display: flex;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    flex-wrap: wrap;
 }
 
-td.eds-desc {
-	width: 35%;
-	overflow: hidden;
-	margin-left: 2px;
-	margin-right: 2px;
-	text-align: left;
-	line-height: 1.2em;
-	font-size: 1.1em;
+.file-list-header {
+    background-color: #f4f4f4;
+    font-weight: bold;
 }
 
-td.eds-desc-small {
-	width: 30%;
-	margin-left: 2px;
-	margin-right: 2px;
-	text-align: left;
-	line-height: 1.2em;
-	font-size: 1.1em;
+.file-list-item {
+    align-items: center;
 }
 
-td.eds-count {
-	width: 10%;
-	overflow: hidden;
-	text-align: center;
-	font-size: 1.1em;
+.file-title, .file-version, .file-image, .file-desc, .file-count, .file-size, .file-dl {
+    flex: 1 1 100%;
+    text-align: center;
 }
 
-td.eds-cost {
-	width: 8%;
-	min-width: 100px;
-	overflow: hidden;
-	text-align: center;
-	font-size: 1.1em;
+.file-title {
+    flex: 1 1 100%;
 }
 
-td.eds-filesize {
-	width: 8%;
-	min-width: 60px;
-	overflow: hidden;
-	text-align: center;
-	line-height: 1.2em;
-	font-size: 1.1em;
+.file-image {
+    flex: 1 1 100%;
 }
 
-td.eds-dl {
-	width: 68px;
-	min-width: 60px;
-	text-align: center;
-	font-size: 1.1em;
-	
+.file-dl {
+    text-align: right;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
 }
 
-.eds-ext{
-	display: block;
+.file-no-files {
+    padding: 20px;
+    text-align: center;
+    color: #888;
+}
+
+.pagination {
+    margin-top: 20px;
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+button.button2 {
+    margin-left: 5px;
+}
+
+.file-list-item.row1 {
+    background-color: #f9f9f9;
+}
+
+.file-list-item.row2 {
+    background-color: #fff;
+}
+
+.forumtitlex {
+    padding-top: 12px;
+}
+
+.eds-ext {
+    display: block;
     font-size: 10px;
     margin-top: 15px;
     text-align: center;
 }
 
-td.eds-lastpost {
-	width: 30%;
-	min-width: 60px;
-	text-align: left;
-	font-size: 1.1em;
+.categories-list {
+    margin-top: 20px;
 }
 
-div.eds-legend {
-	text-align: center;
-	vertical-align: middle;
-	line-height: 1.2em;
-	font-size: 1.1em;
+.categories-list-header, .categories-list-item {
+    display: flex;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    flex-wrap: wrap;
 }
 
-.forumtitlex {
-    padding-top: 12px;
+.categories-list-header {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.categories-list-item {
+    align-items: center;
+}
+
+.categories-icon, .categories-image, .categories-name, .categories-desc, .categories-count, .categories-last {
+    flex: 1 1 100%;
+    text-align: center;
+}
+
+.categories-icon, .categories-name {
+    flex: 1 1 100%;
+}
+
+.categories-image {
+    flex: 1 1 100%;
+}
+
+.categories-last {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.categories-no-cats {
+    padding: 20px;
+    text-align: center;
+    color: #888;
+}
+
+.pagination {
+    margin-top: 20px;
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+button.button2 {
+    margin-left: 5px;
+}
+
+.categories-list-item.row1 {
+    background-color: #f9f9f9;
+}
+
+.categories-list-item.row2 {
+    background-color: #fff;
+}
+
+@media (min-width: 768px) {
+    .file-title, .file-version, .file-image, .file-desc, .file-count, .file-size, .file-dl,
+    .categories-name, .categories-desc, .categories-count, .categories-last {
+        flex: 1;
+    }
+
+    .file-title {
+        flex: 2;
+    }
+
+    .categories-icon, .categories-name {
+        flex: 2;
+    }
+
+    .categories-image {
+        flex: 1;
+    }
+}
+
+@media (max-width: 767px) {
+    .file-version, .file-image, .file-count, .file-size, .categories-image, .categories-count {
+        display: none;
+    }
 }

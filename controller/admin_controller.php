@@ -1202,24 +1202,24 @@ class admin_controller
 
 	public function display_downloads()
 	{
-		$action 		= $this->request->is_set_post('submit');
-		$id				= $this->request->variable('id', 0);
-		$form_action 	= $this->u_action. '&amp;action=add';
-		$lang_mode 		= $this->user->lang['ACP_ADD'];
+		$action = $this->request->is_set_post('submit');
+		$id = $this->request->variable('id', 0);
+		$form_action = $this->u_action . '&amp;action=add';
+		$lang_mode = $this->user->lang['ACP_ADD'];
 
 		// Read out config values
 		$eds_values = $this->functions->config_values();
 
-		$start	= $this->request->variable('start', 0);
-		$number	= $eds_values['pagination_acp'];
+		$start = $this->request->variable('start', 0);
+		$number = $eds_values['pagination_acp'];
 
 		$this->template->assign_vars([
-			'BASE'	=> $this->u_action,
+			'BASE' => $this->u_action,
 		]);
 
-		$sort_days	= $this->request->variable('st', 0);
-		$sort_key	= $this->request->variable('sk', 'download_title');
-		$sort_dir	= $this->request->variable('sd', 'ASC');
+		$sort_days = $this->request->variable('st', 0);
+		$sort_key = $this->request->variable('sk', 'download_title');
+		$sort_dir = $this->request->variable('sd', 'ASC');
 		$limit_days = [0 => $this->user->lang['ACP_ALL_DOWNLOADS'], 1 => $this->user->lang['1_DAY'], 7 => $this->user->lang['7_DAYS'], 14 => $this->user->lang['2_WEEKS'], 30 => $this->user->lang['1_MONTH'], 90 => $this->user->lang['3_MONTHS'], 180 => $this->user->lang['6_MONTHS'], 365 => $this->user->lang['1_YEAR']];
 
 		$sort_by_text = ['t' => $this->user->lang['ACP_SORT_TITLE'], 'c' => $this->user->lang['ACP_SORT_CAT']];
@@ -1229,9 +1229,14 @@ class admin_controller
 		gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 		$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
+		$search_query = $this->request->variable('q', '', true);
+		$search_sql = $this->functions->generate_search_file_sql($search_query);
+
 		// Total number of downloads
 		$sql = 'SELECT COUNT(download_id) AS total_downloads
-			FROM ' . $this->dm_eds_table;
+			FROM ' . $this->dm_eds_table . ' d
+			LEFT JOIN ' . $this->dm_eds_cat_table . ' c
+			ON d.download_cat_id = c.cat_id ' . $search_sql;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$total_downloads = $row['total_downloads'];
@@ -1241,44 +1246,50 @@ class admin_controller
 		$sql = 'SELECT d.*, c.*
 			FROM ' . $this->dm_eds_table . ' d
 			LEFT JOIN ' . $this->dm_eds_cat_table . ' c
-				ON d.download_cat_id = c.cat_id
-			ORDER BY '. $sql_sort_order;
-		$result = $this->db->sql_query_limit($sql, $number, $start);
+			ON d.download_cat_id = c.cat_id ' . $search_sql . '
+			ORDER BY ' . $sql_sort_order;
+		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$this->template->assign_block_vars('downloads', [
-				'ICON_COPY'		=> '<img src="' . $this->root_path . 'adm/images/file_new.gif" alt="' . $this->user->lang['ACP_COPY_NEW'] . '" title="' . $this->user->lang['ACP_COPY_NEW'] . '" />',
-				'TITLE'			=> $row['download_title'],
-				'FILENAME'		=> $row['download_filename'],
-				'DESC'			=> $this->renderer->render(html_entity_decode($row['download_desc'])),
-				'VERSION'		=> $row['download_version'],
-				'DL_COST'		=> ($row['cost_per_dl'] == 0 ? $this->user->lang['ACP_COST_FREE'] : $row['cost_per_dl']),
-				'DL_CLICKS'		=> $row['download_count'],
-				'SUB_DIR'		=> $row['cat_sub_dir'],
-				'CATNAME'		=> $row['cat_name'],
-				'U_COPY'		=> $this->u_action . '&amp;action=copy_new&amp;id=' .$row['download_id'],
-				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' .$row['download_id'],
-				'U_DEL'			=> $this->u_action . '&amp;action=delete&amp;id=' .$row['download_id'],
-				'DL_IMAGE'		=> generate_board_url() . '/' . $eds_values['dm_eds_image_dir'] . '/' . $row['download_image'],
+				'ICON_COPY' => '<i class="icon acp-icon acp-icon-copy fa-copy fa-fw" title="' . $this->user->lang['ACP_COPY_NEW'] . '"></i>',
+				'TITLE' => $row['download_title'],
+				'FILENAME' => $row['download_filename'],
+				'DESC' => $this->renderer->render(html_entity_decode($row['download_desc'])),
+				'VERSION' => $row['download_version'],
+				'DL_COST' => ($row['cost_per_dl'] == 0 ? $this->user->lang['ACP_COST_FREE'] : $row['cost_per_dl']),
+				'DL_CLICKS' => $row['download_count'],
+				'SUB_DIR' => $row['cat_sub_dir'],
+				'CATNAME' => $row['cat_name'],
+				'U_COPY' => $this->u_action . '&amp;action=copy_new&amp;id=' . $row['download_id'],
+				'U_EDIT' => $this->u_action . '&amp;action=edit&amp;id=' . $row['download_id'],
+				'U_DEL' => $this->u_action . '&amp;action=delete&amp;id=' . $row['download_id'],
+				'DL_IMAGE' => generate_board_url() . '/' . $eds_values['dm_eds_image_dir'] . '/' . $row['download_image'],
 			]);
 		}
 		$this->db->sql_freeresult($result);
 
 		$base_url = $this->u_action;
 
-		//Start pagination
-		$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_downloads, $number, $start);
+		// Disable pagination if search query is present
+		if (!$search_query)
+		{
+			// Start pagination
+			$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_downloads, $number, $start);
+		}
 
 		$this->template->assign_vars([
-			'S_DOWNLOAD_ACTION'		=> $this->u_action,
-			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
-			'S_SELECT_SORT_KEY'		=> $s_sort_key,
-			'TOTAL_DOWNLOADS'		=> ($total_downloads == 1) ? $this->user->lang['ACP_SINGLE_DOWNLOAD'] : sprintf($this->user->lang['ACP_MULTI_DOWNLOAD'], $total_downloads),
-			'U_NEW_DOWNLOAD'		=> $this->u_action . '&amp;action=new_download',
-			'L_MODE_TITLE'			=> $lang_mode,
-			'U_EDIT_ACTION'			=> $this->u_action,
-			'S_DM_EDS_ALLOW_DL_IMG'	=> $eds_values['dm_eds_allow_dl_img'],
+			'S_DOWNLOAD_ACTION' => $this->u_action,
+			'S_SELECT_SORT_DIR' => $s_sort_dir,
+			'S_SELECT_SORT_KEY' => $s_sort_key,
+			'TOTAL_DOWNLOADS' => ($total_downloads == 1) ? $this->user->lang['ACP_SINGLE_DOWNLOAD'] : sprintf($this->user->lang['ACP_MULTI_DOWNLOAD'], $total_downloads),
+			'U_NEW_DOWNLOAD' => $this->u_action . '&amp;action=new_download',
+			'U_ACTION_SEARCH' => $this->u_action,
+			'L_MODE_TITLE' => $lang_mode,
+			'U_EDIT_ACTION' => $this->u_action,
+			'S_DM_EDS_ALLOW_DL_IMG' => $eds_values['dm_eds_allow_dl_img'],
+			'SEARCH_QUERY' => $search_query,
 		]);
 	}
 
@@ -1294,13 +1305,18 @@ class admin_controller
 		$eds_values = $this->functions->config_values();
 
 		$this->template->assign_vars([
-			'S_MODE_MANAGE'	=> true,
-			'S_ACTION'		=> $this->u_action . '&amp;action=create&amp;parent_id=' . $parent_id,
+			'S_MODE_MANAGE' => true,
+			'S_ACTION' => $this->u_action . '&amp;action=create&amp;parent_id=' . $parent_id,
+			'U_ACTION_SEARCH' => $this->u_action,
 		]);
 
 		$dm_eds = [];
+		$search_query = $this->request->variable('q', '', true);
+		$search_sql = $this->functions->generate_search_cat_sql($search_query);
+
 		$sql = 'SELECT *
 			FROM ' . $this->dm_eds_cat_table . '
+			' . $search_sql . '
 			ORDER BY left_id ASC';
 		$result = $this->db->sql_query($sql);
 
@@ -1325,28 +1341,29 @@ class admin_controller
 			}
 
 			$this->template->assign_block_vars('catrow', [
-				'FOLDER_FA_ICON'		=> $folder_fa_icon,
-				'U_CAT'					=> $this->u_action . '&amp;parent_id=' . $dm_eds[$i]['cat_id'],
-				'CAT_NAME'				=> $dm_eds[$i]['cat_name'],
-				'CAT_DESC'				=> $this->renderer->render(html_entity_decode($dm_eds[$i]['cat_desc'])),
-				'CAT_SUBS'				=> ($dm_eds[$i]['left_id'] + 1 == $dm_eds[$i]['right_id'] && !$dm_eds[$i]['cat_id'] == $dm_eds[$i]['parent_id']) ? true : false,
-				'CAT_SUBS_SHOW'			=> ($dm_eds[$i]['left_id'] + 1 != $dm_eds[$i]['right_id'] && $dm_eds[$i]['cat_id'] != $parent_id || $dm_eds[$i]['parent_id'] == 0) ? true : false,
-				'CAT_MAIN_NAME'			=> $cat_main_name,
-				'CAT_NAME_SHOW'			=> ($dm_eds[$i]['cat_name_show'] == 1) ? $this->user->lang['ACP_CAT_NAME_SHOW_YES'] : $this->user->lang['ACP_CAT_NAME_SHOW_NO'],
-				'CAT_DESCRIPTION'		=> generate_text_for_display($dm_eds[$i]['cat_desc'], $dm_eds[$i]['cat_desc_uid'], $dm_eds[$i]['cat_desc_bitfield'], $dm_eds[$i]['cat_desc_options']),
-				'U_MOVE_UP'				=> $this->u_action . '&amp;action=move&amp;move=move_up&amp;cat_id=' . $dm_eds[$i]['cat_id'],
-				'U_MOVE_DOWN'			=> $this->u_action . '&amp;action=move&amp;move=move_down&amp;cat_id=' . $dm_eds[$i]['cat_id'],
-				'U_EDIT'				=> $this->u_action . '&amp;action=edit&amp;cat_id=' . $dm_eds[$i]['cat_id'],
-				'U_DELETE'				=> $this->u_action . '&amp;action=delete&amp;cat_id=' . $dm_eds[$i]['cat_id'],
-				'IMAGE'					=> generate_board_url() . '/' . $eds_values['dm_eds_image_cat_dir'] . '/' . $dm_eds[$i]['category_image'],
+				'FOLDER_FA_ICON' => $folder_fa_icon,
+				'U_CAT' => $this->u_action . '&amp;parent_id=' . $dm_eds[$i]['cat_id'],
+				'CAT_NAME' => $dm_eds[$i]['cat_name'],
+				'CAT_DESC' => $this->renderer->render(html_entity_decode($dm_eds[$i]['cat_desc'])),
+				'CAT_SUBS' => ($dm_eds[$i]['left_id'] + 1 == $dm_eds[$i]['right_id'] && !$dm_eds[$i]['cat_id'] == $dm_eds[$i]['parent_id']) ? true : false,
+				'CAT_SUBS_SHOW' => ($dm_eds[$i]['left_id'] + 1 != $dm_eds[$i]['right_id'] && $dm_eds[$i]['cat_id'] != $parent_id || $dm_eds[$i]['parent_id'] == 0) ? true : false,
+				'CAT_MAIN_NAME' => $cat_main_name,
+				'CAT_NAME_SHOW' => ($dm_eds[$i]['cat_name_show'] == 1) ? $this->user->lang['ACP_CAT_NAME_SHOW_YES'] : $this->user->lang['ACP_CAT_NAME_SHOW_NO'],
+				'CAT_DESCRIPTION' => generate_text_for_display($dm_eds[$i]['cat_desc'], $dm_eds[$i]['cat_desc_uid'], $dm_eds[$i]['cat_desc_bitfield'], $dm_eds[$i]['cat_desc_options']),
+				'U_MOVE_UP' => $this->u_action . '&amp;action=move&amp;move=move_up&amp;cat_id=' . $dm_eds[$i]['cat_id'],
+				'U_MOVE_DOWN' => $this->u_action . '&amp;action=move&amp;move=move_down&amp;cat_id=' . $dm_eds[$i]['cat_id'],
+				'U_EDIT' => $this->u_action . '&amp;action=edit&amp;cat_id=' . $dm_eds[$i]['cat_id'],
+				'U_DELETE' => $this->u_action . '&amp;action=delete&amp;cat_id=' . $dm_eds[$i]['cat_id'],
+				'IMAGE' => generate_board_url() . '/' . $eds_values['dm_eds_image_cat_dir'] . '/' . $dm_eds[$i]['category_image'],
 			]);
 		}
 
 		$this->template->assign_vars([
-			'S_DM_EDS_ALLOW_CAT_IMG'		=> $eds_values['dm_eds_allow_cat_img'],
-			'S_DM_EDS'						=> $parent_id,
-			'U_EDIT'						=> ($parent_id) ? $this->u_action . '&amp;action=edit&amp;cat_id=' . $parent_id : '',
-			'U_DELETE'						=> ($parent_id) ? $this->u_action . '&amp;action=delete&amp;cat_id=' . $parent_id : '',
+			'S_DM_EDS_ALLOW_CAT_IMG' => $eds_values['dm_eds_allow_cat_img'],
+			'S_DM_EDS' => $parent_id,
+			'U_EDIT' => ($parent_id) ? $this->u_action . '&amp;action=edit&amp;cat_id=' . $parent_id : '',
+			'U_DELETE' => ($parent_id) ? $this->u_action . '&amp;action=delete&amp;cat_id=' . $parent_id : '',
+			'SEARCH_QUERY' => $search_query,
 		]);
 	}
 

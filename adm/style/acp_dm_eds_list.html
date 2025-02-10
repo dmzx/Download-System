@@ -16,6 +16,14 @@
 	</fieldset>
 </form>
 
+<form id="dm_search" method="post" action="{{ U_ACTION_SEARCH }}">
+	<fieldset class="tabulated">
+		<input type="text" name="q" value="{{ SEARCH_QUERY }}" placeholder="{{ lang('SEARCH') }}" />
+		<input class="button2" type="submit" value="{{ lang('SEARCH') }}" />
+		<input class="button2" type="button" value="{{ lang('RESET') }}" onclick="window.location='{{ U_ACTION }}';" />
+	</fieldset>
+</form>
+
 {% if loops.pagination|length or TOTAL_DOWNLOADS %}
 	<div class="pagination">
 		{{ TOTAL_DOWNLOADS }}
@@ -28,40 +36,38 @@
 {% endif %}
 
 <div class="clear"></div>
-<table cellspacing="1">
-	<thead>
-		<tr>
-			<th class="eds-title">{{ lang('ACP_NEW_TITLE') }}</th>
-			<th class="eds-count">{{ lang('ACP_DOWNLOADS') }}</th>
-			{% if S_DM_EDS_ALLOW_DL_IMG %}
-			<th class="eds-image">{{ lang('ACP_NEW_IMAGE_DL') }}</th>
-			{% endif %}
-			<th class="eds-version">{{ lang('ACP_NEW_VERSION') }}</th>
-			<th class="eds-cat">{{ lang('ACP_CAT') }}</th>
-			<th class="eds-desc-small">{{ lang('ACP_NEW_DESC') }}</th>
-			<th style="width: 20%;">{{ lang('ACTION') }}</th>
-		</tr>
-	</thead>
-	<tbody>
+<div class="eds-acp-list">
+	<div class="eds-acp-list-header">
+		<span class="eds-acp-title">{{ lang('ACP_NEW_TITLE') }}</span>
+		<span class="eds-acp-count">{{ lang('ACP_DOWNLOADS') }}</span>
+		{% if S_DM_EDS_ALLOW_DL_IMG %}
+		<span class="eds-acp-image">{{ lang('ACP_NEW_IMAGE_DL') }}</span>
+		{% endif %}
+		<span class="eds-acp-version">{{ lang('ACP_NEW_VERSION') }}</span>
+		<span class="eds-acp-cat">{{ lang('ACP_CAT') }}</span>
+		<span class="eds-acp-desc">{{ lang('ACP_NEW_DESC') }}</span>
+		<span class="eds-acp-actions">{{ lang('ACTION') }}</span>
+	</div>
 	{% for downloads in loops.downloads %}
-		{% if downloads.S_ROW_COUNT is even %}<tr class="row1">{% else %}<tr class="row2">{% endif %}
-			<td class="eds-title">{{ downloads.TITLE }}</td>
-			<td class="eds-count"><strong>{{ downloads.DL_CLICKS }}</strong></td>
-			{% if S_DM_EDS_ALLOW_DL_IMG %}
-			<td class="eds-image"><img src="{{ downloads.DL_IMAGE }}" width="65" height="65" alt="{{ downloads.DL_IMAGE }}" title="{{ downloads.TITLE }}" /></td>
-			{% endif %}
-			<td class="eds-version">{{ downloads.VERSION }}</td>
-			<td class="eds-cat">{{ downloads.CATNAME }}</td>
-			<td class="eds-desc-small">{{ downloads.DESC }}</td>
-			<td style="width: 20%;">&nbsp;<a href="{{ downloads.U_COPY }}">{{ downloads.ICON_COPY }}</a>&nbsp;<a href="{{ downloads.U_EDIT }}">{{ ICON_EDIT }}</a>&nbsp;<a href="{{ downloads.U_DEL }}" data-ajax="row_delete">{{ ICON_DELETE }}</a>&nbsp;</td>
-		</tr>
-		{% else %}
-		<tr>
-			<td colspan="{% if S_CLEAR_ALLOWED %}6{% else %}5{% endif %}">{{ lang('ACP_NO_DOWNLOADS') }}</td>
-		</tr>
+	<div class="eds-acp-list-item {% if downloads.S_ROW_COUNT is even %}row1{% else %}row2{% endif %}">
+		<span class="eds-acp-title">{{ downloads.TITLE }}</span>
+		<span class="eds-acp-count"><strong>{{ downloads.DL_CLICKS }}</strong></span>
+		{% if S_DM_EDS_ALLOW_DL_IMG %}
+		<span class="eds-acp-image"><img src="{{ downloads.DL_IMAGE }}" width="65" height="65" alt="{{ downloads.DL_IMAGE }}" title="{{ downloads.TITLE }}" /></span>
+		{% endif %}
+		<span class="eds-acp-version">{{ downloads.VERSION }}</span>
+		<span class="eds-acp-cat">{{ downloads.CATNAME }}</span>
+		<span class="eds-acp-desc">{{ downloads.DESC }}</span>
+		<span class="eds-acp-actions">
+			<a href="{{ downloads.U_COPY }}">{{ downloads.ICON_COPY }}</a>
+			<a href="{{ downloads.U_EDIT }}">{{ ICON_EDIT }}</a>
+			<a href="{{ downloads.U_DEL }}" data-ajax="row_delete">{{ ICON_DELETE }}</a>
+		</span>
+	</div>
+	{% else %}
+	<div class="eds-acp-no-downloads">{{ lang('ACP_NO_DOWNLOADS') }}</div>
 	{% endfor %}
-	</tbody>
-</table>
+</div>
 
 {% if loops.pagination|length or TOTAL_DOWNLOADS %}
 <div class="pagination">
